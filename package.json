@@ -1,0 +1,24 @@
+{
+  "name": "hia-uview-biz-repo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Repository orchestration package for HIA-uView-Biz.",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "modules/*",
+    "extensions/*"
+  ],
+  "scripts": {
+    "check": "node scripts/verify-workspace.mjs",
+    "test": "npm run check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mandolin/HIA-uView-Biz.git"
+  },
+  "license": "UNLICENSED"
+}

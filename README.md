@@ -25,4 +25,4 @@ The current check validates the baseline files. See [development notes](docs/dev
 
 ## License
 
-License selection is pending while the framework establishes its dependency and reference-code policy. See [LICENSE](LICENSE).
+HIA-uView-Biz is licensed under the [MIT License](LICENSE). Future commercial modules or extensions may use their own declared licenses and notices; they must not change the license of this framework repository.

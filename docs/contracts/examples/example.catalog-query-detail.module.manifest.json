@@ -1,0 +1,81 @@
+{
+  "manifestVersion": "1.0",
+  "kind": "business-module",
+  "id": "example.catalog-query-detail",
+  "displayName": {
+    "zh-Hans": "通用目录—查询—详情示例",
+    "en": "Catalog query and detail example"
+  },
+  "business": {
+    "responsibility": {
+      "zh-Hans": "提供只读 entry 目录、查询与详情能力，不主张行业或生产数据主责。",
+      "en": "Provides read-only entry catalog, query, and detail behavior without claiming industry or production data ownership."
+    },
+    "lifecycle": "profile-selected",
+    "permissions": []
+  },
+  "contracts": {
+    "ports": [
+      {
+        "id": "catalog-query",
+        "direction": "required",
+        "contract": {
+          "id": "catalog-query-detail.query",
+          "version": "1.0"
+        }
+      },
+      {
+        "id": "entry-detail",
+        "direction": "required",
+        "contract": {
+          "id": "catalog-query-detail.detail",
+          "version": "1.0"
+        }
+      },
+      {
+        "id": "session-state",
+        "direction": "required",
+        "contract": {
+          "id": "catalog-query-detail.session",
+          "version": "1.0"
+        }
+      }
+    ],
+    "filterSchema": {
+      "id": "catalog-query-detail.filter",
+      "version": "1.0"
+    },
+    "outcomes": [
+      {
+        "id": "catalog-query-detail.query-result",
+        "version": "1.0"
+      },
+      {
+        "id": "catalog-query-detail.detail-result",
+        "version": "1.0"
+      },
+      {
+        "id": "catalog-query-detail.failure",
+        "version": "1.0"
+      }
+    ]
+  },
+  "configuration": {
+    "registeredBlocks": [
+      "catalog-list",
+      "entry-detail"
+    ],
+    "paginationModes": [
+      "page"
+    ],
+    "visibilityConditions": [
+      "always",
+      "has-results",
+      "has-selection",
+      "detail-ready"
+    ],
+    "ordering": "profile-controlled"
+  },
+  "dependencies": [],
+  "conflicts": []
+}

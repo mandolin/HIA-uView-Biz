@@ -1,0 +1,40 @@
+# Contract artifacts / 契约产物
+
+These files define data contracts for HIA-uView-Biz composition. They are reviewable JSON Schema and example manifests, not runtime code, a package release, a backend adapter, or a generated project template.
+
+这些文件定义 HIA-uView-Biz 组合所使用的数据契约。它们是可审阅的 JSON Schema 与示例 manifest，不是运行时代码、包发布、后端 adapter 或生成式项目模板。
+
+## Artifact map / 产物地图
+
+| Artifact / 产物 | Purpose / 用途 |
+| --- | --- |
+| [Business-module manifest schema / 业务模块 manifest schema](schemas/business-module.manifest.v1.schema.json) | Declares business ownership, ports, schemas, and permitted presentation configuration / 声明业务主责、port、schema 和允许的呈现配置 |
+| [Implementation-package manifest schema / 实现包 manifest schema](schemas/implementation-package.manifest.v1.schema.json) | Declares installed engineering delivery facts for one module / 声明一个模块的已安装工程交付事实 |
+| [Module example / 模块示例](examples/example.catalog-query-detail.module.manifest.json) | A neutral read-only `entry` catalog, query, and detail capability / 中性的只读 `entry` 目录、查询与详情能力 |
+| [Implementation example / 实现示例](examples/example.catalog-query-detail.mock-implementation.manifest.json) | A fixture-only mock implementation declaration / 仅供 fixture 使用的 mock 实现声明 |
+
+## Two manifest responsibilities / 两类 manifest 的主责
+
+The business-module manifest answers **what capability is owned**: business responsibility, lifecycle, permissions, required or provided ports, domain contract references, and the configuration that may select registered presentation blocks. It must not describe a backend-specific route, HTTP envelope, credential, or package distribution detail.
+
+业务模块 manifest 回答**拥有哪项能力**：业务主责、生命周期、权限、required 或 provided port、领域契约引用，以及可选择已登记呈现区块的配置。它不能描述后端专用路由、HTTP envelope、凭据或包分发细节。
+
+The implementation-package manifest answers **how an installed engineering package supplies a capability**: package identity and distribution status, runtime target and surface, supplied port implementation, compatibility, provenance, and planned or verified evidence. It must not silently create business ownership or turn `package.json` into a business manifest.
+
+实现包 manifest 回答**已安装工程包如何提供能力**：包身份与分发状态、运行时目标与表面、所提供的 port 实现、兼容性、来源，以及计划中或已验证的证据。它不能悄然创建业务主责，也不能把 `package.json` 变成业务 manifest。
+
+## Configuration boundary / 配置边界
+
+The module schema permits only identifiers for registered blocks, declared pagination modes, declared visibility conditions, and a profile-controlled or fixed ordering policy. A manifest cannot introduce a script, dependency, unknown component, arbitrary URL, arbitrary connection, or undeclared private-data read.
+
+模块 schema 只允许已登记区块的标识、已声明的分页模式、已声明的可见性条件，以及由 profile 控制或固定的排序策略。manifest 不能引入脚本、依赖、未知组件、任意 URL、任意连接或未声明的私有数据读取。
+
+## JSON and language notes / JSON 与语言说明
+
+JSON does not support comments. The schemas therefore use bilingual `title` and `description` metadata, and this Markdown explains every public responsibility in Chinese and English. Example display and responsibility text uses the explicit `zh-Hans` and `en` fields.
+
+JSON 不支持注释。因此 schema 使用中英双语的 `title` 与 `description` 元数据，本 Markdown 以中英文解释每项公开主责。示例的显示文本与主责文本使用明确的 `zh-Hans` 和 `en` 字段。
+
+The schema files use JSON Schema Draft 7 so they can be checked without adding a runtime dependency in this repository. The draft choice is a validation-tooling boundary, not a claim that the manifests are already a stable runtime API.
+
+schema 文件使用 JSON Schema Draft 7，因此可以在本仓不新增运行时依赖的情况下检查。选择该 draft 是验证工具边界，并不表示 manifest 已经是稳定的运行时 API。

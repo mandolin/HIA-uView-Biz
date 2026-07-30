@@ -1,0 +1,63 @@
+{
+  "manifestVersion": "1.0",
+  "kind": "implementation-package",
+  "id": "example.catalog-query-detail.mock-implementation",
+  "moduleId": "example.catalog-query-detail",
+  "package": {
+    "identity": "example-catalog-query-detail-mock",
+    "distribution": "fixture-only"
+  },
+  "runtime": {
+    "targets": [
+      "mp-weixin"
+    ],
+    "surfaces": [
+      "adapter",
+      "channel-projection",
+      "mock-session",
+      "presentation-block"
+    ]
+  },
+  "provides": [
+    {
+      "id": "catalog-query",
+      "kind": "adapter",
+      "contract": {
+        "id": "catalog-query-detail.query",
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "entry-detail",
+      "kind": "adapter",
+      "contract": {
+        "id": "catalog-query-detail.detail",
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "session-state",
+      "kind": "mock-session",
+      "contract": {
+        "id": "catalog-query-detail.session",
+        "version": "1.0"
+      }
+    }
+  ],
+  "compatibility": {
+    "bizContract": ">=1.0.0 <2.0.0",
+    "hiauviewUi": "not-required"
+  },
+  "provenance": {
+    "strategy": "independent",
+    "license": "MIT",
+    "noticeRequired": false
+  },
+  "validation": {
+    "evidence": [
+      "manifest-schema",
+      "contract-fixture"
+    ],
+    "status": "planned"
+  }
+}

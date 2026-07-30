@@ -1,0 +1,237 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/mandolin/HIA-uView-Biz/blob/main/docs/contracts/schemas/business-module.manifest.v1.schema.json",
+  "title": "Business-module manifest / 业务模块 manifest",
+  "description": "Declares business ownership and composition contracts without engineering package or backend wire details. / 声明业务主责与组合契约，不包含工程包或后端 wire 细节。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifestVersion",
+    "kind",
+    "id",
+    "displayName",
+    "business",
+    "contracts",
+    "configuration",
+    "dependencies",
+    "conflicts"
+  ],
+  "properties": {
+    "manifestVersion": {
+      "const": "1.0",
+      "description": "Manifest contract version. / Manifest 契约版本。"
+    },
+    "kind": {
+      "const": "business-module",
+      "description": "Separates this artifact from an implementation-package manifest. / 将本产物与实现包 manifest 区分。"
+    },
+    "id": {
+      "$ref": "#/$defs/dottedIdentifier"
+    },
+    "displayName": {
+      "$ref": "#/$defs/localizedText"
+    },
+    "business": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responsibility",
+        "lifecycle",
+        "permissions"
+      ],
+      "properties": {
+        "responsibility": {
+          "$ref": "#/$defs/localizedText"
+        },
+        "lifecycle": {
+          "enum": [
+            "required",
+            "optional",
+            "profile-selected"
+          ],
+          "description": "Composition lifecycle, not package installation state. / 组合生命周期，不是包安装状态。"
+        },
+        "permissions": {
+          "type": "array",
+          "description": "Declared capability permissions; an empty list means no permission is claimed. / 已声明的能力权限；空列表表示不主张任何权限。",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/simpleIdentifier"
+          }
+        }
+      }
+    },
+    "contracts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ports",
+        "filterSchema",
+        "outcomes"
+      ],
+      "properties": {
+        "ports": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/portDeclaration"
+          }
+        },
+        "filterSchema": {
+          "$ref": "#/$defs/versionedContractReference"
+        },
+        "outcomes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/versionedContractReference"
+          }
+        }
+      }
+    },
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "registeredBlocks",
+        "paginationModes",
+        "visibilityConditions",
+        "ordering"
+      ],
+      "properties": {
+        "registeredBlocks": {
+          "type": "array",
+          "description": "Only pre-registered presentation blocks may be selected. / 只能选择预先登记的呈现区块。",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/simpleIdentifier"
+          }
+        },
+        "paginationModes": {
+          "type": "array",
+          "description": "Pagination modes declared by the module; adapters state their compatible modes separately. / 模块声明的分页模式；adapter 另行声明兼容模式。",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "page",
+              "cursor",
+              "offset"
+            ]
+          }
+        },
+        "visibilityConditions": {
+          "type": "array",
+          "description": "An allowlist of declarative visibility conditions, never executable expressions. / 声明式可见性条件的 allowlist，绝非可执行表达式。",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "always",
+              "has-results",
+              "has-selection",
+              "detail-ready"
+            ]
+          }
+        },
+        "ordering": {
+          "enum": [
+            "fixed",
+            "profile-controlled"
+          ],
+          "description": "A profile may control only the order of registered blocks. / profile 只能控制已登记区块的顺序。"
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "Business-module dependencies, not npm dependencies. / 业务模块依赖，不是 npm 依赖。",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/dottedIdentifier"
+      }
+    },
+    "conflicts": {
+      "type": "array",
+      "description": "Business-module conflicts that composition must detect. / 组合必须检测的业务模块冲突。",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/dottedIdentifier"
+      }
+    }
+  },
+  "$defs": {
+    "dottedIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)*$",
+      "description": "Stable lowercase dotted identifier. / 稳定的小写点分标识。"
+    },
+    "simpleIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Stable lowercase identifier. / 稳定的小写标识。"
+    },
+    "localizedText": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zh-Hans",
+        "en"
+      ],
+      "properties": {
+        "zh-Hans": {
+          "type": "string",
+          "minLength": 1
+        },
+        "en": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "versionedContractReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/dottedIdentifier"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+$",
+          "description": "Major and minor contract version. / 主版本与次版本契约号。"
+        }
+      }
+    },
+    "portDeclaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "direction",
+        "contract"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/simpleIdentifier"
+        },
+        "direction": {
+          "enum": [
+            "required",
+            "provided"
+          ],
+          "description": "Required ports are supplied by an implementation; provided ports are supplied to another module. / required port 由实现提供；provided port 提供给其他模块。"
+        },
+        "contract": {
+          "$ref": "#/$defs/versionedContractReference"
+        }
+      }
+    }
+  }
+}

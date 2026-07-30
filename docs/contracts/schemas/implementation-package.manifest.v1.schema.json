@@ -1,0 +1,238 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/mandolin/HIA-uView-Biz/blob/main/docs/contracts/schemas/implementation-package.manifest.v1.schema.json",
+  "title": "Implementation-package manifest / 实现包 manifest",
+  "description": "Declares engineering delivery facts for a business module without claiming its business ownership. / 声明业务模块的工程交付事实，不主张其业务主责。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifestVersion",
+    "kind",
+    "id",
+    "moduleId",
+    "package",
+    "runtime",
+    "provides",
+    "compatibility",
+    "provenance",
+    "validation"
+  ],
+  "properties": {
+    "manifestVersion": {
+      "const": "1.0",
+      "description": "Manifest contract version. / Manifest 契约版本。"
+    },
+    "kind": {
+      "const": "implementation-package",
+      "description": "Separates this artifact from a business-module manifest. / 将本产物与业务模块 manifest 区分。"
+    },
+    "id": {
+      "$ref": "#/$defs/dottedIdentifier"
+    },
+    "moduleId": {
+      "$ref": "#/$defs/dottedIdentifier"
+    },
+    "package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "distribution"
+      ],
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/packageIdentity"
+        },
+        "distribution": {
+          "enum": [
+            "fixture-only",
+            "private",
+            "public"
+          ],
+          "description": "Distribution status, not a publication promise. / 分发状态，不是发布承诺。"
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "targets",
+        "surfaces"
+      ],
+      "properties": {
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "mp-weixin",
+              "uni-app",
+              "web",
+              "native-app"
+            ]
+          }
+        },
+        "surfaces": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "adapter",
+              "channel-projection",
+              "mock-session",
+              "presentation-block"
+            ]
+          }
+        }
+      }
+    },
+    "provides": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/providedSurface"
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bizContract",
+        "hiauviewUi"
+      ],
+      "properties": {
+        "bizContract": {
+          "type": "string",
+          "pattern": "^>=\\d+\\.\\d+\\.\\d+ <\\d+\\.\\d+\\.\\d+$",
+          "description": "Supported Biz contract range. / 支持的 Biz 契约范围。"
+        },
+        "hiauviewUi": {
+          "enum": [
+            "not-required",
+            "optional",
+            "required-by-explicit-contract"
+          ],
+          "description": "Whether this package requires a separately declared HIA-uView UI contract. / 本包是否需要另行声明的 HIA-uView UI 契约。"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "license",
+        "noticeRequired"
+      ],
+      "properties": {
+        "strategy": {
+          "enum": [
+            "independent",
+            "audited-mit-reuse"
+          ],
+          "description": "Source-intake strategy; detailed file evidence remains external to this manifest. / 源码接入策略；逐文件证据不放入本 manifest。"
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "noticeRequired": {
+          "type": "boolean"
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence",
+        "status"
+      ],
+      "properties": {
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "manifest-schema",
+              "contract-fixture",
+              "source-provenance",
+              "compatibility-matrix"
+            ]
+          }
+        },
+        "status": {
+          "enum": [
+            "planned",
+            "verified"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "dottedIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)*$",
+      "description": "Stable lowercase dotted identifier. / 稳定的小写点分标识。"
+    },
+    "simpleIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Stable lowercase identifier. / 稳定的小写标识。"
+    },
+    "packageIdentity": {
+      "type": "string",
+      "pattern": "^(?:@[a-z][a-z0-9-]*/)?[a-z][a-z0-9-]*$",
+      "description": "npm-style package identity; an example identity is not a publication claim. / npm 风格包身份；示例身份不是发布声明。"
+    },
+    "versionedContractReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/dottedIdentifier"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+$",
+          "description": "Major and minor contract version. / 主版本与次版本契约号。"
+        }
+      }
+    },
+    "providedSurface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "contract"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/simpleIdentifier"
+        },
+        "kind": {
+          "enum": [
+            "adapter",
+            "channel-projection",
+            "mock-session",
+            "presentation-block"
+          ]
+        },
+        "contract": {
+          "$ref": "#/$defs/versionedContractReference"
+        }
+      }
+    }
+  }
+}

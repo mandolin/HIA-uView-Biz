@@ -1,0 +1,75 @@
+{
+  "manifestVersion": "1.0",
+  "kind": "application-template",
+  "id": "example.catalog-query-detail.mp-weixin",
+  "adoptionProfileId": "example.catalog-composed",
+  "primaryModuleId": "example.catalog-query-detail",
+  "capabilitySlots": [
+    {
+      "id": "reference-data",
+      "moduleId": "example.reference-data",
+      "requiredState": "enabled",
+      "requiredSurfaces": [
+        "adapter"
+      ]
+    },
+    {
+      "id": "catalog-adapter",
+      "moduleId": "example.catalog-query-detail",
+      "requiredState": "enabled",
+      "requiredSurfaces": [
+        "adapter",
+        "mock-session"
+      ]
+    }
+  ],
+  "hostPolicy": {
+    "registeredBlocks": [
+      "runtime-status",
+      "query-context",
+      "catalog-list",
+      "entry-detail"
+    ],
+    "registeredVisibility": [
+      "always",
+      "has-results",
+      "has-selection"
+    ],
+    "allowedPageSizes": [
+      1,
+      5,
+      10,
+      20
+    ]
+  },
+  "routeProjection": {
+    "channel": "mp-weixin",
+    "screens": [
+      {
+        "intent": "catalog",
+        "screenId": "catalog-list",
+        "blocks": [
+          "catalog-list"
+        ]
+      },
+      {
+        "intent": "entry-detail",
+        "screenId": "entry-detail",
+        "blocks": [
+          "entry-detail"
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "select-entry",
+        "from": "catalog-list",
+        "to": "entry-detail"
+      }
+    ]
+  },
+  "screenCapabilityPolicy": {
+    "catalog-list": [],
+    "entry-detail": []
+  }
+}

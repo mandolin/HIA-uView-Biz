@@ -9,3 +9,4 @@ Architecture Decision Records (ADRs) capture public decisions that shape package
 - [ADR-0003: Adapter, session, and cache boundary / Adapter、会话与缓存边界](ADR-0003-adapter-session-and-cache-boundary.md)
 - [ADR-0004: Capability composition and lifecycle / 能力组合与生命周期](ADR-0004-capability-composition-and-lifecycle.md)
 - [ADR-0005: Explicit capability adoption and replacement / 显式能力采用与替换](ADR-0005-explicit-capability-adoption-and-replacement.md)
+- [ADR-0006: Application template and explicit adapter integration / 应用模板与显式 Adapter 集成](ADR-0006-application-template-and-explicit-adapter-integration.md)

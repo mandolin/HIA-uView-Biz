@@ -1,0 +1,22 @@
+{
+  "name": "@hia-uview/biz-app-integration",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Candidate-first application-template integration for explicit HIA-uView-Biz capability units.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@hia-uview/biz-adoption-runtime": "0.0.0",
+    "@hia-uview/biz-app-shell": "0.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

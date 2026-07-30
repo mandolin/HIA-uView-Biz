@@ -1,12 +1,12 @@
 # Representative `mp-weixin` slice / 代表性 `mp-weixin` 纵切
 
-This contract defines the first end-to-end application fixture for `example.catalog-query-detail`. It proves that one neutral mini-program can join the versioned business contract, capability lifecycle, backend-agnostic adapter boundary, application shell, and named HIA-uView components. It remains a representative engineering fixture rather than an industry preset, generated application, production backend, or release template.
+This contract defines the first end-to-end application fixture for `example.catalog-query-detail`. It proves that one neutral mini-program can consume a versioned application template that joins the business contract, complete capability adoption, backend-agnostic adapter boundary, application shell, and named HIA-uView components. It remains a representative engineering fixture rather than an industry preset, generated application, copied scaffold, production backend, or release template.
 
-本契约定义 `example.catalog-query-detail` 的首个端到端应用 fixture。它验证一个中性小程序可以串联带版本业务契约、能力生命周期、后端无关 adapter 边界、应用 shell 与 HIA-uView 命名组件。它仍是代表性工程 fixture，而不是行业预置、生成式应用、生产后端或发布模板。
+本契约定义 `example.catalog-query-detail` 的首个端到端应用 fixture。它验证一个中性小程序可以消费版本化应用模板，由模板串联业务契约、完整能力采用、后端无关 adapter 边界、应用 shell 与 HIA-uView 命名组件。它仍是代表性工程 fixture，而不是行业预置、生成式应用、复制式脚手架、生产后端或发布模板。
 
-Read it together with the [profile schema](schemas/representative-mp-weixin.profile.v1.schema.json), [profile example](examples/example.catalog-query-detail.representative-mp-weixin.profile.json), [catalog-query-detail contract](catalog-query-detail.md), [adapter boundary](adapter-boundary.md), and [capability lifecycle](capability-lifecycle.md).
+Read it together with the [application-template contract](application-template.md), [template example](examples/example.catalog-query-detail.mp-weixin.template.manifest.json), [profile schema](schemas/representative-mp-weixin.profile.v1.schema.json), [profile example](examples/example.catalog-query-detail.representative-mp-weixin.profile.json), and [catalog-query-detail contract](catalog-query-detail.md).
 
-请将本文与 [profile schema](schemas/representative-mp-weixin.profile.v1.schema.json)、[profile 示例](examples/example.catalog-query-detail.representative-mp-weixin.profile.json)、[目录—查询—详情契约](catalog-query-detail.md)、[adapter 边界](adapter-boundary.md)和[能力生命周期](capability-lifecycle.md)一并阅读。
+请将本文与[应用模板契约](application-template.md)、[模板示例](examples/example.catalog-query-detail.mp-weixin.template.manifest.json)、[profile schema](schemas/representative-mp-weixin.profile.v1.schema.json)、[profile 示例](examples/example.catalog-query-detail.representative-mp-weixin.profile.json)和[目录—查询—详情契约](catalog-query-detail.md)一并阅读。
 
 ## Profile boundary / Profile 边界
 
@@ -59,8 +59,8 @@ Both modes are deterministic, local, read-only, and free of network I/O. They sh
 
 | Mode / 模式 | Responsibility / 主责 | Evidence / 证据 |
 | --- | --- | --- |
-| `wire-fixture` | Install and enable explicit neutral reference-data first, then select and enable the injected-wire catalog implementation, convert a bounded backend-like fixture into canonical results, and route the app shell through that enabled catalog capability / 先安装并启用显式中性 reference-data，再选择并启用 injected-wire catalog 实现，把受限的类后端 fixture 转为规范化结果，并通过已启用 catalog 能力向 app shell 路由 | Lifecycle snapshot names both enabled modules and implementations; bounded observation counts adapter exchange without exposing payloads / lifecycle snapshot 标识两项已启用模块与实现；受限 observation 统计 adapter exchange 而不暴露 payload |
-| `mock` | Install and enable explicit neutral reference-data first, then select the neutral in-memory catalog mock through the same lifecycle boundary and retain mandatory offline/regression behavior / 先安装并启用显式中性 reference-data，再通过相同 lifecycle 边界选择中性内存 catalog mock，并保留必备的离线与回归行为 | Canonical page, detail, failure, and mock-session outcomes remain deterministic / 规范化 page、detail、failure 与 mock-session 结果保持确定 |
+| `wire-fixture` | Template supplies complete explicit neutral reference-data plus injected-wire catalog units; integration validates slots/surfaces, adopts them dependency-first, and routes the shell through the enabled primary module / 模板提供完整显式中性 reference-data 加 injected-wire catalog 单元；integration 校验 slots/surfaces、按依赖优先顺序采用，并通过已启用主模块向 shell 路由 | Adoption snapshot names both enabled modules and implementations; bounded observation counts adapter exchange without exposing payloads / adoption snapshot 标识两项已启用模块与实现；受限 observation 统计 adapter exchange 而不暴露 payload |
+| `mock` | Template supplies the same complete slots with the neutral in-memory catalog mock, retaining mandatory explicit offline/regression behavior through the same integration path / 模板使用中性内存 catalog mock 提供相同完整 slots，并通过同一集成路径保留必备显式离线/回归行为 | Canonical page, detail, failure, and mock-session outcomes remain deterministic / 规范化 page、detail、failure 与 mock-session 结果保持确定 |
 
 An unavailable, unknown, or invalid selected mode makes initialization fail with bounded diagnostics. The runtime does not retry the other mode, inspect the environment, search a registry, or open a connection.
 
@@ -73,11 +73,12 @@ The representative path is one explicit sequence:
 代表性路径是下面这条明确序列：
 
 1. Validate the complete profile before creating or invoking a provider. / 在创建或调用 provider 前校验完整 profile。
-2. Assemble explicit reference-data and the selected catalog capability unit, install both as disabled, then explicitly enable them in dependency-first order. / 装配显式 reference-data 与所选 catalog capability unit，以 disabled 状态安装两者，再按依赖优先顺序显式启用。
-3. Bridge only the enabled capability invocation and registered route projection into the application shell. / 只把已启用能力调用与已登记路由投影桥接给应用 shell。
-4. Submit the profile-owned canonical `page` and `pageSize`, then display the resulting catalog page. / 提交 profile 自有的规范化 `page` 与 `pageSize`，再显示结果目录页。
-5. Select an `entry` from that canonical page, invoke `entry-detail`, and display its primary entry and section states. / 从规范化页面选择一个 `entry`，调用 `entry-detail`，再显示主条目与 section 状态。
-6. Return to the catalog projection without a URL, platform router, page-stack mutation, or second copy of business state. / 不使用 URL、平台 router、页面栈修改或第二份业务状态副本，返回目录投影。
+2. Ask the fixed template package for one complete explicit reference-data plus selected catalog candidate; no unit is discovered or auto-filled. / 请求固定模板包创建一个完整显式 reference-data 加所选 catalog 候选；不发现或自动补齐任何单元。
+3. Validate template identity, complete slots, selected implementations, required surfaces, and host policy; then atomically adopt the complete candidate in dependency-first order. / 校验模板 identity、完整 slots、所选实现、必需 surfaces 与宿主 policy；再按依赖优先顺序原子采用完整候选。
+4. Let application integration create the shell bridge fixed to the template primary module and registered route projection. / 由 application integration 创建固定到模板主模块与已登记路由投影的 shell bridge。
+5. Submit the profile-owned canonical `page` and `pageSize`, then display the resulting catalog page. / 提交 profile 自有的规范化 `page` 与 `pageSize`，再显示结果目录页。
+6. Select an `entry` from that canonical page, invoke `entry-detail`, and display its primary entry and section states. / 从规范化页面选择一个 `entry`，调用 `entry-detail`，再显示主条目与 section 状态。
+7. Return to the catalog projection without a URL, platform router, page-stack mutation, or second copy of business state. / 不使用 URL、平台 router、页面栈修改或第二份业务状态副本，返回目录投影。
 
 Automated acceptance covers invalid-profile rejection before invocation; successful `wire-fixture` lifecycle and bounded adapter observation; explicit `mock`; query, empty/failure semantics where supplied by the selected fixture; detail and section states; back-to-catalog state; detached snapshots; and absence of manifests, providers, input payloads, raw wire values, credentials, paths, or environment data from public diagnostics.
 
@@ -92,8 +93,9 @@ The controlled compiler and output verifier remain separate evidence. They prove
 | Layer / 层 | Owns / 主责 | Must not own / 禁止主责 |
 | --- | --- | --- |
 | App profile / 应用 profile | Source selection, bounded initial paging values, registered block visibility / 数据源选择、受限初始分页值、已登记区块可见性 | Scripts, arbitrary components, URLs, connections, dependencies, business schema / 脚本、任意组件、URL、连接、依赖、业务 schema |
-| Fixture runtime / Fixture runtime | Profile validation, explicit source construction, lifecycle transition, safe shell bridge, bounded observation / profile 校验、显式数据源构造、lifecycle 转换、安全 shell bridge、受限 observation | UI refs, platform navigation, hidden fallback, real backend discovery / UI ref、平台导航、隐藏回退、真实后端发现 |
-| Capability runtime / 能力 runtime | Validated application-local reference-data and catalog install/enable/invoke state with dependency protection / 已验证的应用本地 reference-data 与 catalog install/enable/invoke 状态及依赖保护 | Package manager, lifecycle script, remote installation / 包管理器、生命周期脚本、远程安装 |
+| Fixture runtime / Fixture runtime | App-profile validation, explicit template-candidate request, query factory, registered-block predicate, and bounded observation / app-profile 校验、显式模板候选请求、query factory、已登记 block 判断与受限 observation | Manifest/provider/lifecycle/shell assembly, UI refs, platform navigation, hidden fallback, real backend discovery / manifest/provider/lifecycle/shell 装配、UI ref、平台导航、隐藏回退、真实后端发现 |
+| Template package / 模板包 | Versioned application-template metadata and complete explicit reference-data plus selected catalog unit assembly / 版本化 application-template metadata 与完整显式 reference-data 加所选 catalog 单元装配 | Generator, scaffold copying, discovery, installation, remote catalog, industry fields, fallback / 生成器、脚手架复制、发现、安装、远端目录、行业字段、回退 |
+| Application integration / 应用集成 | Template/slot/surface gate, complete-set adoption delegation, fixed-primary-module shell, safe receipts/snapshots / 模板/slot/surface 门禁、完整集合采用委托、固定主模块 shell、安全 receipt/snapshot | File/package loading, provider invention, dynamic component/script, backend or external state / 文件/package 加载、provider 虚构、动态组件/脚本、后端或外部状态 |
 | Adapter or mock / Adapter 或 mock | Canonical read-port results for the selected explicit mode / 为明确选择的模式提供规范化只读 port 结果 | UI layout, route ownership, raw wire leakage, implicit mode selection / UI 布局、路由主责、原始 wire 泄露、隐式模式选择 |
 | Application shell / 应用 shell | Screen/action gate and detached presentation state / screen/action gate 与隔离呈现状态 | Provider construction, profile parsing, backend protocol / provider 构造、profile 解析、后端协议 |
 | Vue page / Vue 页面 | Named HIA-uView presentation, local input text, explicit user actions / HIA-uView 命名呈现、本地输入文字、明确用户操作 | Core/provider assembly, source fallback, business-data duplication, dynamic import / core/provider 装配、数据源回退、业务数据复制、动态 import |

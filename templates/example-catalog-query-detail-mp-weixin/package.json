@@ -1,0 +1,23 @@
+{
+  "name": "@hia-uview/biz-example-catalog-query-detail-template",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Declarative mp-weixin application template for the neutral catalog-query-detail example.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@hia-uview/biz-example-catalog-query-detail": "0.0.0",
+    "@hia-uview/biz-example-catalog-query-detail-adapter-fixture": "0.0.0",
+    "@hia-uview/biz-example-reference-data": "0.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

@@ -1,20 +1,18 @@
 /**
- * <lang><zh-CN>代表性小程序 fixture runtime：校验声明式 app profile，显式选择本地 source，并把已启用 Biz 能力桥接到应用 shell。</zh-CN><en>Representative mini-program fixture runtime: validates a declarative app profile, selects a local source explicitly, and bridges an enabled Biz capability into the application shell.</en></lang>
+ * <lang><zh-CN>代表性小程序 fixture runtime：校验声明式 app profile，并通过版本化应用模板集成完整显式能力候选。</zh-CN><en>Representative mini-program fixture runtime: validates a declarative app profile and integrates a complete explicit capability candidate through a versioned application template.</en></lang>
  * @lang zh-CN 本模块只组合仓内确定性 mock/wire fixture；它不读取文件、环境、网络、credential、storage 或动态代码。
  * @lang en This module composes only checked-in deterministic mock and wire fixtures; it reads no file, environment, network, credential, storage, or dynamic code.
  */
 
-import { createApplicationShell } from '@hia-uview/biz-app-shell';
-import { createCapabilityRuntime } from '@hia-uview/biz-capability-runtime';
-import { createCatalogQueryDetailAdapterFixture } from '@hia-uview/biz-example-catalog-query-detail-adapter-fixture';
+// <lang><zh-CN>通用 integration runtime 校验 template/slots/surfaces，并建立固定主模块 shell bridge。</zh-CN><en>The generic integration runtime validates template, slots, and surfaces and establishes a shell bridge fixed to the primary module.</en></lang>
 import {
-  createCatalogQueryDetailMock,
-  createExampleManifests
-} from '@hia-uview/biz-example-catalog-query-detail';
+  createApplicationIntegrationRuntime
+} from '@hia-uview/biz-app-integration';
+
+// <lang><zh-CN>私有模板包拥有显式 mock/wire 单元装配；app 不再复制 capability lifecycle 过程。</zh-CN><en>The private template package owns explicit mock or wire unit assembly; the app no longer duplicates capability-lifecycle procedures.</en></lang>
 import {
-  REFERENCE_DATA_MODULE_ID,
-  createReferenceDataCapabilityUnit
-} from '@hia-uview/biz-example-reference-data';
+  createExampleCatalogTemplateCandidate
+} from '@hia-uview/biz-example-catalog-query-detail-template';
 
 /**
  * <lang><zh-CN>当前代表性 app profile 与 canonical port 共享的固定契约版本。</zh-CN><en>Fixed contract version shared by the current representative app profile and canonical ports.</en></lang>
@@ -29,13 +27,6 @@ const CONTRACT_VERSION = '1.0';
  * @lang en The identifier locates only the current app profile and replaces neither a business-module ID nor an implementation-package ID.
  */
 const REPRESENTATIVE_PROFILE_ID = 'example.catalog-query-detail.representative-mp-weixin';
-
-/**
- * <lang><zh-CN>本纵切唯一业务模块的稳定标识。</zh-CN><en>Stable identifier of the sole business module in this slice.</en></lang>
- * @lang zh-CN runtime 通过该 ID 显式 install/enable/invoke，不做 package 或 provider discovery。
- * @lang en The runtime explicitly installs, enables, and invokes through this ID and performs no package or provider discovery.
- */
-const MODULE_ID = 'example.catalog-query-detail';
 
 /**
  * <lang><zh-CN>profile 根级唯一允许的字段集合。</zh-CN><en>Only fields allowed at the profile root.</en></lang>
@@ -508,64 +499,13 @@ function copyProfile(profile) {
 }
 
 /**
- * <lang><zh-CN>为已验证 source 构造 implementation 与 provider，并保留最小 observation factory。</zh-CN><en>Constructs implementation and providers for a validated source while retaining a minimum observation factory.</en></lang>
- *
- * @param {object} manifests <lang><zh-CN>中性 example 的新声明集合。</zh-CN><en>Fresh declaration set of the neutral example.</en></lang>
- * @param {string} sourceMode <lang><zh-CN>已验证 source mode。</zh-CN><en>Validated source mode.</en></lang>
- * @param {string} fixtureCase <lang><zh-CN>与 source 匹配的 allowlisted fixture case。</zh-CN><en>Allowlisted fixture case matching the source.</en></lang>
- * @returns {{implementationPackage: object, portProviders: object, getObservation: Function}} <lang><zh-CN>仅供本 factory 私下装配的数据源单元。</zh-CN><en>Source unit used privately by this factory for composition.</en></lang>
- * @lang zh-CN 返回对象只在初始化闭包内使用，provider 与 manifest 不进入公开结果。
- * @lang en The returned object is used only inside the initialization closure; providers and manifests never enter the public result.
- */
-function createSelectedSource(manifests, sourceMode, fixtureCase) {
-  // <lang><zh-CN>wire 分支创建 injected local adapter，并把受限计数 observation 包装为带 source 标签的新对象。</zh-CN><en>The wire branch creates the injected local adapter and wraps its count-only observation in a new source-labelled object.</en></lang>
-  if (sourceMode === 'wire-fixture') {
-    // <lang><zh-CN>fixtureCase 已由对应 allowlist 校验，不传 endpoint、cache、时钟或 credential。</zh-CN><en>The fixture case was checked by the corresponding allowlist; no endpoint, cache, clock, or credential is passed.</en></lang>
-    const adapterFixture = createCatalogQueryDetailAdapterFixture({ fixtureCase });
-
-    // <lang><zh-CN>每次 observation 调用都取得 adapter controller 的新计数对象。</zh-CN><en>Every observation call obtains fresh count objects from the adapter controller.</en></lang>
-    const getObservation = () => {
-      // <lang><zh-CN>底层结果按 query/detail 分组且不含 request/wire/cache value。</zh-CN><en>The lower-layer result is grouped by query and detail and contains no request, wire value, or cache value.</en></lang>
-      const observation = adapterFixture.getObservation();
-
-      // <lang><zh-CN>根对象增加稳定 sourceMode，便于 UI/测试解释计数主责。</zh-CN><en>Add stable sourceMode at the root so UI and tests can interpret count ownership.</en></lang>
-      return {
-        sourceMode,
-        query: observation.query,
-        detail: observation.detail
-      };
-    };
-
-    // <lang><zh-CN>只返回 core/lifecycle 所需表面与受限 observation closure。</zh-CN><en>Return only surfaces required by core and lifecycle plus the bounded observation closure.</en></lang>
-    return {
-      implementationPackage: adapterFixture.implementationPackage,
-      portProviders: adapterFixture.portProviders,
-      getObservation
-    };
-  }
-
-  // <lang><zh-CN>mock 分支创建既有中性 provider；该路径只会由已验证的显式 `mock` 进入。</zh-CN><en>The mock branch creates existing neutral providers; only validated explicit `mock` reaches this path.</en></lang>
-  const mockFixture = createCatalogQueryDetailMock({ fixtureCase });
-
-  // <lang><zh-CN>mock 不具有 adapter wire controller，因此 observation 只报告 source mode，不伪造计数。</zh-CN><en>The mock has no adapter wire controller, so observation reports only source mode and fabricates no count.</en></lang>
-  const getObservation = () => ({ sourceMode });
-
-  // <lang><zh-CN>mock implementation manifest 与 provider 都来自同一次中性 example 构造。</zh-CN><en>The mock implementation manifest and providers both come from the same neutral-example construction.</en></lang>
-  return {
-    implementationPackage: manifests.implementationPackage,
-    portProviders: mockFixture.portProviders,
-    getObservation
-  };
-}
-
-/**
  * <lang><zh-CN>创建代表性小程序的纯 fixture runtime。</zh-CN><en>Creates the pure fixture runtime for the representative mini-program.</en></lang>
  *
  * @param {unknown} candidateProfile <lang><zh-CN>待完整校验的声明式 app profile。</zh-CN><en>Declarative app profile to validate completely.</en></lang>
  * @param {object} [fixtureOptions={}] <lang><zh-CN>代码自有、仅含 allowlisted fixtureCase 的本地证据选择。</zh-CN><en>Code-owned local evidence selection containing only an allowlisted fixtureCase.</en></lang>
  * @returns {object} <lang><zh-CN>失败时只有 diagnostics；成功时包含只读 source、snapshot helpers 与 app shell。</zh-CN><en>On failure only diagnostics; on success read-only source, snapshot helpers, and app shell.</en></lang>
- * @lang zh-CN factory 先校验 profile/options，再构造 source，随后显式 install/enable，最后创建 shell；任一步失败都不返回 partial runtime。
- * @lang en The factory validates profile and options before source construction, then explicitly installs and enables, and creates the shell last; failure at any step returns no partial runtime.
+ * @lang zh-CN factory 先校验 app profile/options，再创建完整模板候选，最后通过 integration runtime 原子采用并建立 shell；任一步失败都不返回 partial runtime。
+ * @lang en The factory validates the app profile and options, creates a complete template candidate, and finally adopts it atomically through the integration runtime before establishing the shell; failure at any step returns no partial runtime.
  */
 export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOptions = {}) {
   // <lang><zh-CN>profile 校验是第一道门禁；失败不会进入 options/source/core/lifecycle。</zh-CN><en>Profile validation is the first gate; failure reaches neither options, source, core, nor lifecycle.</en></lang>
@@ -587,93 +527,20 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
     return createFailure(fixtureValidation.diagnostics);
   }
 
-  // <lang><zh-CN>每次初始化取得新的 module/implementation/profile 声明，避免多个 app runtime 共享可变 manifest。</zh-CN><en>Every initialization obtains fresh module, implementation, and profile declarations, avoiding mutable manifest sharing across app runtimes.</en></lang>
-  const manifests = createExampleManifests();
-
-  // <lang><zh-CN>显式 source factory 只接收两个已校验枚举值。</zh-CN><en>The explicit source factory receives only two already validated enum values.</en></lang>
-  const selectedSource = createSelectedSource(
-    manifests,
-    profile.sourceMode,
-    fixtureValidation.fixtureCase
-  );
-
-  // <lang><zh-CN>core profile 选择当前实现包；app presentation profile 不改变 module-owned block contract。</zh-CN><en>The core profile selects the current implementation package; the app presentation profile does not alter the module-owned block contract.</en></lang>
-  manifests.profile.implementationPackageIds = [selectedSource.implementationPackage.id];
-
-  // <lang><zh-CN>capability runtime 是本次 app 初始化私有实例，不暴露 install/disable/uninstall 控制面给 Vue。</zh-CN><en>The capability runtime is private to this app initialization and exposes no install, disable, or uninstall control surface to Vue.</en></lang>
-  const capabilityRuntime = createCapabilityRuntime();
-
-  // <lang><zh-CN>创建显式 reference-data v1 单元，满足 catalog 的稳定业务依赖；不根据 profile 字符串发现包。</zh-CN><en>Create the explicit reference-data v1 unit to satisfy the catalog's stable business dependency; discover no package from a profile string.</en></lang>
-  const referenceDataUnit = createReferenceDataCapabilityUnit({
-    fixtureVersion: 'v1'
+  // <lang><zh-CN>模板候选显式接收 app 已验证的 source、fixture、page size 与已编译 block。</zh-CN><en>The template candidate explicitly receives the app-validated source, fixture, page size, and compiled blocks.</en></lang>
+  const templateCandidate = createExampleCatalogTemplateCandidate({
+    sourceMode: profile.sourceMode,
+    fixtureCase: fixtureValidation.fixtureCase,
+    pageSize: profile.query.pageSize,
+    enabledBlocks: profile.presentation.enabledBlocks
   });
 
-  // <lang><zh-CN>先安装 reference-data；installation 不调用其 provider。</zh-CN><en>Install reference-data first; installation does not invoke its provider.</en></lang>
-  const referenceInstallResult = capabilityRuntime.install(referenceDataUnit);
+  // <lang><zh-CN>通用 integration runtime 先校验 template/slots/surfaces，再原子采用完整 units，最后创建 shell。</zh-CN><en>The generic integration runtime validates template, slots, and surfaces before atomically adopting complete units and finally creating the shell.</en></lang>
+  const integration = createApplicationIntegrationRuntime(templateCandidate);
 
-  // <lang><zh-CN>依赖安装失败时返回受限 lifecycle diagnostic，不创建 shell 或 partial public runtime。</zh-CN><en>On dependency-installation failure, return bounded lifecycle diagnostics and create neither a shell nor a partial public runtime.</en></lang>
-  if (!referenceInstallResult.ok) {
-    return createFailure(copyDiagnostics(referenceInstallResult.diagnostics));
-  }
-
-  // <lang><zh-CN>catalog 单元只含现有 business module、所选 implementation、显式 core profile 与 provider。</zh-CN><en>The catalog unit contains only the existing business module, selected implementation, explicit core profile, and providers.</en></lang>
-  const catalogInstallResult = capabilityRuntime.install({
-    businessModule: manifests.businessModule,
-    implementationPackage: selectedSource.implementationPackage,
-    profile: manifests.profile,
-    portProviders: selectedSource.portProviders
-  });
-
-  // <lang><zh-CN>catalog 安装失败返回白名单 diagnostic 副本，不返回任一 unit 或 core composition。</zh-CN><en>Catalog-installation failure returns allowlisted diagnostic copies and no unit or core composition.</en></lang>
-  if (!catalogInstallResult.ok) {
-    return createFailure(copyDiagnostics(catalogInstallResult.diagnostics));
-  }
-
-  // <lang><zh-CN>按 dependency-first 顺序显式启用 reference-data。</zh-CN><en>Explicitly enable reference-data in dependency-first order.</en></lang>
-  const referenceEnableResult = capabilityRuntime.enable(REFERENCE_DATA_MODULE_ID);
-
-  // <lang><zh-CN>依赖启用失败不尝试 fallback、递归转换或 provider 调用。</zh-CN><en>Dependency-enable failure attempts no fallback, recursive transition, or provider invocation.</en></lang>
-  if (!referenceEnableResult.ok) {
-    return createFailure(copyDiagnostics(referenceEnableResult.diagnostics));
-  }
-
-  // <lang><zh-CN>依赖已 enabled 后再显式启用 catalog。</zh-CN><en>Explicitly enable the catalog after its dependency is enabled.</en></lang>
-  const catalogEnableResult = capabilityRuntime.enable(MODULE_ID);
-
-  // <lang><zh-CN>catalog 启用失败返回受限诊断；整个未公开闭包可被丢弃。</zh-CN><en>Catalog-enable failure returns bounded diagnostics; the entire unpublished closure can be discarded.</en></lang>
-  if (!catalogEnableResult.ok) {
-    return createFailure(copyDiagnostics(catalogEnableResult.diagnostics));
-  }
-
-  /**
-   * <lang><zh-CN>将 app-shell 的 port 调用桥接到固定已启用模块。</zh-CN><en>Bridges app-shell port invocation into the fixed enabled module.</en></lang>
-   *
-   * @param {string} portId <lang><zh-CN>app-shell 请求的已登记 port ID。</zh-CN><en>Registered port ID requested by app shell.</en></lang>
-   * @param {unknown} input <lang><zh-CN>module-owned canonical 输入。</zh-CN><en>Module-owned canonical input.</en></lang>
-   * @returns {unknown} <lang><zh-CN>所选 provider 的规范化结果。</zh-CN><en>Canonical result from the selected provider.</en></lang>
-   * @lang zh-CN bridge 不暴露 runtime 或 module selector，shell 无法调用其他能力单元。
-   * @lang en The bridge exposes neither runtime nor module selector, so shell cannot invoke another capability unit.
-   */
-  const invokeEnabledCapability = (portId, input) => (
-    capabilityRuntime.invoke(MODULE_ID, portId, input)
-  );
-
-  // <lang><zh-CN>冻结最小 composition bridge，避免 shell 调用方替换 invoke。</zh-CN><en>Freeze the minimum composition bridge, preventing shell callers from replacing invoke.</en></lang>
-  const compositionBridge = Object.freeze({ invoke: invokeEnabledCapability });
-
-  // <lang><zh-CN>路由投影来自同一声明集合，不借 mock provider 充当 wire fallback。</zh-CN><en>The route projection comes from the same declaration set and does not use a mock provider as a wire fallback.</en></lang>
-  const shellInitialization = createApplicationShell({
-    composition: compositionBridge,
-    routeProjection: manifests.profile.routeProjection,
-    screenCapabilityPolicy: {
-      'catalog-list': [],
-      'entry-detail': []
-    }
-  });
-
-  // <lang><zh-CN>shell 校验失败时只复制其 diagnostics；已启用 runtime 仍被局部闭包回收而不对外可达。</zh-CN><en>If shell validation fails, copy only its diagnostics; the enabled runtime remains locally collectible and unreachable from outside.</en></lang>
-  if (!shellInitialization.ok) {
-    return createFailure(copyDiagnostics(shellInitialization.diagnostics));
+  // <lang><zh-CN>集成失败只投影受限 diagnostics；template、profile、unit 与 partial shell 均不公开。</zh-CN><en>An integration failure projects only bounded diagnostics; template, profile, units, and a partial shell all remain private.</en></lang>
+  if (!integration.ok) {
+    return createFailure(copyDiagnostics(integration.diagnostics));
   }
 
   // <lang><zh-CN>presentation Set 从已验证副本创建，后续 caller profile/snapshot 修改不能改变可见性。</zh-CN><en>Create the presentation set from the validated copy so later caller profile or snapshot mutation cannot change visibility.</en></lang>
@@ -709,7 +576,7 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
    * @lang zh-CN 下层 snapshot 已复制关系数组且不含 provider/manifest/composition。
    * @lang en The lower-layer snapshot already copies relationship arrays and contains no provider, manifest, or composition.
    */
-  const getLifecycleSnapshot = () => capabilityRuntime.snapshot();
+  const getLifecycleSnapshot = () => integration.getAdoptionSnapshot();
 
   /**
    * <lang><zh-CN>返回所选 source 的受限 observation。</zh-CN><en>Returns the bounded observation for the selected source.</en></lang>
@@ -718,7 +585,7 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
    * @lang zh-CN observation 不包含 query/detail 输入输出、wire、cache value、session 或异常。
    * @lang en Observation contains no query or detail input/output, wire value, cache value, session, or exception.
    */
-  const getObservation = () => selectedSource.getObservation();
+  const getObservation = () => templateCandidate.getObservation();
 
   /**
    * <lang><zh-CN>判断一个调用方 ID 是否为当前 profile 已启用的已登记区块。</zh-CN><en>Determines whether a caller ID is a registered block enabled by the current profile.</en></lang>
@@ -739,7 +606,7 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
     ok: true,
     diagnostics: [],
     sourceMode: profile.sourceMode,
-    shell: shellInitialization.shell,
+    shell: integration.shell,
     createQueryRequest,
     getProfileSnapshot,
     getLifecycleSnapshot,

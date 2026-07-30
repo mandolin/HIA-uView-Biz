@@ -18,13 +18,23 @@ npm run check
 npm test
 ```
 
-`npm run check` verifies required workspace files and the minimum bilingual ROP markers in controlled JavaScript, Vue, and CSS source. `npm test` runs that gate first and then executes deterministic Node contracts for core, the neutral mock, application shell, adapter runtime, capability lifecycle, complete-set adoption/replacement, the injected neutral wire fixture, and the representative app runtime.
+`npm run check` verifies required workspace files and the minimum bilingual ROP markers in controlled JavaScript, Vue, and CSS source. `npm test` runs that gate first and then executes deterministic Node contracts for core, the neutral mock, application shell, adapter runtime, capability lifecycle, complete-set adoption/replacement, application-template integration, the injected neutral wire fixture, and the representative app runtime.
 
-`npm run check` 校验必需 workspace 文件，以及受控 JavaScript、Vue 与 CSS 源码的最低双语 ROP 标记。`npm test` 先运行该门禁，再执行 core、中性 mock、应用 shell、adapter runtime、能力生命周期、完整集合采用/替换、注入式中性 wire fixture 与代表性 app runtime 的确定性 Node 契约。
+`npm run check` 校验必需 workspace 文件，以及受控 JavaScript、Vue 与 CSS 源码的最低双语 ROP 标记。`npm test` 先运行该门禁，再执行 core、中性 mock、应用 shell、adapter runtime、能力生命周期、完整集合采用/替换、应用模板集成、注入式中性 wire fixture 与代表性 app runtime 的确定性 Node 契约。
 
 These commands use the committed lockfile and installed dependencies. They do not start a service, access production data, or create a runtime backend connection.
 
 这些命令使用 committed lockfile 和已安装依赖。它们不启动服务、不访问生产数据，也不创建运行时后端连接。
+
+## Application-template development / 应用模板开发
+
+The initial template lives in `templates/example-catalog-query-detail-mp-weixin/`. Its public declarative contract is checked in separately under `docs/contracts/`; its runtime factory returns a fresh template plus a complete explicit adoption profile and capability-unit set. Keep the template, adoption profile, app profile, business-module manifests, implementation-package manifests, and `package.json` as separate artifacts.
+
+首个模板位于 `templates/example-catalog-query-detail-mp-weixin/`。其公开声明式契约单独存放在 `docs/contracts/`；runtime factory 返回新的模板，以及完整显式 adoption profile 与 capability-unit 集合。模板、adoption profile、app profile、business-module manifest、implementation-package manifest 和 `package.json` 必须保持为不同工件。
+
+Add a capability to a template only by declaring a complete slot, required state and surfaces, supplying its explicit unit, and extending acceptance first. Do not derive a package name from a slot, search a registry, copy a scaffold, load arbitrary JSON/YAML inside the runtime, run a lifecycle/migration script, or add a silent mock/wire fallback.
+
+只有在声明完整 slot、必需 state 与 surfaces、提供其显式 unit 并先扩展验收后，才能向模板增加能力。不得从 slot 推导 package 名、搜索 registry、复制脚手架、在 runtime 内加载任意 JSON/YAML、运行 lifecycle/migration script，或增加静默 mock/wire fallback。
 
 ## Controlled mp-weixin fixture / 受控 mp-weixin fixture
 
@@ -61,9 +71,9 @@ Do not use `npm audit fix` or `npm audit fix --force` as an unreviewed repair. A
 
 ## Current runtime boundary / 当前运行时边界
 
-Core receives already parsed in-memory manifests and explicit port providers. The deterministic example validates composition, page query, detail, canonical failure, mock session, and restricted route action. Application shell adds in-memory screen-state projection, mock capability gate, and retry retention. Adapter runtime adds an explicit synchronous injected-exchange lifecycle, redaction, and optional bounded process-local success cache. Capability runtime adds explicit process-local install/enable/disable/uninstall state, dependency/conflict checks, unique owners, enabled-only routing, and redacted snapshots without package-manager behavior or hooks. Adoption runtime adds complete profile validation, exact caller-supplied unit matching, dependency-first candidate activation, bounded presentation metadata, public-safe receipts, and atomic in-memory implementation replacement. The first set combines neutral reference-data with catalog-query-detail; the representative app also installs/enables reference-data before its selected catalog source. None is a JSON/YAML loader, complete JSON Schema engine, package installer, registry, real backend adapter, application generator, migration engine, or real identity system.
+Core receives already parsed in-memory manifests and explicit port providers. The deterministic example validates composition, page query, detail, canonical failure, mock session, and restricted route action. Application shell adds in-memory screen-state projection, mock capability gate, and retry retention. Adapter runtime adds an explicit synchronous injected-exchange lifecycle, redaction, and optional bounded process-local success cache. Capability runtime adds explicit process-local install/enable/disable/uninstall state, dependency/conflict checks, unique owners, enabled-only routing, and redacted snapshots without package-manager behavior or hooks. Adoption runtime adds complete profile validation, exact caller-supplied unit matching, dependency-first candidate activation, bounded presentation metadata, public-safe receipts, and atomic in-memory implementation replacement. Application integration adds application-template validation, exact slot/state/implementation/surface correspondence, adoption delegation, and a shell bridge fixed to the primary module. The private template package assembles the complete neutral reference-data and selected catalog candidate, so the representative app no longer duplicates lifecycle/provider assembly. None is a JSON/YAML loader, complete JSON Schema engine, package installer, registry, real backend adapter, application generator, migration engine, or real identity system.
 
-core 接收已解析的内存 manifest 和显式 port provider。确定性示例验证组合、页码 query、详情、规范化 failure、mock session 与受限 route action。应用 shell 增加内存 screen-state 投影、mock capability gate 与 retry 保留。adapter runtime 增加显式同步注入式 exchange lifecycle、脱敏与可选受限进程内成功缓存。capability runtime 增加显式进程内安装/启用/停用/卸载状态、依赖/冲突检查、唯一 owner、仅已启用路由与脱敏 snapshot，且没有包管理器行为或 hook。adoption runtime 增加完整 profile 校验、精确调用方单元匹配、依赖优先候选启用、受限呈现 metadata、可公开 receipt 与原子进程内实现替换。首个集合组合中性 reference-data 与 catalog-query-detail；代表性 app 也会先安装/启用 reference-data，再启用所选 catalog source。它们都不是 JSON/YAML loader、完整 JSON Schema engine、包安装器、registry、真实后端 adapter、应用生成器、迁移引擎或真实身份系统。
+core 接收已解析的内存 manifest 和显式 port provider。确定性示例验证组合、页码 query、详情、规范化 failure、mock session 与受限 route action。应用 shell 增加内存 screen-state 投影、mock capability gate 与 retry 保留。adapter runtime 增加显式同步注入式 exchange lifecycle、脱敏与可选受限进程内成功缓存。capability runtime 增加显式进程内安装/启用/停用/卸载状态、依赖/冲突检查、唯一 owner、仅已启用路由与脱敏 snapshot，且没有包管理器行为或 hook。adoption runtime 增加完整 profile 校验、精确调用方单元匹配、依赖优先候选启用、受限呈现 metadata、可公开 receipt 与原子进程内实现替换。application integration 增加 application-template 校验、精确 slot/state/implementation/surface 对应、采用委托与固定主模块 shell bridge。私有模板包装配完整的中性 reference-data 与所选 catalog 候选，因此代表性 app 不再重复 lifecycle/provider 装配。它们都不是 JSON/YAML loader、完整 JSON Schema engine、包安装器、registry、真实后端 adapter、应用生成器、迁移引擎或真实身份系统。
 
 The fixture uses explicit HIA-uView SFC imports and an explicit style entry through the one-use verified source link. It does not install the UI global plugin, auto-scan components, introduce UI global services, or change HIA-uView source. The neutral query-context input is not an implicit filter: current module schema owns no filter field. Future filter semantics require a separate versioned module contract.
 

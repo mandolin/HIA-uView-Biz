@@ -26,10 +26,14 @@ const documentedSourceFiles = [
   { relativePath: 'packages/capability-runtime/src/index.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>采用 runtime 承担 profile validation、候选预检、原子切换与 receipt，必须进入严格 ROP 门禁。</zh-CN><en>The adoption runtime owns profile validation, candidate preflight, atomic switching, and receipts and must enter the strict ROP gate.</en></lang>
   { relativePath: 'packages/adoption-runtime/src/index.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>应用模板集成 runtime 承担 template/slot/surface 校验、采用与 shell bridge，必须进入严格 ROP 门禁。</zh-CN><en>The application-template integration runtime owns template, slot, and surface validation, adoption, and the shell bridge and must enter the strict ROP gate.</en></lang>
+  { relativePath: 'packages/app-integration/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'modules/example-catalog-query-detail/src/index.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>中性 reference-data capability 是自研业务源码，必须保留节点/流程双语注释。</zh-CN><en>The neutral reference-data capability is independently written business source and must retain bilingual node/flow comments.</en></lang>
   { relativePath: 'modules/example-reference-data/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'extensions/example-catalog-query-detail-adapter-fixture/src/index.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>应用模板工厂承担完整显式候选装配，必须保留节点与流程双语注释。</zh-CN><en>The application-template factory owns complete explicit candidate assembly and must retain bilingual node and flow comments.</en></lang>
+  { relativePath: 'templates/example-catalog-query-detail-mp-weixin/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'test/core-and-example.test.mjs', requiresNodeMarkers: true },
   { relativePath: 'test/app-shell.test.mjs', requiresNodeMarkers: true },
   { relativePath: 'test/adapter-runtime.test.mjs', requiresNodeMarkers: true },
@@ -37,6 +41,8 @@ const documentedSourceFiles = [
   { relativePath: 'test/capability-runtime.test.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>完整采用/替换 acceptance 同样适用严格双语 ROP。</zh-CN><en>The complete adoption/replacement acceptance is also subject to strict bilingual ROP.</en></lang>
   { relativePath: 'test/capability-adoption.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>应用模板与集成 acceptance 同样适用严格双语 ROP。</zh-CN><en>The application-template and integration acceptance is also subject to strict bilingual ROP.</en></lang>
+  { relativePath: 'test/application-template.test.mjs', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/vite.config.mjs', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/index.html', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/main.js', requiresNodeMarkers: true },

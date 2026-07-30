@@ -1,8 +1,8 @@
 # Controlled mp-weixin fixture / 受控 mp-weixin fixture
 
-This non-published representative fixture composes the neutral `example.catalog-query-detail` capability into one UniApp Vue 3 `mp-weixin` page. Pure Node acceptance exercises its profile, explicit source, lifecycle, query, detail, and back-to-catalog path; the controlled compiler verifies the checked-in Vue projection. It is not a published application, project template, production backend adapter, authentication sample, or industry starter.
+This non-published representative fixture consumes the private versioned catalog application template through one validated app profile and renders one UniApp Vue 3 `mp-weixin` page. The template package supplies the complete explicit reference-data plus selected catalog candidate; the generic integration runtime validates its slots/surfaces, adopts it, and establishes the shell. Pure Node acceptance exercises profile, template integration, explicit source, query, detail, and back-to-catalog behavior; the controlled compiler verifies the checked-in Vue projection. It is not a published application, generator, copied scaffold, production backend adapter, authentication sample, or industry starter.
 
-此非发布代表性 fixture 将中性的 `example.catalog-query-detail` 能力组合为一个 UniApp Vue 3 `mp-weixin` 页面。纯 Node 验收执行其 profile、显式 source、lifecycle、query、detail 与返回目录路径；受控 compiler 校验仓内 Vue 投影。它不是已发布应用、项目模板、生产后端 adapter、认证示例或行业 starter。
+此非发布代表性 fixture 通过一个已校验 app profile 消费私有版本化 catalog 应用模板，并呈现一个 UniApp Vue 3 `mp-weixin` 页面。模板包提供完整显式 reference-data 加所选 catalog 候选；通用 integration runtime 校验其 slots/surfaces、采用候选并建立 shell。纯 Node 验收执行 profile、模板集成、显式 source、query、detail 与返回目录行为；受控 compiler 校验仓内 Vue 投影。它不是已发布应用、生成器、复制式脚手架、生产后端 adapter、认证示例或行业 starter。
 
 The acceptance boundary is defined by the [representative slice contract](../../docs/contracts/representative-mp-weixin-slice.md). The app consumes `src/representative.profile.json`, whose shape is fixed by the [versioned profile schema](../../docs/contracts/schemas/representative-mp-weixin.profile.v1.schema.json).
 
@@ -39,9 +39,9 @@ The checked-in profile selects `wire-fixture`, page `1`, page size `1`, and four
 
 仓内 profile 选择 `wire-fixture`、第 `1` 页、每页 `1` 项和四个已登记的已编译区块。`catalog-list` 与 `entry-detail` 必选。`runtime-status` 与 `query-context` 可以声明式隐藏。区块 ID 只控制既有 template 分支；它们不能成为组件导入、路由、URL、依赖、连接、表达式或数据字段。
 
-`wire-fixture` is the default explicit catalog source and proves injected adapter conversion through application-local install and enable lifecycle. `mock` remains a mandatory explicit offline/regression catalog source. Both paths first install and enable the neutral `example.reference-data` dependency, then install and enable the selected catalog implementation. An invalid or unavailable selection fails initialization; neither mode falls back to the other. Both are deterministic, local, synchronous, and read-only.
+`wire-fixture` is the default explicit catalog source and proves injected adapter conversion through the application-template integration boundary. `mock` remains a mandatory explicit offline/regression catalog source. The template returns a complete candidate containing neutral `example.reference-data` and the selected catalog implementation; the adoption runtime validates and enables them in dependency-first order. An invalid or unavailable selection fails initialization; neither mode falls back to the other. Both are deterministic, local, synchronous, and read-only.
 
-`wire-fixture` 是默认显式 catalog source，用于通过应用本地 install/enable lifecycle 证明注入式 adapter 转换。`mock` 仍是必备的显式离线/回归 catalog source。两条路径都会先安装并启用中性 `example.reference-data` 依赖，再安装并启用所选 catalog 实现。无效或不可用选择会使初始化失败；两种模式都不会回退到另一模式。二者都具有确定性、仅在本地、同步且只读。
+`wire-fixture` 是默认显式 catalog source，用于通过 application-template 集成边界证明注入式 adapter 转换。`mock` 仍是必备的显式离线/回归 catalog source。模板返回包含中性 `example.reference-data` 与所选 catalog 实现的完整候选；adoption runtime 按依赖优先顺序校验并启用它们。无效或不可用选择会使初始化失败；两种模式都不会回退到另一模式。二者都具有确定性、仅在本地、同步且只读。
 
 ## Behavior and limits / 行为与限制
 
@@ -49,9 +49,9 @@ The page explicitly imports the `UStack`, `UNavBar`, `UField`, `UInput`, `UCell`
 
 页面通过一次性且已核验的 source link 显式导入 `UStack`、`UNavBar`、`UField`、`UInput`、`UCell`、`UEmpty`、`UNotice`、`UButton` 和 `UValidationMessage` SFC 及样式入口，使 UniApp compiler 能生成固定的微信 `usingComponents` registry，而无需 UI 全局 plugin 或组件自动扫描。
 
-The page consumes only the app-owned fixture runtime's safe shell, profile/lifecycle snapshots, query factory, source observation, and registered-block predicate. It does not assemble core, providers, adapters, or manifests. The default wire observation exposes counts only; mock observation exposes only its explicit source mode.
+The page consumes only the app-owned fixture runtime's safe shell, profile/adoption snapshots, query factory, source observation, and registered-block predicate. The app runtime validates its app profile and delegates complete candidate assembly to the template and adoption/shell composition to application integration. It does not assemble core, providers, adapters, manifests, routes, or lifecycle transitions. The default wire observation exposes counts only; mock observation exposes only its explicit source mode.
 
-页面只消费 app-owned fixture runtime 的安全 shell、profile/lifecycle snapshot、query factory、source observation 与已登记区块判断；它不装配 core、provider、adapter 或 manifest。默认 wire observation 只公开计数；mock observation 只公开其显式 source mode。
+页面只消费 app-owned fixture runtime 的安全 shell、profile/adoption snapshot、query factory、source observation 与已登记区块判断。app runtime 校验自身 app profile，并把完整候选装配委托给模板，把 adoption/shell 组合委托给 application integration；它不装配 core、provider、adapter、manifest、route 或 lifecycle 转换。默认 wire observation 只公开计数；mock observation 只公开其显式 source mode。
 
 The query-context input is visible caller-owned text, but the neutral contract currently declares no filter fields, so that text is not sent as a hidden or invented query filter. The fixture has no HTTP, Directus, real identity, token, cookie, storage, write operation, URL/router, deep link, persisted state, dynamic page/block import, executable configuration, industry field, or production data.
 

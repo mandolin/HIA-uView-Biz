@@ -1,0 +1,39 @@
+{
+  "adoptionVersion": "1.0",
+  "kind": "capability-adoption-profile",
+  "profileId": "example.catalog-composed",
+  "capabilities": [
+    {
+      "moduleId": "example.reference-data",
+      "implementationPackageId": "example.reference-data.fixture-v1",
+      "state": "enabled"
+    },
+    {
+      "moduleId": "example.catalog-query-detail",
+      "implementationPackageId": "example.catalog-query-detail.mock-implementation",
+      "state": "enabled"
+    }
+  ],
+  "presentation": {
+    "blocks": [
+      {
+        "id": "query-context",
+        "visibility": "always"
+      },
+      {
+        "id": "catalog-list",
+        "visibility": "always"
+      },
+      {
+        "id": "entry-detail",
+        "visibility": "has-selection"
+      }
+    ],
+    "order": [
+      "query-context",
+      "catalog-list",
+      "entry-detail"
+    ],
+    "pageSize": 5
+  }
+}

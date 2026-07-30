@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/mandolin/HIA-uView-Biz/docs/contracts/schemas/capability-adoption.profile.v1.schema.json",
+  "title": "Capability adoption profile v1 / 能力采用 profile v1",
+  "description": "Declares one application's complete explicit capability selection, desired lifecycle states, and bounded presentation metadata. / 声明一个应用的完整显式能力选择、期望 lifecycle 状态与受限呈现 metadata。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "adoptionVersion",
+    "kind",
+    "profileId",
+    "capabilities",
+    "presentation"
+  ],
+  "properties": {
+    "adoptionVersion": {
+      "const": "1.0",
+      "description": "Adoption contract version. / 采用契约版本。"
+    },
+    "kind": {
+      "const": "capability-adoption-profile",
+      "description": "Separates this application profile from business and engineering manifests. / 将此应用 profile 与业务及工程 manifest 区分。"
+    },
+    "profileId": {
+      "$ref": "#/$defs/dottedIdentifier"
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/capabilitySelection"
+      },
+      "description": "Complete desired capability set; runtime validation enforces unique module and implementation IDs. / 完整期望能力集合；runtime 校验 module 与 implementation ID 唯一性。"
+    },
+    "presentation": {
+      "$ref": "#/$defs/presentationSelection"
+    }
+  },
+  "$defs": {
+    "dottedIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)+$",
+      "description": "Stable lowercase dotted identifier. / 稳定的小写点分标识。"
+    },
+    "simpleIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Stable lowercase identifier. / 稳定的小写标识。"
+    },
+    "capabilitySelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "moduleId",
+        "implementationPackageId",
+        "state"
+      ],
+      "properties": {
+        "moduleId": {
+          "$ref": "#/$defs/dottedIdentifier"
+        },
+        "implementationPackageId": {
+          "$ref": "#/$defs/dottedIdentifier"
+        },
+        "state": {
+          "enum": [
+            "enabled",
+            "disabled"
+          ],
+          "description": "Desired process-local lifecycle state. / 期望的进程内 lifecycle 状态。"
+        }
+      }
+    },
+    "presentationBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "visibility"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/simpleIdentifier"
+        },
+        "visibility": {
+          "$ref": "#/$defs/simpleIdentifier"
+        }
+      }
+    },
+    "presentationSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "blocks",
+        "order",
+        "pageSize"
+      ],
+      "properties": {
+        "blocks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/presentationBlock"
+          },
+          "description": "Selected host-registered blocks and allowlisted visibility values. / 选择的宿主已登记区块及 allowlist visibility 值。"
+        },
+        "order": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/simpleIdentifier"
+          },
+          "description": "Every selected block ID exactly once; runtime validation enforces set equality. / 每个已选择区块 ID 精确一次；runtime 校验集合相等。"
+        },
+        "pageSize": {
+          "enum": [
+            1,
+            5,
+            10,
+            20
+          ],
+          "description": "Initial framework allowlist; a host may permit a subset. / 框架首轮 allowlist；宿主可只允许其子集。"
+        }
+      }
+    }
+  }
+}

@@ -21,6 +21,12 @@ const requiredFiles = [
   'packages/core/src/index.mjs',
   'packages/app-shell/package.json',
   'packages/app-shell/src/index.mjs',
+  'packages/adapter-runtime/package.json',
+  'packages/adapter-runtime/src/index.mjs',
+  'packages/adapter-runtime/README.md',
+  'extensions/example-catalog-query-detail-adapter-fixture/package.json',
+  'extensions/example-catalog-query-detail-adapter-fixture/src/index.mjs',
+  'extensions/example-catalog-query-detail-adapter-fixture/README.md',
   'apps/example-catalog-query-detail-mp-weixin/package.json',
   'apps/example-catalog-query-detail-mp-weixin/index.html',
   'apps/example-catalog-query-detail-mp-weixin/vite.config.mjs',
@@ -39,10 +45,14 @@ const requiredFiles = [
   'docs/development.md',
   'docs/architecture.md',
   'docs/api/app-shell.md',
+  'docs/api/adapter-runtime.md',
+  'docs/adr/ADR-0003-adapter-session-and-cache-boundary.md',
   'docs/jsdoc.config.json',
+  'docs/contracts/adapter-boundary.md',
   'docs/contracts/catalog-query-detail.md',
   'test/core-and-example.test.mjs',
-  'test/app-shell.test.mjs'
+  'test/app-shell.test.mjs',
+  'test/adapter-runtime.test.mjs'
 ];
 
 /**

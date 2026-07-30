@@ -18,9 +18,9 @@ npm run check
 npm test
 ```
 
-`npm run check` verifies required workspace files and the minimum bilingual ROP markers in controlled JavaScript, Vue, and CSS source. `npm test` runs that gate first and then executes deterministic Node contracts for core, the neutral mock, and application shell.
+`npm run check` verifies required workspace files and the minimum bilingual ROP markers in controlled JavaScript, Vue, and CSS source. `npm test` runs that gate first and then executes deterministic Node contracts for core, the neutral mock, application shell, adapter runtime, and the injected neutral wire fixture.
 
-`npm run check` 校验必需 workspace 文件，以及受控 JavaScript、Vue 与 CSS 源码的最低双语 ROP 标记。`npm test` 先运行该门禁，再执行 core、中性 mock 和应用 shell 的确定性 Node 契约。
+`npm run check` 校验必需 workspace 文件，以及受控 JavaScript、Vue 与 CSS 源码的最低双语 ROP 标记。`npm test` 先运行该门禁，再执行 core、中性 mock、应用 shell、adapter runtime 与注入式中性 wire fixture 的确定性 Node 契约。
 
 These commands use the committed lockfile and installed dependencies. They do not start a service, access production data, or create a runtime backend connection.
 
@@ -57,9 +57,9 @@ Do not use `npm audit fix` or `npm audit fix --force` as an unreviewed repair. A
 
 ## Current runtime boundary / 当前运行时边界
 
-Core receives already parsed in-memory manifests and explicit port providers. The deterministic example validates composition, page query, detail, canonical failure, mock session, and restricted route action. Application shell adds in-memory screen-state projection, mock capability gate, and retry retention. It is not a JSON/YAML loader, complete JSON Schema engine, backend adapter, application generator, or real identity system.
+Core receives already parsed in-memory manifests and explicit port providers. The deterministic example validates composition, page query, detail, canonical failure, mock session, and restricted route action. Application shell adds in-memory screen-state projection, mock capability gate, and retry retention. Adapter runtime adds an explicit synchronous injected-exchange lifecycle, redaction, and optional bounded process-local success cache. The neutral extension converts independently written query/detail wire fixtures and can be selected explicitly in place of the mock implementation. None is a JSON/YAML loader, complete JSON Schema engine, real backend adapter, application generator, or real identity system.
 
-core 接收已解析的内存 manifest 和显式 port provider。确定性示例验证组合、页码 query、详情、规范化 failure、mock session 与受限 route action。应用 shell 增加内存 screen-state 投影、mock capability gate 与 retry 保留。它不是 JSON/YAML loader、完整 JSON Schema engine、后端 adapter、应用生成器或真实身份系统。
+core 接收已解析的内存 manifest 和显式 port provider。确定性示例验证组合、页码 query、详情、规范化 failure、mock session 与受限 route action。应用 shell 增加内存 screen-state 投影、mock capability gate 与 retry 保留。adapter runtime 增加显式同步注入式 exchange lifecycle、脱敏与可选受限进程内成功缓存。中性 extension 转换独立编写的 query/detail wire fixture，并可显式选择以替代 mock implementation。它们都不是 JSON/YAML loader、完整 JSON Schema engine、真实后端 adapter、应用生成器或真实身份系统。
 
 The fixture uses named HIA-uView component imports and explicit style entry. It does not install the UI global plugin, auto-register components, introduce UI global services, or change HIA-uView source. The neutral query-context input is not an implicit filter: current module schema owns no filter field. Future filter semantics require a separate versioned module contract.
 
@@ -71,6 +71,6 @@ HIA-uView is a separate repository. Current fixture consumption is a documented,
 
 HIA-uView 是独立仓库。当前 fixture 消费方式是已文档化、由操作者提供且经过 commit 校验的本地源码集成。普通 clone 没有外部 `file:` dependency，也不会搜索同级目录。不会创建共享 root lockfile。
 
-The first surface is read-only and single-page. It has no real HTTP/Directus adapter, token/cookie/header transport, account lookup, WeChat or enterprise identity, write operation, persistence, URL/router/deep link, dynamic import, executable configuration, industry fields, online CMS, or production data. These are intentional non-goals until separately designed, reviewed, and validated.
+The first surface is read-only and single-page. Its adapter exchange is synchronous, local, and injected only. It has no real HTTP/Directus adapter, token/cookie/header transport, account lookup, WeChat or enterprise identity, write operation, persistent/offline/shared cache, URL/router/deep link, dynamic import, executable configuration, industry fields, online CMS, or production data. These are intentional non-goals until separately designed, reviewed, and validated.
 
-首个表面是只读且单页的。它没有真实 HTTP/Directus adapter、token/cookie/header transport、账户查询、微信或企业身份、写操作、持久化、URL/router/deep link、动态 import、可执行配置、行业字段、在线 CMS 或生产数据。在完成独立设计、复审与验证前，这些都是有意的非目标。
+首个表面是只读且单页的。其 adapter exchange 仅为同步、局部、注入式。它没有真实 HTTP/Directus adapter、token/cookie/header transport、账户查询、微信或企业身份、写操作、持久/离线/共享 cache、URL/router/deep link、动态 import、可执行配置、行业字段、在线 CMS 或生产数据。在完成独立设计、复审与验证前，这些都是有意的非目标。

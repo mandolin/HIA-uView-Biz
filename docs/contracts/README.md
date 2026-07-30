@@ -15,6 +15,7 @@ These files define data contracts for HIA-uView-Biz composition. They are review
 | [Catalog-query-detail contract / 目录—查询—详情契约](catalog-query-detail.md) | Canonical query, detail, outcome, mock-session, adapter, route-projection, and fixture behavior / 规范化 query、detail、结果、mock session、adapter、路由投影与 fixture 行为 |
 | [Adapter boundary contract / Adapter 边界契约](adapter-boundary.md) | Backend-agnostic port ownership, wire conversion, failure redaction, session, cache, pagination, and Directus migration rules / 后端无关的 port 主责、wire 转换、failure 脱敏、会话、缓存、分页与 Directus 迁移规则 |
 | [Application-shell API / 应用 shell API](../api/app-shell.md) | In-memory projection of declared screens/actions and mock capabilities; it is an API contract rather than a manifest artifact / 已声明 screens/actions 与 mock capabilities 的内存投影；它是 API 契约而非 manifest 产物 |
+| [Adapter-runtime API / Adapter runtime API](../api/adapter-runtime.md) | Executable declaration/lifecycle/redaction/memory-cache surface for injected read-adapter fixtures / 注入式 read-adapter fixture 的可执行声明、lifecycle、脱敏与内存缓存表面 |
 
 ## Two manifest responsibilities / 两类 manifest 的主责
 

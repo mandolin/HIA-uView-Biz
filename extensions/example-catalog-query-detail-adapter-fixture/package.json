@@ -1,0 +1,21 @@
+{
+  "name": "@hia-uview/biz-example-catalog-query-detail-adapter-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Deterministic injected-wire adapter fixture for the neutral HIA-uView-Biz catalog-query-detail example.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@hia-uview/biz-adapter-runtime": "0.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

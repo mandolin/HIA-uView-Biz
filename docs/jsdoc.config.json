@@ -6,6 +6,7 @@
     "include": [
       "packages",
       "modules",
+      "extensions",
       "scripts"
     ],
     "includePattern": ".+\\.(m?js)$",

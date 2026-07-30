@@ -16,9 +16,9 @@ HIA-uView-Biz 是可配置、按能力组合的 UniApp 业务框架。它从面�
 | `extensions/` | Explicit extension points and extension packages / 显式扩展点与扩展包 |
 | `docs/` | Public architecture, contracts, API, and development documentation / 公开架构、契约、API 与开发文档 |
 
-The current runnable boundary contains a pure Node ESM core, an owned deterministic mock, and a pure application shell. A separate controlled fixture compiles the neutral catalog-query-detail projection through named HIA-uView UI imports for `mp-weixin`. It validates explicitly supplied declarations and invokes explicitly registered ports; it does not connect to a backend, storage, real identity provider, production data, or published HIA-uView package.
+The current runnable boundary contains a pure Node ESM core, an owned deterministic mock, a pure application shell, and a backend-agnostic adapter runtime with one injected local wire fixture. A separate controlled fixture compiles the neutral catalog-query-detail projection through named HIA-uView UI imports for `mp-weixin`. It validates explicitly supplied declarations and invokes explicitly registered ports; it does not connect to a real backend, storage, real identity provider, production data, or published HIA-uView package.
 
-当前可运行边界包含纯 Node ESM core、自有确定性 mock 和纯应用 shell。独立的受控 fixture 通过命名 HIA-uView UI 导入，为 `mp-weixin` 编译中性目录—查询—详情投影。它校验显式传入的声明并调用显式登记的 port；它不连接后端、真实身份提供方、生产数据或已发布 HIA-uView 包。
+当前可运行边界包含纯 Node ESM core、自有确定性 mock、纯应用 shell，以及带一个注入式本地 wire fixture 的 backend-agnostic adapter runtime。独立的受控 fixture 通过命名 HIA-uView UI 导入，为 `mp-weixin` 编译中性目录—查询—详情投影。它校验显式传入的声明并调用显式登记的 port；它不连接真实后端、storage、真实身份提供方、生产数据或已发布 HIA-uView 包。
 
 ## Development / 开发
 

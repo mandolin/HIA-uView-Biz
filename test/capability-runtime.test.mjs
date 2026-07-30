@@ -12,6 +12,10 @@ import {
   createCatalogQueryDetailMock,
   createExampleManifests
 } from '../modules/example-catalog-query-detail/src/index.mjs';
+import {
+  REFERENCE_DATA_MODULE_ID,
+  createReferenceDataCapabilityUnit
+} from '../modules/example-reference-data/src/index.mjs';
 import { createCatalogQueryDetailAdapterFixture } from '../extensions/example-catalog-query-detail-adapter-fixture/src/index.mjs';
 
 /**
@@ -336,10 +340,17 @@ function testRunsExistingAdapterExtensionThroughLifecycle() {
   // <lang><zh-CN>profile 显式选择 adapter implementation，不通过 fallback 或 discovery 替换。</zh-CN><en>The profile explicitly selects the adapter implementation without fallback or discovery.</en></lang>
   manifests.profile.implementationPackageIds = [adapterFixture.implementationPackage.id];
 
-  // <lang><zh-CN>独立 runtime 只持有这一已审阅 capability unit。</zh-CN><en>An independent runtime holds only this reviewed capability unit.</en></lang>
+  // <lang><zh-CN>独立 runtime 只持有显式 reference dependency 与已审阅 adapter capability unit。</zh-CN><en>An independent runtime holds only the explicit reference dependency and reviewed adapter capability unit.</en></lang>
   const runtime = createCapabilityRuntime();
 
-  // <lang><zh-CN>安装与启用不执行 exchange；observation 应仍为零。</zh-CN><en>Install and enable execute no exchange, so observation must remain zero.</en></lang>
+  // <lang><zh-CN>先安装并启用 catalog 所需的中性 reference-data fixture。</zh-CN><en>First install and enable the neutral reference-data fixture required by the catalog.</en></lang>
+  const referenceDataUnit = createReferenceDataCapabilityUnit({
+    fixtureVersion: 'v1'
+  });
+  assert.equal(runtime.install(referenceDataUnit).ok, true);
+  assert.equal(runtime.enable(REFERENCE_DATA_MODULE_ID).ok, true);
+
+  // <lang><zh-CN>安装与启用 catalog 不执行 exchange；observation 应仍为零。</zh-CN><en>Installing and enabling the catalog executes no exchange, so observation must remain zero.</en></lang>
   assert.equal(runtime.install({
     businessModule: manifests.businessModule,
     implementationPackage: adapterFixture.implementationPackage,
@@ -360,9 +371,11 @@ function testRunsExistingAdapterExtensionThroughLifecycle() {
   assert.equal(page.entries[0].id, 'entry-001');
   assert.equal(adapterFixture.getObservation().query.exchanges, 1);
 
-  // <lang><zh-CN>停用和卸载不会调用 adapter，也不会留下 lifecycle snapshot。</zh-CN><en>Disable and uninstall do not invoke the adapter and leave no lifecycle snapshot.</en></lang>
+  // <lang><zh-CN>先停用/卸载 dependent catalog，再停用/卸载 reference dependency。</zh-CN><en>Disable/uninstall the dependent catalog before disabling/uninstalling the reference dependency.</en></lang>
   assert.equal(runtime.disable(manifests.businessModule.id).ok, true);
   assert.equal(runtime.uninstall(manifests.businessModule.id).ok, true);
+  assert.equal(runtime.disable(REFERENCE_DATA_MODULE_ID).ok, true);
+  assert.equal(runtime.uninstall(REFERENCE_DATA_MODULE_ID).ok, true);
   assert.deepEqual(runtime.snapshot(), []);
   assert.equal(adapterFixture.getObservation().query.exchanges, 1);
 }

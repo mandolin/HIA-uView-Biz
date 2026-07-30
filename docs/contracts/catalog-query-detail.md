@@ -18,6 +18,16 @@ Localized human-readable values use explicit `zh-Hans` and `en` properties. Cont
 
 面向人的本地化值使用明确的 `zh-Hans` 与 `en` 属性。契约标识、代码和枚举值保持语言中立的标识形式。
 
+## Reference-data dependency / Reference-data 依赖
+
+The module declares `example.reference-data` as a business dependency. That neutral capability supplies declared filter-option metadata through its own `reference-options` port. The catalog module does not import a reference implementation or read its provider object; an application lifecycle or adoption runtime must explicitly install and enable the dependency before enabling catalog-query-detail.
+
+该模块把 `example.reference-data` 声明为业务依赖。该中性能力通过自身 `reference-options` port 提供已声明 filter option metadata。catalog module 不 import reference 实现，也不读取其 provider 对象；应用 lifecycle 或 adoption runtime 必须先显式安装并启用该依赖，随后才能启用 catalog-query-detail。
+
+The current query fixture still uses an empty filter. The dependency proves composition ownership and future declared-option readiness; it does not add an industry filter, user preference, implicit provider call, or backend lookup to the catalog contract.
+
+当前 query fixture 仍使用空 filter。该依赖证明组合主责与未来已声明 option 的准备度；不会向 catalog contract 加入行业 filter、用户偏好、隐式 provider 调用或后端查询。
+
 ## Query port / 查询 port
 
 The required `catalog-query` port receives a page-based query. `filter` is module-owned and may only contain fields accepted by the module's versioned filter schema. The neutral example deliberately declares no industry filter fields.

@@ -28,6 +28,10 @@ const requiredFiles = [
   'packages/capability-runtime/package.json',
   'packages/capability-runtime/src/index.mjs',
   'packages/capability-runtime/README.md',
+  // <lang><zh-CN>candidate-first adoption runtime 必须以独立 package、源码与公开说明存在。</zh-CN><en>The candidate-first adoption runtime must exist as an independent package, source file, and public guide.</en></lang>
+  'packages/adoption-runtime/package.json',
+  'packages/adoption-runtime/src/index.mjs',
+  'packages/adoption-runtime/README.md',
   'extensions/example-catalog-query-detail-adapter-fixture/package.json',
   'extensions/example-catalog-query-detail-adapter-fixture/src/index.mjs',
   'extensions/example-catalog-query-detail-adapter-fixture/README.md',
@@ -49,18 +53,29 @@ const requiredFiles = [
   'scripts/verify-documentation-output.mjs',
   'modules/example-catalog-query-detail/package.json',
   'modules/example-catalog-query-detail/src/index.mjs',
+  // <lang><zh-CN>首批组合必须包含中性 reference-data capability package 与源码说明。</zh-CN><en>The initial composition must contain the neutral reference-data capability package and source guide.</en></lang>
+  'modules/example-reference-data/package.json',
+  'modules/example-reference-data/src/index.mjs',
+  'modules/example-reference-data/README.md',
   'docs/development.md',
   'docs/architecture.md',
   'docs/api/app-shell.md',
   'docs/api/adapter-runtime.md',
   // <lang><zh-CN>能力生命周期公开 API 文档必须与 runtime package 同步存在。</zh-CN><en>The public capability-lifecycle API guide must exist alongside the runtime package.</en></lang>
   'docs/api/capability-runtime.md',
+  'docs/api/adoption-runtime.md',
   'docs/adr/ADR-0003-adapter-session-and-cache-boundary.md',
   // <lang><zh-CN>能力组合状态机必须由公开 ADR 与 contract 固定。</zh-CN><en>The capability-composition state machine must be fixed by a public ADR and contract.</en></lang>
   'docs/adr/ADR-0004-capability-composition-and-lifecycle.md',
+  // <lang><zh-CN>完整集合采用与显式原子替换必须由独立公开 ADR/contract 固定。</zh-CN><en>Complete-set adoption and explicit atomic replacement must be fixed by a separate public ADR/contract.</en></lang>
+  'docs/adr/ADR-0005-explicit-capability-adoption-and-replacement.md',
   'docs/jsdoc.config.json',
   'docs/contracts/adapter-boundary.md',
   'docs/contracts/capability-lifecycle.md',
+  'docs/contracts/capability-adoption.md',
+  'docs/contracts/schemas/capability-adoption.profile.v1.schema.json',
+  'docs/contracts/examples/example.catalog-composed.adoption.profile.json',
+  'docs/contracts/examples/example.catalog-composed.replacement.profile.json',
   'docs/contracts/catalog-query-detail.md',
   // <lang><zh-CN>代表性小程序纵切必须同时具备公开验收契约、受限 profile schema 与默认 profile 示例。</zh-CN><en>The representative mini-program slice must have a public acceptance contract, bounded profile schema, and default profile example together.</en></lang>
   'docs/contracts/representative-mp-weixin-slice.md',
@@ -71,6 +86,8 @@ const requiredFiles = [
   'test/adapter-runtime.test.mjs',
   // <lang><zh-CN>能力生命周期测试固定多单元组合、依赖/冲突与无 hook 边界。</zh-CN><en>The capability-lifecycle test fixes multi-unit composition, dependency/conflict, and no-hook boundaries.</en></lang>
   'test/capability-runtime.test.mjs',
+  // <lang><zh-CN>采用测试固定完整集合、dependency order、状态、替换、回退、配置与冲突。</zh-CN><en>The adoption test fixes complete sets, dependency order, state, replacement, rollback, configuration, and conflicts.</en></lang>
+  'test/capability-adoption.test.mjs',
   // <lang><zh-CN>端到端纯 Node 测试固定 profile、显式 source、lifecycle、shell 与脱敏 observation。</zh-CN><en>The end-to-end pure-Node test fixes profile, explicit source, lifecycle, shell, and redacted observation.</en></lang>
   'test/representative-mp-weixin-slice.test.mjs'
 ];

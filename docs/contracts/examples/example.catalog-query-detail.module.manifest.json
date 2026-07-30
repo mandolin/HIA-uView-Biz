@@ -76,6 +76,8 @@
     ],
     "ordering": "profile-controlled"
   },
-  "dependencies": [],
+  "dependencies": [
+    "example.reference-data"
+  ],
   "conflicts": []
 }

@@ -59,8 +59,8 @@ Both modes are deterministic, local, read-only, and free of network I/O. They sh
 
 | Mode / 模式 | Responsibility / 主责 | Evidence / 证据 |
 | --- | --- | --- |
-| `wire-fixture` | Select the injected-wire implementation, install and enable it in the application-local capability runtime, convert a bounded backend-like fixture into canonical results, and route the app shell through that enabled capability / 选择 injected-wire 实现，在应用本地 capability runtime 中安装并启用它，把受限的类后端 fixture 转为规范化结果，并通过已启用能力向 app shell 路由 | Lifecycle snapshot names the enabled module and implementation; bounded observation counts adapter exchange without exposing payloads / lifecycle snapshot 标识已启用模块与实现；受限 observation 统计 adapter exchange 而不暴露 payload |
-| `mock` | Select the neutral in-memory mock implementation, install and enable it through the same lifecycle boundary, and retain mandatory offline/regression behavior / 选择中性内存 mock 实现，通过相同 lifecycle 边界安装并启用它，并保留必备的离线与回归行为 | Canonical page, detail, failure, and mock-session outcomes remain deterministic / 规范化 page、detail、failure 与 mock-session 结果保持确定 |
+| `wire-fixture` | Install and enable explicit neutral reference-data first, then select and enable the injected-wire catalog implementation, convert a bounded backend-like fixture into canonical results, and route the app shell through that enabled catalog capability / 先安装并启用显式中性 reference-data，再选择并启用 injected-wire catalog 实现，把受限的类后端 fixture 转为规范化结果，并通过已启用 catalog 能力向 app shell 路由 | Lifecycle snapshot names both enabled modules and implementations; bounded observation counts adapter exchange without exposing payloads / lifecycle snapshot 标识两项已启用模块与实现；受限 observation 统计 adapter exchange 而不暴露 payload |
+| `mock` | Install and enable explicit neutral reference-data first, then select the neutral in-memory catalog mock through the same lifecycle boundary and retain mandatory offline/regression behavior / 先安装并启用显式中性 reference-data，再通过相同 lifecycle 边界选择中性内存 catalog mock，并保留必备的离线与回归行为 | Canonical page, detail, failure, and mock-session outcomes remain deterministic / 规范化 page、detail、failure 与 mock-session 结果保持确定 |
 
 An unavailable, unknown, or invalid selected mode makes initialization fail with bounded diagnostics. The runtime does not retry the other mode, inspect the environment, search a registry, or open a connection.
 
@@ -73,7 +73,7 @@ The representative path is one explicit sequence:
 代表性路径是下面这条明确序列：
 
 1. Validate the complete profile before creating or invoking a provider. / 在创建或调用 provider 前校验完整 profile。
-2. Assemble the selected capability unit, install it as disabled, then explicitly enable it. / 装配所选 capability unit，以 disabled 状态安装，再显式启用。
+2. Assemble explicit reference-data and the selected catalog capability unit, install both as disabled, then explicitly enable them in dependency-first order. / 装配显式 reference-data 与所选 catalog capability unit，以 disabled 状态安装两者，再按依赖优先顺序显式启用。
 3. Bridge only the enabled capability invocation and registered route projection into the application shell. / 只把已启用能力调用与已登记路由投影桥接给应用 shell。
 4. Submit the profile-owned canonical `page` and `pageSize`, then display the resulting catalog page. / 提交 profile 自有的规范化 `page` 与 `pageSize`，再显示结果目录页。
 5. Select an `entry` from that canonical page, invoke `entry-detail`, and display its primary entry and section states. / 从规范化页面选择一个 `entry`，调用 `entry-detail`，再显示主条目与 section 状态。
@@ -93,7 +93,7 @@ The controlled compiler and output verifier remain separate evidence. They prove
 | --- | --- | --- |
 | App profile / 应用 profile | Source selection, bounded initial paging values, registered block visibility / 数据源选择、受限初始分页值、已登记区块可见性 | Scripts, arbitrary components, URLs, connections, dependencies, business schema / 脚本、任意组件、URL、连接、依赖、业务 schema |
 | Fixture runtime / Fixture runtime | Profile validation, explicit source construction, lifecycle transition, safe shell bridge, bounded observation / profile 校验、显式数据源构造、lifecycle 转换、安全 shell bridge、受限 observation | UI refs, platform navigation, hidden fallback, real backend discovery / UI ref、平台导航、隐藏回退、真实后端发现 |
-| Capability runtime / 能力 runtime | Validated application-local install/enable/invoke state / 已验证的应用本地 install/enable/invoke 状态 | Package manager, lifecycle script, remote installation / 包管理器、生命周期脚本、远程安装 |
+| Capability runtime / 能力 runtime | Validated application-local reference-data and catalog install/enable/invoke state with dependency protection / 已验证的应用本地 reference-data 与 catalog install/enable/invoke 状态及依赖保护 | Package manager, lifecycle script, remote installation / 包管理器、生命周期脚本、远程安装 |
 | Adapter or mock / Adapter 或 mock | Canonical read-port results for the selected explicit mode / 为明确选择的模式提供规范化只读 port 结果 | UI layout, route ownership, raw wire leakage, implicit mode selection / UI 布局、路由主责、原始 wire 泄露、隐式模式选择 |
 | Application shell / 应用 shell | Screen/action gate and detached presentation state / screen/action gate 与隔离呈现状态 | Provider construction, profile parsing, backend protocol / provider 构造、profile 解析、后端协议 |
 | Vue page / Vue 页面 | Named HIA-uView presentation, local input text, explicit user actions / HIA-uView 命名呈现、本地输入文字、明确用户操作 | Core/provider assembly, source fallback, business-data duplication, dynamic import / core/provider 装配、数据源回退、业务数据复制、动态 import |

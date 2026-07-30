@@ -26,6 +26,13 @@ const MODULE_ID = 'example.catalog-query-detail';
 const IMPLEMENTATION_ID = 'example.catalog-query-detail.mock-implementation';
 
 /**
+ * <lang><zh-CN>catalog filter option 所依赖的中性 reference-data module ID。</zh-CN><en>The neutral reference-data module ID required for catalog filter options.</en></lang>
+ * @lang zh-CN 依赖只引用业务能力 ID；本模块不 import reference provider、package 或 fixture。
+ * @lang en The dependency references only a business-capability ID; this module imports no reference provider, package, or fixture.
+ */
+const REFERENCE_DATA_MODULE_ID = 'example.reference-data';
+
+/**
  * <lang><zh-CN>创建双语显示文本。</zh-CN><en>Creates bilingual display text.</en></lang>
  *
  * @param {string} zhHans 中文文本。 / Chinese text.
@@ -161,7 +168,8 @@ export function createExampleManifests() {
       visibilityConditions: ['always', 'has-results', 'has-selection', 'detail-ready'],
       ordering: 'profile-controlled'
     },
-    dependencies: [],
+    // <lang><zh-CN>目录能力显式依赖中性 reference-data，以确保已声明 filter option 先可用。</zh-CN><en>The catalog capability explicitly depends on neutral reference-data so declared filter options are available first.</en></lang>
+    dependencies: [REFERENCE_DATA_MODULE_ID],
     conflicts: []
   };
 
@@ -214,7 +222,8 @@ export function createExampleManifests() {
   // <lang><zh-CN>profile 只选择已登记 module、implementation、block、condition 和 screen/action ID。</zh-CN><en>The profile selects only registered module, implementation, block, condition, and screen/action IDs.</en></lang>
   const profile = {
     id: MODULE_ID,
-    enabledModuleIds: [MODULE_ID],
+    // <lang><zh-CN>core profile 同时选择当前模块及其业务依赖，但不会自动发现或安装依赖。</zh-CN><en>The core profile selects the current module and its business dependency but does not discover or install that dependency automatically.</en></lang>
+    enabledModuleIds: [REFERENCE_DATA_MODULE_ID, MODULE_ID],
     implementationPackageIds: [IMPLEMENTATION_ID],
     selectedBlocks: ['catalog-list', 'entry-detail'],
     visibilityByBlock: {

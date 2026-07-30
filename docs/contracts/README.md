@@ -24,6 +24,7 @@ These files define data contracts for HIA-uView-Biz composition. They are review
 | [Representative profile example / 代表性 profile 示例](examples/example.catalog-query-detail.representative-mp-weixin.profile.json) | Default checked-in `wire-fixture` selection for the neutral application fixture / 中性应用 fixture 的默认仓内 `wire-fixture` 选择 |
 | [Application-shell API / 应用 shell API](../api/app-shell.md) | In-memory projection of declared screens/actions and mock capabilities; it is an API contract rather than a manifest artifact / 已声明 screens/actions 与 mock capabilities 的内存投影；它是 API 契约而非 manifest 产物 |
 | [Adapter-runtime API / Adapter runtime API](../api/adapter-runtime.md) | Executable declaration/lifecycle/redaction/memory-cache surface for injected read-adapter fixtures / 注入式 read-adapter fixture 的可执行声明、lifecycle、脱敏与内存缓存表面 |
+| [Adoption-runtime API / 采用 runtime API](../api/adoption-runtime.md) | Executable complete-set reconciliation, bounded presentation, receipt, invocation, and atomic replacement surface / 可执行完整集合协调、受限呈现、receipt、调用与原子替换表面 |
 
 ## Two manifest responsibilities / 两类 manifest 的主责
 

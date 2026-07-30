@@ -39,9 +39,9 @@ The checked-in profile selects `wire-fixture`, page `1`, page size `1`, and four
 
 仓内 profile 选择 `wire-fixture`、第 `1` 页、每页 `1` 项和四个已登记的已编译区块。`catalog-list` 与 `entry-detail` 必选。`runtime-status` 与 `query-context` 可以声明式隐藏。区块 ID 只控制既有 template 分支；它们不能成为组件导入、路由、URL、依赖、连接、表达式或数据字段。
 
-`wire-fixture` is the default explicit source and proves injected adapter conversion through application-local install and enable lifecycle. `mock` remains a mandatory explicit offline/regression source. An invalid or unavailable selection fails initialization; neither mode falls back to the other. Both are deterministic, local, synchronous, and read-only.
+`wire-fixture` is the default explicit catalog source and proves injected adapter conversion through application-local install and enable lifecycle. `mock` remains a mandatory explicit offline/regression catalog source. Both paths first install and enable the neutral `example.reference-data` dependency, then install and enable the selected catalog implementation. An invalid or unavailable selection fails initialization; neither mode falls back to the other. Both are deterministic, local, synchronous, and read-only.
 
-`wire-fixture` 是默认显式 source，用于通过应用本地 install/enable lifecycle 证明注入式 adapter 转换。`mock` 仍是必备的显式离线/回归 source。无效或不可用选择会使初始化失败；两种模式都不会回退到另一模式。二者都具有确定性、仅在本地、同步且只读。
+`wire-fixture` 是默认显式 catalog source，用于通过应用本地 install/enable lifecycle 证明注入式 adapter 转换。`mock` 仍是必备的显式离线/回归 catalog source。两条路径都会先安装并启用中性 `example.reference-data` 依赖，再安装并启用所选 catalog 实现。无效或不可用选择会使初始化失败；两种模式都不会回退到另一模式。二者都具有确定性、仅在本地、同步且只读。
 
 ## Behavior and limits / 行为与限制
 

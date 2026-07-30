@@ -1,0 +1,21 @@
+{
+  "name": "@hia-uview/biz-adoption-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Candidate-first explicit capability adoption and atomic in-memory replacement runtime for HIA-uView-Biz.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "dependencies": {
+    "@hia-uview/biz-capability-runtime": "0.0.0"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

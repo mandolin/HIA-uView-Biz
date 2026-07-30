@@ -21,6 +21,10 @@ The package owns only neutral test entries and canonical fixture results. It rea
 
 本包只拥有中性测试 entry 和规范化 fixture 结果。它不读取网络、文件、环境变量、存储、账户、token、cookie、后端 envelope、Directus collection、UI 组件或 HIA-uView 依赖。
 
+The business-module manifest declares `example.reference-data` as a dependency for declared filter-option readiness. The package does not import or call a reference-data implementation directly; the application lifecycle or adoption runtime must explicitly provide and enable that capability first.
+
+业务模块 manifest 将 `example.reference-data` 声明为依赖，用于准备已声明 filter option。本包不直接 import 或调用 reference-data 实现；应用 lifecycle 或 adoption runtime 必须先显式提供并启用该能力。
+
 See the [public example contract / 公开示例契约](../../docs/contracts/catalog-query-detail.md).
 
 详见[公开示例契约](../../docs/contracts/catalog-query-detail.md)。

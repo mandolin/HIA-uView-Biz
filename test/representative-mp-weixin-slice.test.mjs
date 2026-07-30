@@ -124,11 +124,14 @@ async function testRunsDefaultWireSliceEndToEnd() {
   // <lang><zh-CN>lifecycle snapshot 证明明确实现已启用，同时不暴露 composition 或 provider。</zh-CN><en>The lifecycle snapshot proves the explicit implementation is enabled while exposing no composition or provider.</en></lang>
   const initialLifecycle = representativeRuntime.getLifecycleSnapshot();
 
-  // <lang><zh-CN>当前代表性 app 只安装一个中性能力单元。</zh-CN><en>The current representative app installs exactly one neutral capability unit.</en></lang>
-  assert.equal(initialLifecycle.length, 1);
+  // <lang><zh-CN>当前代表性 app 显式安装 catalog 与其中性 reference-data 依赖。</zh-CN><en>The current representative app explicitly installs the catalog and its neutral reference-data dependency.</en></lang>
+  assert.equal(initialLifecycle.length, 2);
   assert.equal(initialLifecycle[0].moduleId, MODULE_ID);
   assert.equal(initialLifecycle[0].implementationPackageId, 'example.catalog-query-detail.wire-fixture');
   assert.equal(initialLifecycle[0].state, 'enabled');
+  assert.equal(initialLifecycle[1].moduleId, 'example.reference-data');
+  assert.equal(initialLifecycle[1].implementationPackageId, 'example.reference-data.fixture-v1');
+  assert.equal(initialLifecycle[1].state, 'enabled');
 
   // <lang><zh-CN>install/enable 没有读取业务数据，因此两个 adapter exchange 计数都必须为零。</zh-CN><en>Install and enable read no business data, so both adapter-exchange counts must be zero.</en></lang>
   const initialObservation = representativeRuntime.getObservation();

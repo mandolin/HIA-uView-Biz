@@ -9,7 +9,8 @@
     "@hia-uview/biz-app-shell": "0.0.0",
     "@hia-uview/biz-capability-runtime": "0.0.0",
     "@hia-uview/biz-example-catalog-query-detail": "0.0.0",
-    "@hia-uview/biz-example-catalog-query-detail-adapter-fixture": "0.0.0"
+    "@hia-uview/biz-example-catalog-query-detail-adapter-fixture": "0.0.0",
+    "@hia-uview/biz-example-reference-data": "0.0.0"
   },
   "devDependencies": {
     "@dcloudio/uni-mp-weixin": "3.0.0-5010520260709002"

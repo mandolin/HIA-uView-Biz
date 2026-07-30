@@ -11,6 +11,10 @@ import {
   createCatalogQueryDetailMock,
   createExampleManifests
 } from '@hia-uview/biz-example-catalog-query-detail';
+import {
+  REFERENCE_DATA_MODULE_ID,
+  createReferenceDataCapabilityUnit
+} from '@hia-uview/biz-example-reference-data';
 
 /**
  * <lang><zh-CN>当前代表性 app profile 与 canonical port 共享的固定契约版本。</zh-CN><en>Fixed contract version shared by the current representative app profile and canonical ports.</en></lang>
@@ -599,25 +603,46 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
   // <lang><zh-CN>capability runtime 是本次 app 初始化私有实例，不暴露 install/disable/uninstall 控制面给 Vue。</zh-CN><en>The capability runtime is private to this app initialization and exposes no install, disable, or uninstall control surface to Vue.</en></lang>
   const capabilityRuntime = createCapabilityRuntime();
 
-  // <lang><zh-CN>安装单元只含现有 business module、所选 implementation、显式 core profile 与 provider。</zh-CN><en>The installed unit contains only the existing business module, selected implementation, explicit core profile, and providers.</en></lang>
-  const installResult = capabilityRuntime.install({
+  // <lang><zh-CN>创建显式 reference-data v1 单元，满足 catalog 的稳定业务依赖；不根据 profile 字符串发现包。</zh-CN><en>Create the explicit reference-data v1 unit to satisfy the catalog's stable business dependency; discover no package from a profile string.</en></lang>
+  const referenceDataUnit = createReferenceDataCapabilityUnit({
+    fixtureVersion: 'v1'
+  });
+
+  // <lang><zh-CN>先安装 reference-data；installation 不调用其 provider。</zh-CN><en>Install reference-data first; installation does not invoke its provider.</en></lang>
+  const referenceInstallResult = capabilityRuntime.install(referenceDataUnit);
+
+  // <lang><zh-CN>依赖安装失败时返回受限 lifecycle diagnostic，不创建 shell 或 partial public runtime。</zh-CN><en>On dependency-installation failure, return bounded lifecycle diagnostics and create neither a shell nor a partial public runtime.</en></lang>
+  if (!referenceInstallResult.ok) {
+    return createFailure(copyDiagnostics(referenceInstallResult.diagnostics));
+  }
+
+  // <lang><zh-CN>catalog 单元只含现有 business module、所选 implementation、显式 core profile 与 provider。</zh-CN><en>The catalog unit contains only the existing business module, selected implementation, explicit core profile, and providers.</en></lang>
+  const catalogInstallResult = capabilityRuntime.install({
     businessModule: manifests.businessModule,
     implementationPackage: selectedSource.implementationPackage,
     profile: manifests.profile,
     portProviders: selectedSource.portProviders
   });
 
-  // <lang><zh-CN>安装失败返回白名单 diagnostic 副本，不返回 unit 或 core composition。</zh-CN><en>Installation failure returns allowlisted diagnostic copies and no unit or core composition.</en></lang>
-  if (!installResult.ok) {
-    return createFailure(copyDiagnostics(installResult.diagnostics));
+  // <lang><zh-CN>catalog 安装失败返回白名单 diagnostic 副本，不返回任一 unit 或 core composition。</zh-CN><en>Catalog-installation failure returns allowlisted diagnostic copies and no unit or core composition.</en></lang>
+  if (!catalogInstallResult.ok) {
+    return createFailure(copyDiagnostics(catalogInstallResult.diagnostics));
   }
 
-  // <lang><zh-CN>显式 enable 与 install 分开，保留生命周期状态机证据。</zh-CN><en>Explicit enablement remains separate from installation, preserving lifecycle-state-machine evidence.</en></lang>
-  const enableResult = capabilityRuntime.enable(MODULE_ID);
+  // <lang><zh-CN>按 dependency-first 顺序显式启用 reference-data。</zh-CN><en>Explicitly enable reference-data in dependency-first order.</en></lang>
+  const referenceEnableResult = capabilityRuntime.enable(REFERENCE_DATA_MODULE_ID);
 
-  // <lang><zh-CN>启用失败不尝试替代实现或自动卸载，返回受限诊断即可丢弃本地闭包。</zh-CN><en>Enablement failure attempts neither a replacement implementation nor automatic uninstall; returning bounded diagnostics lets the local closure be discarded.</en></lang>
-  if (!enableResult.ok) {
-    return createFailure(copyDiagnostics(enableResult.diagnostics));
+  // <lang><zh-CN>依赖启用失败不尝试 fallback、递归转换或 provider 调用。</zh-CN><en>Dependency-enable failure attempts no fallback, recursive transition, or provider invocation.</en></lang>
+  if (!referenceEnableResult.ok) {
+    return createFailure(copyDiagnostics(referenceEnableResult.diagnostics));
+  }
+
+  // <lang><zh-CN>依赖已 enabled 后再显式启用 catalog。</zh-CN><en>Explicitly enable the catalog after its dependency is enabled.</en></lang>
+  const catalogEnableResult = capabilityRuntime.enable(MODULE_ID);
+
+  // <lang><zh-CN>catalog 启用失败返回受限诊断；整个未公开闭包可被丢弃。</zh-CN><en>Catalog-enable failure returns bounded diagnostics; the entire unpublished closure can be discarded.</en></lang>
+  if (!catalogEnableResult.ok) {
+    return createFailure(copyDiagnostics(catalogEnableResult.diagnostics));
   }
 
   /**

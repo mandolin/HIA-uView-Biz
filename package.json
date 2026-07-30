@@ -19,7 +19,7 @@
     "check": "node scripts/verify-workspace.mjs && node scripts/check-rop.mjs && npm run docs:check",
     "docs:api": "jsdoc -c docs/jsdoc.config.json",
     "docs:check": "npm run docs:api && node scripts/verify-documentation-output.mjs",
-    "test": "npm run check && node --test test/core-and-example.test.mjs test/app-shell.test.mjs test/adapter-runtime.test.mjs test/capability-runtime.test.mjs test/representative-mp-weixin-slice.test.mjs"
+    "test": "npm run check && node --test test/core-and-example.test.mjs test/app-shell.test.mjs test/adapter-runtime.test.mjs test/capability-runtime.test.mjs test/capability-adoption.test.mjs test/representative-mp-weixin-slice.test.mjs"
   },
   "devDependencies": {
     "@dcloudio/types": "3.4.31",

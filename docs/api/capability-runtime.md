@@ -137,9 +137,9 @@ The initial operation codes are:
 
 ## Deliberate limits / 刻意限制
 
-The runtime is synchronous and process-local. It does not implement batch profile reconciliation, automatic dependency activation, concurrent transitions, cancellation, persistent state, recovery after process termination, package discovery, npm installation, dynamic import, executable lifecycle hooks, remote code/configuration, arbitrary scripts, environment or storage access, credential handling, permissions, production adapters, UI registration, or release behavior.
+The runtime is synchronous and process-local. Complete candidate-first profile reconciliation, deterministic dependency activation, bounded presentation, and atomic in-memory implementation replacement are provided by the separate [adoption runtime](adoption-runtime.md), which still uses only explicitly supplied units. The lifecycle runtime itself does not implement concurrent transitions, cancellation, persistent state, recovery after process termination, package discovery, npm installation, dynamic import, executable lifecycle hooks, remote code/configuration, arbitrary scripts, environment or storage access, credential handling, permissions, production adapters, UI registration, or release behavior.
 
-runtime 是同步且进程内的。它不实现批量 profile 协调、自动依赖启用、并发转换、取消、持久化状态、进程终止后恢复、包发现、npm 安装、动态 import、可执行生命周期 hook、远程代码/配置、任意脚本、环境或 storage 访问、凭据处理、权限、生产 adapter、UI 登记或发布行为。
+runtime 是同步且进程内的。完整的候选优先 profile 协调、确定性依赖启用、受限呈现与原子进程内实现替换由独立[采用 runtime](adoption-runtime.md)提供；它仍然只使用显式提供的单元。lifecycle runtime 本身不实现并发转换、取消、持久化状态、进程终止后恢复、包发现、npm 安装、动态 import、可执行 lifecycle hook、远程代码/配置、任意脚本、环境或 storage 访问、credential 处理、权限、生产 adapter、UI 登记或发布行为。
 
 These capabilities may be added only through separately reviewed, versioned contracts; they are not permanently rejected by the current limits.
 

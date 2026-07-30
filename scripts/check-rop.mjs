@@ -22,11 +22,15 @@ const documentedSourceFiles = [
   { relativePath: 'packages/core/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'packages/app-shell/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'packages/adapter-runtime/src/index.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>能力生命周期 runtime 是新自研源码，必须进入严格双语 ROP 最低门禁。</zh-CN><en>The capability-lifecycle runtime is new independently written source and must enter the strict bilingual ROP minimum gate.</en></lang>
+  { relativePath: 'packages/capability-runtime/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'modules/example-catalog-query-detail/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'extensions/example-catalog-query-detail-adapter-fixture/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'test/core-and-example.test.mjs', requiresNodeMarkers: true },
   { relativePath: 'test/app-shell.test.mjs', requiresNodeMarkers: true },
   { relativePath: 'test/adapter-runtime.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>新能力生命周期测试也必须维持节点级和流程级双语 ROP 标记。</zh-CN><en>The new capability-lifecycle test must also retain node-level and flow-level bilingual ROP markers.</en></lang>
+  { relativePath: 'test/capability-runtime.test.mjs', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/vite.config.mjs', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/index.html', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/main.js', requiresNodeMarkers: true },

@@ -24,6 +24,10 @@ const requiredFiles = [
   'packages/adapter-runtime/package.json',
   'packages/adapter-runtime/src/index.mjs',
   'packages/adapter-runtime/README.md',
+  // <lang><zh-CN>能力生命周期 runtime 必须以独立 package、源码和公开说明存在。</zh-CN><en>The capability-lifecycle runtime must exist as an independent package, source file, and public guide.</en></lang>
+  'packages/capability-runtime/package.json',
+  'packages/capability-runtime/src/index.mjs',
+  'packages/capability-runtime/README.md',
   'extensions/example-catalog-query-detail-adapter-fixture/package.json',
   'extensions/example-catalog-query-detail-adapter-fixture/src/index.mjs',
   'extensions/example-catalog-query-detail-adapter-fixture/README.md',
@@ -46,13 +50,20 @@ const requiredFiles = [
   'docs/architecture.md',
   'docs/api/app-shell.md',
   'docs/api/adapter-runtime.md',
+  // <lang><zh-CN>能力生命周期公开 API 文档必须与 runtime package 同步存在。</zh-CN><en>The public capability-lifecycle API guide must exist alongside the runtime package.</en></lang>
+  'docs/api/capability-runtime.md',
   'docs/adr/ADR-0003-adapter-session-and-cache-boundary.md',
+  // <lang><zh-CN>能力组合状态机必须由公开 ADR 与 contract 固定。</zh-CN><en>The capability-composition state machine must be fixed by a public ADR and contract.</en></lang>
+  'docs/adr/ADR-0004-capability-composition-and-lifecycle.md',
   'docs/jsdoc.config.json',
   'docs/contracts/adapter-boundary.md',
+  'docs/contracts/capability-lifecycle.md',
   'docs/contracts/catalog-query-detail.md',
   'test/core-and-example.test.mjs',
   'test/app-shell.test.mjs',
-  'test/adapter-runtime.test.mjs'
+  'test/adapter-runtime.test.mjs',
+  // <lang><zh-CN>能力生命周期测试固定多单元组合、依赖/冲突与无 hook 边界。</zh-CN><en>The capability-lifecycle test fixes multi-unit composition, dependency/conflict, and no-hook boundaries.</en></lang>
+  'test/capability-runtime.test.mjs'
 ];
 
 /**

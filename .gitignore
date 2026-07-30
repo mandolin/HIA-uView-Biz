@@ -3,6 +3,7 @@ dist/
 coverage/
 output/
 temp/
+unpackage/
 .DS_Store
 *.log
 *.tgz

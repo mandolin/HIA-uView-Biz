@@ -16,6 +16,17 @@
     "check": "node scripts/verify-workspace.mjs && node scripts/check-rop.mjs",
     "test": "npm run check && node --test test/core-and-example.test.mjs"
   },
+  "devDependencies": {
+    "@dcloudio/types": "3.4.31",
+    "@dcloudio/uni-app": "3.0.0-5010520260709002",
+    "@dcloudio/uni-mp-weixin": "3.0.0-5010520260709002",
+    "@dcloudio/vite-plugin-uni": "3.0.0-5010520260709002",
+    "@mandolin/jsdoc-plugin-hia-sys": "0.1.2",
+    "@mandolin/jsdoc-theme-hia": "0.1.1",
+    "jsdoc": "4.0.5",
+    "vite": "5.2.8",
+    "vue": "3.4.21"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/mandolin/HIA-uView-Biz.git"

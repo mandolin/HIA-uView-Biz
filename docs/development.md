@@ -45,9 +45,9 @@ The runner verifies the local UI package name, version, MIT metadata, and review
 
 runner 会在 Vite resolution 前校验本地 UI package 的名称、版本、MIT metadata 和已复审 Git commit。它在 fixture 输入树内创建一次性且被忽略的目录 junction，为 DCloud compiler 保留其词法路径，并在清理时删除它。这同时避免源码复制和外部 `file:` dependency。输入缺失或错误会在 compiler 启动前失败。
 
-The verification command builds once, then checks generated `app.json`, `project.config.json`, and the declared home-page file set. It does not start a development server, watch process, WeChat DevTools session, simulator, device connection, preview, upload, release, network service, or browser test.
+The verification command builds once, then checks generated `app.json`, `project.config.json`, the exact home-page `usingComponents` registry, relative component paths, and all required page/component runtime files. It does not start a development server, watch process, WeChat DevTools session, simulator, device connection, preview, upload, release, network service, or browser test.
 
-验证命令构建一次，随后检查生成的 `app.json`、`project.config.json` 和已声明首页文件集合。它不启动开发服务、watch 进程、微信开发者工具会话、模拟器、设备连接、预览、上传、发布、网络服务或浏览器测试。
+验证命令构建一次，随后检查生成的 `app.json`、`project.config.json`、精确首页 `usingComponents` registry、相对组件路径以及全部必需页面/组件运行文件。它不启动开发服务、watch 进程、微信开发者工具会话、模拟器、设备连接、预览、上传、发布、网络服务或浏览器测试。
 
 ## Current dependency-risk disclosure / 当前依赖风险披露
 
@@ -65,9 +65,9 @@ Core receives already parsed in-memory manifests and explicit port providers. Th
 
 core 接收已解析的内存 manifest 和显式 port provider。确定性示例验证组合、页码 query、详情、规范化 failure、mock session 与受限 route action。应用 shell 增加内存 screen-state 投影、mock capability gate 与 retry 保留。adapter runtime 增加显式同步注入式 exchange lifecycle、脱敏与可选受限进程内成功缓存。capability runtime 增加显式进程内安装/启用/停用/卸载状态、依赖/冲突检查、唯一 owner、仅已启用路由与脱敏 snapshot，且没有包管理器行为或 hook。中性 extension 转换独立编写的 query/detail wire fixture，并可显式选择以替代 mock implementation。代表性 app-owned runtime 校验固定 JSON profile，只构造所选本地 source，显式安装并启用单元，并且只向 Vue 暴露 shell、安全 snapshot、受限 observation、profile-owned query factory 与已登记区块判断。它们都不是 JSON/YAML loader、完整 JSON Schema engine、包安装器、真实后端 adapter、应用生成器或真实身份系统。
 
-The fixture uses named HIA-uView component imports and explicit style entry. It does not install the UI global plugin, auto-register components, introduce UI global services, or change HIA-uView source. The neutral query-context input is not an implicit filter: current module schema owns no filter field. Future filter semantics require a separate versioned module contract.
+The fixture uses explicit HIA-uView SFC imports and an explicit style entry through the one-use verified source link. It does not install the UI global plugin, auto-scan components, introduce UI global services, or change HIA-uView source. The neutral query-context input is not an implicit filter: current module schema owns no filter field. Future filter semantics require a separate versioned module contract.
 
-fixture 使用命名 HIA-uView 组件导入和显式样式入口。它不安装 UI 全局 plugin、不自动注册组件、不引入 UI global service，也不修改 HIA-uView 源码。中性 query-context 输入不是隐式 filter：当前 module schema 不拥有 filter 字段。未来 filter 语义需要独立的版本化 module contract。
+fixture 通过一次性且已核验的 source link 使用显式 HIA-uView SFC 导入和显式样式入口。它不安装 UI 全局 plugin、不自动扫描组件、不引入 UI global service，也不修改 HIA-uView 源码。中性 query-context 输入不是隐式 filter：当前 module schema 不拥有 filter 字段。未来 filter 语义需要独立的版本化 module contract。
 
 ## Integration boundary / 集成边界
 

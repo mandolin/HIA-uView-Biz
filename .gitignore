@@ -5,6 +5,7 @@ output/
 temp/
 unpackage/
 .hia-uview-ui-source/
+hia-uview-ui-source/
 .DS_Store
 *.log
 *.tgz

@@ -38,7 +38,7 @@ const verifiedUiSource = resolveVerifiedHiaUViewUiSource();
  * @lang zh-CN Vite 只解析该 lexical link；它不直接 alias 到工作区外绝对源码路径，避免 DCloud compiler 将外部路径当作 output 名称。
  * @lang en Vite resolves only this lexical link and does not alias directly to an absolute source path outside workspace, avoiding DCloud compiler treating external path as output name.
  */
-const uiSourceLinkDirectory = resolve(fixtureDirectory, 'src/.hia-uview-ui-source');
+const uiSourceLinkDirectory = resolve(fixtureDirectory, 'src/hia-uview-ui-source');
 
 /**
  * <lang><zh-CN>一次性 link 中的 UI runtime entry。</zh-CN><en>UI runtime entry inside one-use link.</en></lang>

@@ -55,10 +55,11 @@ async function readGeneratedJson(relativePath) {
  * @lang en Check does not open DevTools; “import prerequisite” means only generated project structure, not actual DevTools import or runtime conclusion.
  */
 async function verifyMpWeixinFixtureOutput() {
-  // <lang><zh-CN>先读取两个编译器直接生成的 JSON 配置，后续断言不依赖命令行输出或本机语言环境。</zh-CN><en>Read two JSON configurations generated directly by compiler first; later assertions do not depend on command-line output or local language environment.</en></lang>
-  const [appConfiguration, projectConfiguration] = await Promise.all([
+  // <lang><zh-CN>先读取三个编译器直接生成的 JSON 配置，后续断言不依赖命令行输出或本机语言环境。</zh-CN><en>Read three JSON configurations generated directly by compiler first; later assertions do not depend on command-line output or local language environment.</en></lang>
+  const [appConfiguration, projectConfiguration, pageConfiguration] = await Promise.all([
     readGeneratedJson('app.json'),
-    readGeneratedJson('project.config.json')
+    readGeneratedJson('project.config.json'),
+    readGeneratedJson('pages/index/index.json')
   ]);
 
   // <lang><zh-CN>页面数组必须只声明 fixture 的唯一首页，防止 compiler 输出悄然扩展到未审阅页面路径。</zh-CN><en>Pages array must declare only fixture's sole home page, preventing compiler output from silently expanding to an unreviewed page path.</en></lang>
@@ -67,6 +68,46 @@ async function verifyMpWeixinFixtureOutput() {
   // <lang><zh-CN>项目配置必须保持小程序类型和无真实身份绑定的 tourist AppID。</zh-CN><en>Project configuration must retain Mini Program type and tourist AppID without real identity binding.</en></lang>
   assert.equal(projectConfiguration.compileType, 'miniprogram', 'Generated project config must identify Mini Program compile type.');
   assert.equal(projectConfiguration.appid, 'touristappid', 'Generated project config must retain fixture-only tourist AppID.');
+
+  // <lang><zh-CN>代表性页面必须把全部九个显式 UI SFC 编译为微信自定义组件；空 registry 会让模板标签被静默保留却渲染为空白。</zh-CN><en>The representative page must compile all nine explicit UI SFCs as WeChat custom components; an empty registry silently retains template tags while rendering a blank page.</en></lang>
+  const expectedComponentNames = [
+    'u-button',
+    'u-cell',
+    'u-empty',
+    'u-field',
+    'u-input',
+    'u-nav-bar',
+    'u-notice',
+    'u-stack',
+    'u-validation-message'
+  ];
+
+  // <lang><zh-CN>只比较稳定组件名集合；生成路径另行限制为输入树内相对路径，避免锁定编译器内部排序。</zh-CN><en>Compare only the stable component-name set; generated paths are separately constrained to input-tree-relative paths, avoiding dependence on compiler-internal ordering.</en></lang>
+  assert.deepEqual(
+    Object.keys(pageConfiguration.usingComponents ?? {}).sort(),
+    expectedComponentNames,
+    'Generated page config must register every explicit HIA-uView UI component used by the representative slice.'
+  );
+
+  // <lang><zh-CN>逐个检查组件路径来自一次性 UI source link 的相对生成树，不接受绝对路径、registry 回退或其他包位置。</zh-CN><en>Check every component path comes from the relative generated tree of the one-use UI-source link; accept no absolute path, registry fallback, or other package location.</en></lang>
+  for (const componentName of expectedComponentNames) {
+    // <lang><zh-CN>读取编译器为当前固定组件名写出的路径；上方集合断言保证该值必须存在。</zh-CN><en>Read the path emitted by compiler for the current fixed component name; the preceding set assertion guarantees this value exists.</en></lang>
+    const generatedComponentPath = pageConfiguration.usingComponents[componentName];
+
+    // <lang><zh-CN>相对路径必须落入生成 output 内的受控 UI source 子树；精确文件后缀由官方 compiler 决定。</zh-CN><en>The relative path must land in the controlled UI-source subtree of generated output; the official compiler decides the exact file suffix.</en></lang>
+    assert.match(
+      generatedComponentPath,
+      /^\.\.\/\.\.\/hia-uview-ui-source\/src\/components\/u-[a-z-]+\/u-[a-z-]+$/,
+      `Generated component path for ${componentName} must remain inside the controlled UI source subtree.`
+    );
+  }
+
+  // <lang><zh-CN>把每个已登记组件展开为微信运行时实际需要的四类生成文件，避免 registry 路径存在但模块或模板缺失。</zh-CN><en>Expand every registered component into the four generated file types required by WeChat runtime, preventing a registry path from existing while its module or template is absent.</en></lang>
+  const requiredGeneratedComponentFiles = expectedComponentNames.flatMap((componentName) => (
+    ['js', 'json', 'wxml', 'wxss'].map((extension) => (
+      `hia-uview-ui-source/src/components/${componentName}/${componentName}.${extension}`
+    ))
+  ));
 
   // <lang><zh-CN>只检查 app、project 与 app.json 已声明首页的四类静态文件；不读取、执行或上传任何其他生成资源。</zh-CN><en>Check only app, project, and four static file types of home page declared by app.json; read, execute, or upload no other generated resource.</en></lang>
   const requiredGeneratedFiles = [
@@ -77,7 +118,8 @@ async function verifyMpWeixinFixtureOutput() {
     'pages/index/index.js',
     'pages/index/index.json',
     'pages/index/index.wxml',
-    'pages/index/index.wxss'
+    'pages/index/index.wxss',
+    ...requiredGeneratedComponentFiles
   ];
 
   // <lang><zh-CN>将全部白名单路径解析到 output root 后并发只读存在性检查；任一缺失即停止验证。</zh-CN><en>Resolve all allowlisted paths under output root and run concurrent read-only existence checks; any missing file stops verification.</en></lang>

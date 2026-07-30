@@ -127,8 +127,16 @@
 <script setup>
 // <lang><zh-CN>仅导入 Vue 的局部响应式原语；页面不使用全局 store、router、platform API 或网络 client。</zh-CN><en>Import only Vue local reactivity primitives; the page uses no global store, router, platform API, or network client.</en></lang>
 import { computed, ref } from 'vue';
-// <lang><zh-CN>显式命名导入所需 HIA-uView 组件；不安装 UView plugin、不自动注册组件，也不依赖 import-time 样式注入。</zh-CN><en>Explicitly named-import required HIA-uView components; install no UView plugin, auto-register no component, and rely on no import-time style injection.</en></lang>
-import { UButton, UCell, UEmpty, UField, UInput, UNavBar, UNotice, UStack, UValidationMessage } from '@hia-uview/ui';
+// <lang><zh-CN>从受控的一次性 UI source link 显式导入九个 SFC，使 UniApp compiler 能生成微信 `usingComponents`；页面仍不安装全局 plugin、不自动扫描组件或依赖 import-time 样式注入。</zh-CN><en>Explicitly import nine SFCs from the controlled one-use UI-source link so UniApp compiler can emit WeChat `usingComponents`; the page still installs no global plugin, auto-scans no component, and relies on no import-time style injection.</en></lang>
+import UButton from '../../hia-uview-ui-source/src/components/u-button/u-button.vue';
+import UCell from '../../hia-uview-ui-source/src/components/u-cell/u-cell.vue';
+import UEmpty from '../../hia-uview-ui-source/src/components/u-empty/u-empty.vue';
+import UField from '../../hia-uview-ui-source/src/components/u-field/u-field.vue';
+import UInput from '../../hia-uview-ui-source/src/components/u-input/u-input.vue';
+import UNavBar from '../../hia-uview-ui-source/src/components/u-nav-bar/u-nav-bar.vue';
+import UNotice from '../../hia-uview-ui-source/src/components/u-notice/u-notice.vue';
+import UStack from '../../hia-uview-ui-source/src/components/u-stack/u-stack.vue';
+import UValidationMessage from '../../hia-uview-ui-source/src/components/u-validation-message/u-validation-message.vue';
 // <lang><zh-CN>页面只导入 app-owned fixture factory；core、provider、adapter 与 lifecycle 装配保持在独立纯模块内。</zh-CN><en>The page imports only the app-owned fixture factory; core, provider, adapter, and lifecycle assembly remain inside a separate pure module.</en></lang>
 import { createRepresentativeFixtureRuntime } from '../../fixture-runtime.mjs';
 // <lang><zh-CN>普通 JSON import 提供仓内带版本声明式 profile；Vite 编译它为静态数据，不把值解释为代码或组件路径。</zh-CN><en>A regular JSON import supplies the checked-in versioned declarative profile; Vite compiles it as static data and interprets no value as code or a component path.</en></lang>

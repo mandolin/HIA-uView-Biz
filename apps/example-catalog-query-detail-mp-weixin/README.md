@@ -29,9 +29,9 @@ $env:HIA_UVIEW_UI_ROOT = 'path-to-local-hia-uview-ui-package'
 npm run verify:fixture:mp-weixin
 ```
 
-The command runs one locked local compiler invocation and then checks generated `app.json`, `project.config.json`, and the declared home-page file set. It creates no development server, watch process, WeChat DevTools session, simulator, device connection, network service, preview, upload, or release.
+The command runs one locked local compiler invocation and then checks generated `app.json`, `project.config.json`, the home-page `usingComponents` registry, and the page/component runtime file set. It creates no development server, watch process, WeChat DevTools session, simulator, device connection, network service, preview, upload, or release.
 
-该命令运行一次锁定的本地 compiler，再检查生成的 `app.json`、`project.config.json` 和已声明的首页文件集合。它不创建开发服务、watch 进程、微信开发者工具会话、模拟器、设备连接、网络服务、预览、上传或发布。
+该命令运行一次锁定的本地 compiler，再检查生成的 `app.json`、`project.config.json`、首页 `usingComponents` registry 以及页面/组件运行文件集合。它不创建开发服务、watch 进程、微信开发者工具会话、模拟器、设备连接、网络服务、预览、上传或发布。
 
 ## Profile and source selection / Profile 与数据源选择
 
@@ -45,9 +45,9 @@ The checked-in profile selects `wire-fixture`, page `1`, page size `1`, and four
 
 ## Behavior and limits / 行为与限制
 
-The page uses named `UStack`, `UNavBar`, `UField`, `UInput`, `UCell`, `UEmpty`, `UNotice`, `UButton`, and `UValidationMessage` imports plus explicit style import. It does not install the UI global plugin or auto-register components.
+The page explicitly imports the `UStack`, `UNavBar`, `UField`, `UInput`, `UCell`, `UEmpty`, `UNotice`, `UButton`, and `UValidationMessage` SFCs plus the style entry through the one-use verified source link. This lets the UniApp compiler emit a fixed WeChat `usingComponents` registry without a global UI plugin or component auto-scan.
 
-页面使用命名的 `UStack`、`UNavBar`、`UField`、`UInput`、`UCell`、`UEmpty`、`UNotice`、`UButton` 和 `UValidationMessage` 导入，并显式导入样式。它不安装 UI 全局 plugin，也不自动注册组件。
+页面通过一次性且已核验的 source link 显式导入 `UStack`、`UNavBar`、`UField`、`UInput`、`UCell`、`UEmpty`、`UNotice`、`UButton` 和 `UValidationMessage` SFC 及样式入口，使 UniApp compiler 能生成固定的微信 `usingComponents` registry，而无需 UI 全局 plugin 或组件自动扫描。
 
 The page consumes only the app-owned fixture runtime's safe shell, profile/lifecycle snapshots, query factory, source observation, and registered-block predicate. It does not assemble core, providers, adapters, or manifests. The default wire observation exposes counts only; mock observation exposes only its explicit source mode.
 

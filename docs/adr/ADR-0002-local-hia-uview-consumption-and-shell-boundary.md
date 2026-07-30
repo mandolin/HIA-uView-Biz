@@ -17,14 +17,14 @@ Accepted for the private, development-only integration fixture.
 1. The application shell is a separate Biz package and has no Vue, UniApp, transport, storage, or identity-provider dependency. It consumes only a successful Biz composition, a declared route projection, a caller-provided mock session, and a declarative screen-capability policy.
 2. Navigation is an in-memory screen-state projection. Only declared screens and actions may change it. The shell creates no URL, deep link, router history, `uni.navigate*` call, global store, persisted state, or dynamic screen/block import.
 3. Permission is a mock capability check. It consumes declared capability strings and returns a stable allow or deny observation; it neither infers identity nor implements accounts, tokens, cookies, WeChat, enterprise identity, or authorization protocols.
-4. The UniApp fixture consumes HIA-uView through named imports and an explicit style entry only. It does not install the global `UView` plugin, auto-register components, inject styles, or create a UI global service.
+4. The UniApp fixture consumes HIA-uView through explicit SFC imports and an explicit style entry over the one-use verified source link. It does not install the global `UView` plugin, auto-scan components, inject styles, or create a UI global service.
 5. The fixture resolves `@hia-uview/ui` only during an explicit local build. The operator supplies a trusted local source root; the build verifies package identity, package version, license, and a recorded Git commit before Vite resolves the import. The public Biz manifest has no external `file:` dependency or machine path, so a normal clone does not silently require an adjacent HIA-uView checkout.
 6. The supported fixture target is compile-only UniApp Vue 3 `mp-weixin`. Its compiler and documentation dependencies are exact development dependencies with a committed lockfile and explicit risk disclosure. No development server, watch process, external CI/service, release, device, accessibility-tree, App, H5, or other platform support follows from this fixture.
 
 1. 应用 shell 是独立 Biz 包，不依赖 Vue、UniApp、传输、存储或身份提供方。它只消费成功的 Biz composition、已声明 route projection、调用方提供的 mock session 与声明式 screen-capability policy。
 2. 导航是内存 screen-state 投影。只有已声明 screen 和 action 可以改变它。shell 不创建 URL、deep link、router history、`uni.navigate*` 调用、global store、持久状态或动态 screen/block import。
 3. 权限是 mock capability 检查。它消费已声明 capability 字符串并返回稳定 allow 或 deny 观察；它不推断身份，也不实现账户、token、cookie、微信、企业身份或授权协议。
-4. UniApp fixture 只通过 named import 和显式 style entry 消费 HIA-uView。它不安装全局 `UView` plugin、不自动注册组件、不注入样式，也不创建 UI global service。
+4. UniApp fixture 只通过一次性且已核验的 source link，以显式 SFC import 和显式 style entry 消费 HIA-uView。它不安装全局 `UView` plugin、不自动扫描组件、不注入样式，也不创建 UI global service。
 5. fixture 仅在显式本地构建时解析 `@hia-uview/ui`。operator 提供受信任的 local source root；build 在 Vite 解析 import 前校验 package identity、package version、license 和已记录 Git commit。公开 Biz manifest 不含仓外 `file:` dependency 或机器路径，因此普通 clone 不会静默要求相邻 HIA-uView checkout。
 6. 受支持 fixture target 是 compile-only UniApp Vue 3 `mp-weixin`。其 compiler 与 documentation dependency 是具有 committed lockfile 和明确风险披露的精确 development dependency。该 fixture 不推出 development server、watch process、external CI/service、release、device、accessibility tree、App、H5 或其他平台支持。
 

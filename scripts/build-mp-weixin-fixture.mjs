@@ -45,7 +45,7 @@ const fixtureSourceDirectory = resolve(fixtureDirectory, 'src');
  * @lang zh-CN link 不是 source copy、Git tracked 文件或发布物；它只让官方 compiler 以输入树内的稳定词法路径读取经核验的 source。
  * @lang en The link is not source copy, Git-tracked file, or release artifact; it only lets official compiler read verified source through a stable lexical path inside input tree.
  */
-const uiSourceLinkDirectory = resolve(fixtureSourceDirectory, '.hia-uview-ui-source');
+const uiSourceLinkDirectory = resolve(fixtureSourceDirectory, 'hia-uview-ui-source');
 
 /**
  * <lang><zh-CN>已锁定官方 UniApp Vite compiler 的本仓入口。</zh-CN><en>Repository-local entry of the locked official UniApp Vite compiler.</en></lang>

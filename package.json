@@ -13,8 +13,8 @@
     "extensions/*"
   ],
   "scripts": {
-    "check": "node scripts/verify-workspace.mjs",
-    "test": "npm run check"
+    "check": "node scripts/verify-workspace.mjs && node scripts/check-rop.mjs",
+    "test": "npm run check && node --test test/core-and-example.test.mjs"
   },
   "repository": {
     "type": "git",

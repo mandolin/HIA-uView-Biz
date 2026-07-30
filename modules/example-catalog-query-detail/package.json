@@ -1,8 +1,8 @@
 {
-  "name": "@hia-uview/biz-core",
+  "name": "@hia-uview/biz-example-catalog-query-detail",
   "version": "0.0.0",
   "private": true,
-  "description": "Pure manifest composition and explicit-port core for HIA-uView-Biz.",
+  "description": "Deterministic mock implementation for the neutral HIA-uView-Biz catalog-query-detail example.",
   "license": "MIT",
   "type": "module",
   "exports": {

@@ -39,3 +39,7 @@ JSON 不支持注释。因此 schema 使用中英双语的 `title` 与 `descript
 The schema files use JSON Schema Draft 7 so they can be checked without adding a runtime dependency in this repository. The draft choice is a validation-tooling boundary, not a claim that the manifests are already a stable runtime API.
 
 schema 文件使用 JSON Schema Draft 7，因此可以在本仓不新增运行时依赖的情况下检查。选择该 draft 是验证工具边界，并不表示 manifest 已经是稳定的运行时 API。
+
+The current core accepts already parsed manifest objects and implements only the minimum relationship checks documented in the [core API](../api/core.md). It does not load JSON/YAML, interpret arbitrary Draft 7 keywords, or replace schema validation with runtime guessing.
+
+当前 core 接受已解析的 manifest 对象，并且只实现 [core API](../api/core.md) 中记录的最小关系校验。它不加载 JSON/YAML、不解释任意 Draft 7 keyword，也不以运行时猜测替代 schema 校验。

@@ -15,6 +15,10 @@ The detailed decision is [ADR-0001: Business composition and contract boundaries
 
 详细决定见 [ADR-0001：业务组合与契约边界](adr/ADR-0001-biz-composition-and-contract-boundaries.md)。该 ADR 定义模块/实现包 manifest 分离、adapter 规范化结果、profile 与渠道投影，以及声明式动态呈现边界。
 
-No runtime API, backend adapter, real identity integration, industry package, or HIA-uView dependency is implemented by this documentation.
+The current runtime implements the core's explicit manifest/profile/port composition boundary and a deterministic neutral mock. It does not implement a backend adapter, real identity integration, industry package, UI/UniApp integration, or HIA-uView dependency.
 
-本说明不实现运行时 API、后端 adapter、真实身份集成、行业包或 HIA-uView 依赖。
+当前运行时实现了 core 的显式 manifest/profile/port 组合边界和确定性中性 mock。它不实现后端 adapter、真实身份集成、行业包、UI/UniApp 集成或 HIA-uView 依赖。
+
+See [core API / core API](api/core.md) for the implemented surface and its deliberate limits.
+
+实现的 API 及其刻意限制见 [core API](api/core.md)。

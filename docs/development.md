@@ -18,9 +18,9 @@ npm run check
 npm test
 ```
 
-`npm run check` verifies required workspace files and the minimum bilingual ROP markers in controlled JavaScript, Vue, and CSS source. `npm test` runs that gate first and then executes deterministic Node contracts for core, the neutral mock, application shell, adapter runtime, capability lifecycle, and the injected neutral wire fixture.
+`npm run check` verifies required workspace files and the minimum bilingual ROP markers in controlled JavaScript, Vue, and CSS source. `npm test` runs that gate first and then executes deterministic Node contracts for core, the neutral mock, application shell, adapter runtime, capability lifecycle, the injected neutral wire fixture, and the representative app runtime.
 
-`npm run check` 校验必需 workspace 文件，以及受控 JavaScript、Vue 与 CSS 源码的最低双语 ROP 标记。`npm test` 先运行该门禁，再执行 core、中性 mock、应用 shell、adapter runtime、能力生命周期与注入式中性 wire fixture 的确定性 Node 契约。
+`npm run check` 校验必需 workspace 文件，以及受控 JavaScript、Vue 与 CSS 源码的最低双语 ROP 标记。`npm test` 先运行该门禁，再执行 core、中性 mock、应用 shell、adapter runtime、能力生命周期、注入式中性 wire fixture 与代表性 app runtime 的确定性 Node 契约。
 
 These commands use the committed lockfile and installed dependencies. They do not start a service, access production data, or create a runtime backend connection.
 
@@ -31,6 +31,10 @@ These commands use the committed lockfile and installed dependencies. They do no
 The fixture in `apps/example-catalog-query-detail-mp-weixin/` is the only current UniApp integration surface. Its build is local and compile-only. Before building, set `HIA_UVIEW_UI_ROOT` to the local UI package directory, not to a parent workspace or registry URL.
 
 `apps/example-catalog-query-detail-mp-weixin/` 中的 fixture 是当前唯一的 UniApp 集成表面。其构建仅限本地编译。构建前，请将 `HIA_UVIEW_UI_ROOT` 设置为本地 UI package 目录，而非父工作区或 registry URL。
+
+The checked-in `src/representative.profile.json` defaults to the local `wire-fixture`. It may select only `wire-fixture` or `mock`, page sizes `1`, `5`, `10`, or `20`, and registered compiled blocks. Invalid source or shape fails before provider creation and never falls back. See the [representative slice contract](contracts/representative-mp-weixin-slice.md).
+
+仓内 `src/representative.profile.json` 默认选择本地 `wire-fixture`。它只能选择 `wire-fixture` 或 `mock`、每页 `1`/`5`/`10`/`20` 项，以及已登记的已编译区块。无效 source 或 shape 会在 provider 构造前失败，且绝不回退。详见[代表性纵切契约](contracts/representative-mp-weixin-slice.md)。
 
 ```powershell
 $env:HIA_UVIEW_UI_ROOT = 'path-to-local-hia-uview-ui-package'
@@ -57,9 +61,9 @@ Do not use `npm audit fix` or `npm audit fix --force` as an unreviewed repair. A
 
 ## Current runtime boundary / 当前运行时边界
 
-Core receives already parsed in-memory manifests and explicit port providers. The deterministic example validates composition, page query, detail, canonical failure, mock session, and restricted route action. Application shell adds in-memory screen-state projection, mock capability gate, and retry retention. Adapter runtime adds an explicit synchronous injected-exchange lifecycle, redaction, and optional bounded process-local success cache. Capability runtime adds explicit process-local install/enable/disable/uninstall state, dependency/conflict checks, unique owners, enabled-only routing, and redacted snapshots without package-manager behavior or hooks. The neutral extension converts independently written query/detail wire fixtures and can be selected explicitly in place of the mock implementation. None is a JSON/YAML loader, complete JSON Schema engine, package installer, real backend adapter, application generator, or real identity system.
+Core receives already parsed in-memory manifests and explicit port providers. The deterministic example validates composition, page query, detail, canonical failure, mock session, and restricted route action. Application shell adds in-memory screen-state projection, mock capability gate, and retry retention. Adapter runtime adds an explicit synchronous injected-exchange lifecycle, redaction, and optional bounded process-local success cache. Capability runtime adds explicit process-local install/enable/disable/uninstall state, dependency/conflict checks, unique owners, enabled-only routing, and redacted snapshots without package-manager behavior or hooks. The neutral extension converts independently written query/detail wire fixtures and can be selected explicitly in place of the mock implementation. The representative app-owned runtime validates its fixed JSON profile, constructs only the selected local source, explicitly installs and enables the unit, and exposes Vue only to a shell, safe snapshots, bounded observation, profile-owned query factory, and registered-block predicate. None is a JSON/YAML loader, complete JSON Schema engine, package installer, real backend adapter, application generator, or real identity system.
 
-core 接收已解析的内存 manifest 和显式 port provider。确定性示例验证组合、页码 query、详情、规范化 failure、mock session 与受限 route action。应用 shell 增加内存 screen-state 投影、mock capability gate 与 retry 保留。adapter runtime 增加显式同步注入式 exchange lifecycle、脱敏与可选受限进程内成功缓存。capability runtime 增加显式进程内安装/启用/停用/卸载状态、依赖/冲突检查、唯一 owner、仅已启用路由与脱敏 snapshot，且没有包管理器行为或 hook。中性 extension 转换独立编写的 query/detail wire fixture，并可显式选择以替代 mock implementation。它们都不是 JSON/YAML loader、完整 JSON Schema engine、包安装器、真实后端 adapter、应用生成器或真实身份系统。
+core 接收已解析的内存 manifest 和显式 port provider。确定性示例验证组合、页码 query、详情、规范化 failure、mock session 与受限 route action。应用 shell 增加内存 screen-state 投影、mock capability gate 与 retry 保留。adapter runtime 增加显式同步注入式 exchange lifecycle、脱敏与可选受限进程内成功缓存。capability runtime 增加显式进程内安装/启用/停用/卸载状态、依赖/冲突检查、唯一 owner、仅已启用路由与脱敏 snapshot，且没有包管理器行为或 hook。中性 extension 转换独立编写的 query/detail wire fixture，并可显式选择以替代 mock implementation。代表性 app-owned runtime 校验固定 JSON profile，只构造所选本地 source，显式安装并启用单元，并且只向 Vue 暴露 shell、安全 snapshot、受限 observation、profile-owned query factory 与已登记区块判断。它们都不是 JSON/YAML loader、完整 JSON Schema engine、包安装器、真实后端 adapter、应用生成器或真实身份系统。
 
 The fixture uses named HIA-uView component imports and explicit style entry. It does not install the UI global plugin, auto-register components, introduce UI global services, or change HIA-uView source. The neutral query-context input is not an implicit filter: current module schema owns no filter field. Future filter semantics require a separate versioned module contract.
 

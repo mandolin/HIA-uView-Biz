@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/mandolin/HIA-uView-Biz/blob/main/docs/contracts/schemas/representative-mp-weixin.profile.v1.schema.json",
+  "title": "Representative mp-weixin application profile / 代表性 mp-weixin 应用 profile",
+  "description": "Selects one local source, bounded initial paging, and registered presentation blocks for the neutral representative slice. / 为中性代表性纵切选择一个本地数据源、受限初始分页与已登记呈现区块。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profileVersion",
+    "id",
+    "sourceMode",
+    "query",
+    "presentation"
+  ],
+  "properties": {
+    "profileVersion": {
+      "const": "1.0",
+      "description": "Application-profile contract version. / 应用 profile 契约版本。"
+    },
+    "id": {
+      "const": "example.catalog-query-detail.representative-mp-weixin",
+      "description": "Stable identity of this representative application profile. / 本代表性应用 profile 的稳定标识。"
+    },
+    "sourceMode": {
+      "enum": [
+        "wire-fixture",
+        "mock"
+      ],
+      "description": "Explicit local provider mode; no fallback is permitted. / 明确的本地 provider 模式；不允许回退。"
+    },
+    "query": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "page",
+        "pageSize"
+      ],
+      "properties": {
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Initial one-based canonical page. / 从一开始的规范化初始页码。"
+        },
+        "pageSize": {
+          "enum": [
+            1,
+            5,
+            10,
+            20
+          ],
+          "description": "Initial canonical page size from a deterministic allowlist. / 从确定性白名单选择的规范化初始每页数量。"
+        }
+      }
+    },
+    "presentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabledBlocks"
+      ],
+      "properties": {
+        "enabledBlocks": {
+          "type": "array",
+          "description": "Unique compiled block identifiers; values never become component imports. / 无重复的已编译区块标识；其值绝不成为组件导入。",
+          "minItems": 2,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "runtime-status",
+              "query-context",
+              "catalog-list",
+              "entry-detail"
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "catalog-list"
+              }
+            },
+            {
+              "contains": {
+                "const": "entry-detail"
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

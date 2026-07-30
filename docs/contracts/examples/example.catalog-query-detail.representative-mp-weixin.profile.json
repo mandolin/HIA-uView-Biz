@@ -1,0 +1,17 @@
+{
+  "profileVersion": "1.0",
+  "id": "example.catalog-query-detail.representative-mp-weixin",
+  "sourceMode": "wire-fixture",
+  "query": {
+    "page": 1,
+    "pageSize": 1
+  },
+  "presentation": {
+    "enabledBlocks": [
+      "runtime-status",
+      "query-context",
+      "catalog-list",
+      "entry-detail"
+    ]
+  }
+}

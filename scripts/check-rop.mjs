@@ -35,8 +35,12 @@ const documentedSourceFiles = [
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/index.html', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/main.js', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/App.vue', requiresNodeMarkers: true },
+  // <lang><zh-CN>app-owned fixture runtime 承担 profile/source/lifecycle/shell 边界，必须进入严格节点与流程注释门禁。</zh-CN><en>The app-owned fixture runtime owns profile, source, lifecycle, and shell boundaries and must enter the strict node and flow comment gate.</en></lang>
+  { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/fixture-runtime.mjs', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/pages/index/index.vue', requiresNodeMarkers: true },
-  { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/uni.scss', requiresNodeMarkers: false }
+  { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/uni.scss', requiresNodeMarkers: false },
+  // <lang><zh-CN>代表性纵切测试也必须保留严格双语节点与流程说明。</zh-CN><en>The representative-slice test must also retain strict bilingual node and flow explanations.</en></lang>
+  { relativePath: 'test/representative-mp-weixin-slice.test.mjs', requiresNodeMarkers: true }
 ];
 
 /**

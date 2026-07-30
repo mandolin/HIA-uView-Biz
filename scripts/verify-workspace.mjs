@@ -9,8 +9,8 @@ import { resolve } from 'node:path';
 
 /**
  * <lang><zh-CN>初始化与当前最小纵切必须存在的公开文件。</zh-CN><en>Public files that must exist for initialization and the current minimum vertical slice.</en></lang>
- * @lang zh-CN 列表使用仓库相对路径，避免质量门禁依赖父工作区或私有 WorkZone。
- * @lang en The list uses repository-relative paths, keeping the quality gate independent of the parent workspace or private WorkZone.
+ * @lang zh-CN 列表使用仓库相对路径，避免质量门禁依赖父工作区或任何私有仓上下文。
+ * @lang en The list uses repository-relative paths, keeping the quality gate independent of the parent workspace or any private-repository context.
  */
 const requiredFiles = [
   'README.md',
@@ -39,6 +39,9 @@ const requiredFiles = [
   'apps/example-catalog-query-detail-mp-weixin/src/uni.scss',
   'apps/example-catalog-query-detail-mp-weixin/src/pages.json',
   'apps/example-catalog-query-detail-mp-weixin/src/manifest.json',
+  // <lang><zh-CN>代表性应用必须以仓内版本化 profile 驱动 app-owned pure fixture runtime。</zh-CN><en>The representative app must drive its app-owned pure fixture runtime from a checked-in versioned profile.</en></lang>
+  'apps/example-catalog-query-detail-mp-weixin/src/representative.profile.json',
+  'apps/example-catalog-query-detail-mp-weixin/src/fixture-runtime.mjs',
   'apps/example-catalog-query-detail-mp-weixin/src/pages/index/index.vue',
   'scripts/resolve-hia-uview-ui-source.mjs',
   'scripts/build-mp-weixin-fixture.mjs',
@@ -59,11 +62,17 @@ const requiredFiles = [
   'docs/contracts/adapter-boundary.md',
   'docs/contracts/capability-lifecycle.md',
   'docs/contracts/catalog-query-detail.md',
+  // <lang><zh-CN>代表性小程序纵切必须同时具备公开验收契约、受限 profile schema 与默认 profile 示例。</zh-CN><en>The representative mini-program slice must have a public acceptance contract, bounded profile schema, and default profile example together.</en></lang>
+  'docs/contracts/representative-mp-weixin-slice.md',
+  'docs/contracts/schemas/representative-mp-weixin.profile.v1.schema.json',
+  'docs/contracts/examples/example.catalog-query-detail.representative-mp-weixin.profile.json',
   'test/core-and-example.test.mjs',
   'test/app-shell.test.mjs',
   'test/adapter-runtime.test.mjs',
   // <lang><zh-CN>能力生命周期测试固定多单元组合、依赖/冲突与无 hook 边界。</zh-CN><en>The capability-lifecycle test fixes multi-unit composition, dependency/conflict, and no-hook boundaries.</en></lang>
-  'test/capability-runtime.test.mjs'
+  'test/capability-runtime.test.mjs',
+  // <lang><zh-CN>端到端纯 Node 测试固定 profile、显式 source、lifecycle、shell 与脱敏 observation。</zh-CN><en>The end-to-end pure-Node test fixes profile, explicit source, lifecycle, shell, and redacted observation.</en></lang>
+  'test/representative-mp-weixin-slice.test.mjs'
 ];
 
 /**

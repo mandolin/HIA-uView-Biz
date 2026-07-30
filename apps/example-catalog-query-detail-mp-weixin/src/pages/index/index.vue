@@ -1,6 +1,6 @@
 <!--
-@lang zh-CN 受控 `mp-weixin` fixture 的单页目录—查询—详情投影：它只组合本仓确定性 mock、纯 app shell 与显式 HIA-uView 命名组件，不连接后端、身份、存储、平台路由或动态脚本。
-@lang en Single-page catalog-query-detail projection for the controlled `mp-weixin` fixture: composes only this repository's deterministic mock, pure app shell, and explicit HIA-uView named components, and connects to no backend, identity, storage, platform routing, or dynamic script.
+@lang zh-CN 受控 `mp-weixin` fixture 的单页目录—查询—详情投影：它消费已验证 profile、显式 mock/wire source、能力生命周期、纯 app shell 与 HIA-uView 命名组件，不连接真实后端、身份、存储、平台路由或动态脚本。
+@lang en Single-page catalog-query-detail projection for the controlled `mp-weixin` fixture: consumes a validated profile, explicit mock or wire source, capability lifecycle, pure app shell, and named HIA-uView components, and connects to no real backend, identity, storage, platform routing, or dynamic script.
 -->
 <template>
   <!-- <lang><zh-CN>页面 stack 只组织当前本地呈现；所有业务状态仍由纯 shell 和页面自身 ref 显式拥有。</zh-CN><en>The page stack organizes current local presentation only; pure shell and page-owned refs explicitly retain all business state.</en></lang> -->
@@ -21,8 +21,17 @@
       @dismiss="dismissFailureNotice"
     />
 
-    <!-- <lang><zh-CN>query field 保留调用方拥有的文字意图；中性 contract 当前不声明 filter 字段，因此按钮提交的 canonical filter 始终为空对象。</zh-CN><en>The query field retains caller-owned text intent; neutral contract declares no filter field at present, so the button submits an empty object as canonical filter.</en></lang> -->
+    <!-- <lang><zh-CN>runtime status 是 profile 可选的已编译区块；它只显示显式 source、enabled lifecycle 与受限初始分页，不暴露 provider 或 manifest。</zh-CN><en>Runtime status is a profile-optional compiled block; it displays only explicit source, enabled lifecycle, and bounded initial paging and exposes no provider or manifest.</en></lang> -->
+    <u-cell
+      v-if="isRuntimeStatusVisible"
+      label="运行状态 / Runtime status"
+      :value="runtimeStatusValue"
+      :description="runtimeStatusDescription"
+    />
+
+    <!-- <lang><zh-CN>query field 只在已验证 profile 启用该已编译区块时显示；中性 contract 当前不声明 filter 字段，因此按钮提交的 canonical filter 始终为空对象。</zh-CN><en>The query field displays only when the validated profile enables this compiled block; neutral contract declares no filter field at present, so the button submits an empty object as canonical filter.</en></lang> -->
     <u-field
+      v-if="isQueryContextVisible"
       label="查询上下文 / Query context"
       help-text="中性示例暂不解释筛选字段；提交仍验证目录 query 契约。 / The neutral example does not yet interpret filter fields; submission still validates the catalog-query contract."
     >
@@ -41,7 +50,7 @@
     />
 
     <!-- <lang><zh-CN>目录分支只在 shell 未投影 detail screen 时显示；它是组件内条件呈现，不是 host router 或页面栈。</zh-CN><en>The catalog branch displays only while shell has not projected detail screen; it is component-local conditional presentation, not a host router or page stack.</en></lang> -->
-    <u-stack v-if="!isDetailVisible" gap="md">
+    <u-stack v-if="isCatalogBlockVisible && !isDetailVisible" gap="md">
       <!-- <lang><zh-CN>按钮提交完整最小 canonical request；其文案不承诺 queryContext 会成为未声明的业务筛选条件。</zh-CN><en>The button submits the complete minimum canonical request; its label does not promise queryContext becomes an undeclared business filter condition.</en></lang> -->
       <u-button
         label="运行目录查询 / Run catalog query"
@@ -58,11 +67,11 @@
         @click="selectEntry(entry.id)"
       />
 
-      <!-- <lang><zh-CN>尚未运行 query 时空态只邀请运行固定 mock，不把无 page 解释为权限、后端故障或真实空数据。</zh-CN><en>Before query runs, empty state only invites running fixed mock and does not interpret absent page as permission, backend failure, or real empty data.</en></lang> -->
+      <!-- <lang><zh-CN>尚未运行 query 时空态只邀请运行 profile 已选择的本地 fixture，不把无 page 解释为权限、后端故障或真实空数据。</zh-CN><en>Before query runs, empty state only invites running the local fixture selected by profile and does not interpret absent page as permission, backend failure, or real empty data.</en></lang> -->
       <u-empty
         v-if="shouldShowQueryPrompt"
         title="尚未查询 / No query yet"
-        description="运行一次受控的本地 mock 目录查询。 / Run one controlled local mock catalog query."
+        description="运行一次受控的本地 fixture 目录查询。 / Run one controlled local fixture catalog query."
         action-text="运行查询 / Run query"
         @action="runCatalogQuery"
       />
@@ -78,7 +87,7 @@
     </u-stack>
 
     <!-- <lang><zh-CN>详情分支仅使用 shell 已选 entry 的 canonical detail；返回按钮调用单页 state reset，不操作平台回退栈。</zh-CN><en>The detail branch uses only canonical detail for shell-selected entry; its back button calls a single-page state reset and does not operate a platform back stack.</en></lang> -->
-    <u-stack v-else class="catalog-fixture__detail" gap="md">
+    <u-stack v-else-if="isEntryDetailBlockVisible" class="catalog-fixture__detail" gap="md">
       <!-- <lang><zh-CN>主 entry 字段来自 canonical detail；页面不补充行业字段、服务端字段、身份信息或未声明 metadata。</zh-CN><en>Primary entry fields come from canonical detail; the page adds no industry field, server field, identity information, or undeclared metadata.</en></lang> -->
       <u-cell
         label="条目 / Entry"
@@ -120,57 +129,10 @@
 import { computed, ref } from 'vue';
 // <lang><zh-CN>显式命名导入所需 HIA-uView 组件；不安装 UView plugin、不自动注册组件，也不依赖 import-time 样式注入。</zh-CN><en>Explicitly named-import required HIA-uView components; install no UView plugin, auto-register no component, and rely on no import-time style injection.</en></lang>
 import { UButton, UCell, UEmpty, UField, UInput, UNavBar, UNotice, UStack, UValidationMessage } from '@hia-uview/ui';
-// <lang><zh-CN>导入 Biz 自有纯 shell、composition core 与确定性 mock；三者均通过 package workspace 显式依赖提供。</zh-CN><en>Import Biz-owned pure shell, composition core, and deterministic mock; all three are supplied through explicit package-workspace dependencies.</en></lang>
-import { createApplicationShell } from '@hia-uview/biz-app-shell';
-import { assembleComposition } from '@hia-uview/biz-core';
-import { createCatalogQueryDetailMock, createExampleManifests } from '@hia-uview/biz-example-catalog-query-detail';
-
-/**
- * <lang><zh-CN>中性 catalog-query-detail contract 的当前固定版本。</zh-CN><en>Current fixed version of neutral catalog-query-detail contract.</en></lang>
- * @lang zh-CN 页面显式写入版本，避免依赖 mock 或 shell 对缺失版本字段的默认推断。
- * @lang en The page writes the version explicitly, avoiding reliance on mock or shell default inference for a missing version field.
- */
-const CONTRACT_VERSION = '1.0';
-
-/**
- * <lang><zh-CN>为 fixture 创建已装配 composition、route projection 与无 capability 要求的 screen policy。</zh-CN><en>Creates fixture's assembled composition, route projection, and screen policy with no capability requirement.</en></lang>
- * @returns {{ok: boolean, diagnostics: Array<object>, shell?: object}} <lang><zh-CN>结构化 app-shell 初始化结果。</zh-CN><en>Structured app-shell initialization result.</en></lang>
- * @lang zh-CN 该函数只组合内存中的自有 manifest/mock；不加载 JSON/YAML 文件、环境、后端、真实 session 或 UI runtime。
- * @lang en This function composes only owned in-memory manifest/mock; it loads no JSON/YAML file, environment, backend, real session, or UI runtime.
- */
-function createFixtureShell() {
-  // <lang><zh-CN>每次创建独立 manifest 集合，使 fixture 不依赖全局 registry 或之前页面实例的可变声明。</zh-CN><en>Create an independent manifest set each time so fixture depends on neither a global registry nor mutable declarations from a prior page instance.</en></lang>
-  const manifests = createExampleManifests();
-
-  // <lang><zh-CN>固定 first-page mock 行为只提供确定性只读 entry；不会改为网络 adapter、行业数据或动态 fixture case。</zh-CN><en>Fixed first-page mock behavior provides deterministic read-only entry only and never becomes a network adapter, industry data, or dynamic fixture case.</en></lang>
-  const mock = createCatalogQueryDetailMock({ fixtureCase: 'first-page' });
-
-  // <lang><zh-CN>core 只装配显式 manifest、profile 和 port providers；装配失败会作为结构化初始化问题继续被页面安全呈现。</zh-CN><en>Core assembles only explicit manifest, profile, and port providers; assembly failure continues as a structured initialization issue safe for page presentation.</en></lang>
-  const assembly = assembleComposition({
-    businessModule: manifests.businessModule,
-    implementationPackage: manifests.implementationPackage,
-    profile: manifests.profile,
-    portProviders: mock.portProviders
-  });
-
-  // <lang><zh-CN>未装配的 composition 不能进入 shell；将已存在的安全 diagnostics 原样返回，而不抛出或连接备用 provider。</zh-CN><en>An unassembled composition cannot enter shell; return existing safe diagnostics unchanged rather than throwing or connecting a fallback provider.</en></lang>
-  if (!assembly.ok) {
-    return assembly;
-  }
-
-  // <lang><zh-CN>两个已登记 screen 均显式声明空 capability 数组；这只证明匿名 mock 的 allow 分支，不代表真实授权政策。</zh-CN><en>Both registered screens explicitly declare empty capability arrays; this proves only allow branch of anonymous mock and represents no real authorization policy.</en></lang>
-  const screenCapabilityPolicy = {
-    'catalog-list': [],
-    'entry-detail': []
-  };
-
-  // <lang><zh-CN>shell 只接收已成功 composition、静态 route projection 与声明 policy；它不接收 Vue app、router、storage 或身份 provider。</zh-CN><en>Shell receives only successful composition, static route projection, and declared policy; it receives no Vue app, router, storage, or identity provider.</en></lang>
-  return createApplicationShell({
-    composition: assembly.composition,
-    routeProjection: mock.routeProjection,
-    screenCapabilityPolicy
-  });
-}
+// <lang><zh-CN>页面只导入 app-owned fixture factory；core、provider、adapter 与 lifecycle 装配保持在独立纯模块内。</zh-CN><en>The page imports only the app-owned fixture factory; core, provider, adapter, and lifecycle assembly remain inside a separate pure module.</en></lang>
+import { createRepresentativeFixtureRuntime } from '../../fixture-runtime.mjs';
+// <lang><zh-CN>普通 JSON import 提供仓内带版本声明式 profile；Vite 编译它为静态数据，不把值解释为代码或组件路径。</zh-CN><en>A regular JSON import supplies the checked-in versioned declarative profile; Vite compiles it as static data and interprets no value as code or a component path.</en></lang>
+import representativeProfile from '../../representative.profile.json';
 
 /**
  * <lang><zh-CN>将已有的双语 localized-text 对象投影为当前 fixture 的单行可见文字。</zh-CN><en>Projects an existing bilingual localized-text object into one line of visible copy for the current fixture.</en></lang>
@@ -215,11 +177,21 @@ function sectionDescription(section) {
   return localizedText(section.failure?.message);
 }
 
-// <lang><zh-CN>创建本页唯一 shell 初始化结果；创建本身不调用 query/detail provider，因此不产生业务数据读取。</zh-CN><en>Create the page's sole shell initialization result; creation itself invokes no query/detail provider and therefore performs no business-data read.</en></lang>
-const shellInitialization = createFixtureShell();
+// <lang><zh-CN>以仓内 profile 创建本页唯一代表性 runtime；初始化完成 profile/source/install/enable/shell，但不调用 query/detail port。</zh-CN><en>Create the page's sole representative runtime from the checked-in profile; initialization completes profile, source, install, enable, and shell but invokes no query or detail port.</en></lang>
+const runtimeInitialization = createRepresentativeFixtureRuntime(representativeProfile);
 
-// <lang><zh-CN>仅在结构化初始化成功时保留 shell；失败时保持 null，所有 handler 都会安全地成为零 provider 调用。</zh-CN><en>Retain shell only when structured initialization succeeds; otherwise keep null and every handler safely becomes zero provider invocation.</en></lang>
-const applicationShell = shellInitialization.ok ? shellInitialization.shell : null;
+// <lang><zh-CN>仅在完整 runtime 初始化成功时保留 shell；失败时保持 null，所有 handler 都会安全地成为零 provider 调用。</zh-CN><en>Retain shell only after complete runtime initialization succeeds; otherwise keep null and every handler safely becomes zero provider invocation.</en></lang>
+const applicationShell = runtimeInitialization.ok ? runtimeInitialization.shell : null;
+
+// <lang><zh-CN>成功时读取隔离 app-profile snapshot 供只读状态文案使用；失败时不从原 JSON 猜测可运行配置。</zh-CN><en>On success read an isolated app-profile snapshot for read-only status copy; on failure do not guess runnable configuration from the original JSON.</en></lang>
+const runtimeProfileSnapshot = runtimeInitialization.ok
+  ? runtimeInitialization.getProfileSnapshot()
+  : null;
+
+// <lang><zh-CN>成功时取得脱敏 lifecycle snapshot；页面不持有 capability runtime 或状态转换函数。</zh-CN><en>On success obtain a redacted lifecycle snapshot; the page retains neither capability runtime nor state-transition function.</en></lang>
+const lifecycleSnapshot = runtimeInitialization.ok
+  ? runtimeInitialization.getLifecycleSnapshot()
+  : [];
 
 // <lang><zh-CN>保存最近一次 shell snapshot 的页面 ref；初始 shell 尚未 query 时 page/detail/failure 都为 null。</zh-CN><en>Keep most-recent shell snapshot in a page ref; before initial query, page, detail, and failure are all null.</en></lang>
 const shellSnapshot = ref(applicationShell === null ? null : applicationShell.getSnapshot());
@@ -229,6 +201,50 @@ const queryContext = ref('');
 
 // <lang><zh-CN>记录调用方是否仅隐藏了当前 canonical failure notice；隐藏不改写 shell 失败事实，也不触发重试。</zh-CN><en>Records whether caller only hid current canonical-failure notice; hiding changes no shell failure fact and triggers no retry.</en></lang>
 const isFailureNoticeDismissed = ref(false);
+
+// <lang><zh-CN>runtime-status 只由已验证 profile 的登记判断控制，失败初始化不会显示猜测状态。</zh-CN><en>Only the registered-block decision of a validated profile controls runtime status; failed initialization displays no guessed status.</en></lang>
+const isRuntimeStatusVisible = computed(() => (
+  runtimeInitialization.ok
+  && runtimeInitialization.isBlockEnabled('runtime-status')
+));
+
+// <lang><zh-CN>query-context 可独立隐藏，但隐藏只影响已编译呈现，不改变 canonical filter 或 query 行为。</zh-CN><en>Query context may be hidden independently, but hiding affects only compiled presentation and changes neither canonical filter nor query behavior.</en></lang>
+const isQueryContextVisible = computed(() => (
+  runtimeInitialization.ok
+  && runtimeInitialization.isBlockEnabled('query-context')
+));
+
+// <lang><zh-CN>目录区块是有效 profile 的必选项；仍通过 runtime API 判断，避免模板自行解释 JSON。</zh-CN><en>Catalog is required by a valid profile; the template still asks the runtime API instead of interpreting JSON itself.</en></lang>
+const isCatalogBlockVisible = computed(() => (
+  runtimeInitialization.ok
+  && runtimeInitialization.isBlockEnabled('catalog-list')
+));
+
+// <lang><zh-CN>详情区块同样由 runtime 已验证登记结果控制，不使用 entry 数据动态选择组件。</zh-CN><en>The detail block is likewise controlled by the runtime's validated registration result and uses no entry data to select a component dynamically.</en></lang>
+const isEntryDetailBlockVisible = computed(() => (
+  runtimeInitialization.ok
+  && runtimeInitialization.isBlockEnabled('entry-detail')
+));
+
+// <lang><zh-CN>状态值只组合显式 source mode 与首个脱敏 lifecycle state，不显示实现包、provider 或 manifest。</zh-CN><en>The status value combines only explicit source mode and the first redacted lifecycle state and displays no implementation package, provider, or manifest.</en></lang>
+const runtimeStatusValue = computed(() => {
+  // <lang><zh-CN>有效初始化固定包含一个 enabled 能力；防御性空值只返回中性 unknown 文案。</zh-CN><en>A valid initialization contains one enabled capability; a defensive absence returns only neutral unknown copy.</en></lang>
+  const lifecycleState = lifecycleSnapshot[0]?.state ?? 'unknown';
+
+  // <lang><zh-CN>source mode 已由 profile allowlist 验证，可直接作为稳定技术标识呈现。</zh-CN><en>The source mode was validated by the profile allowlist and may be presented as a stable technical identifier.</en></lang>
+  return `${runtimeInitialization.sourceMode} · ${lifecycleState}`;
+});
+
+// <lang><zh-CN>状态说明显示受限初始 page/pageSize，证明分页来自 profile 而非页面硬编码。</zh-CN><en>The status description displays bounded initial page and page size, proving paging comes from profile rather than page hard-coding.</en></lang>
+const runtimeStatusDescription = computed(() => {
+  // <lang><zh-CN>初始化失败或 snapshot 缺失时保持空，错误原因由 validation message 单独呈现。</zh-CN><en>Remain empty when initialization or snapshot is unavailable; the validation message presents the error separately.</en></lang>
+  if (runtimeProfileSnapshot === null) {
+    return '';
+  }
+
+  // <lang><zh-CN>数值已通过 profile schema 对应 runtime 校验，只进入固定双语状态句。</zh-CN><en>The values passed runtime validation corresponding to the profile schema and enter only fixed bilingual status copy.</en></lang>
+  return `初始分页 ${runtimeProfileSnapshot.query.page}/${runtimeProfileSnapshot.query.pageSize}。 / Initial paging ${runtimeProfileSnapshot.query.page}/${runtimeProfileSnapshot.query.pageSize}.`;
+});
 
 // <lang><zh-CN>只有已成功 shell 且当前 snapshot 为 detail 才显示详情分支；初始化失败或普通目录状态保持目录分支。</zh-CN><en>Show detail branch only when shell succeeded and current snapshot is detail; initialization failure or ordinary catalog state remains catalog branch.</en></lang>
 const isDetailVisible = computed(() => shellSnapshot.value?.screenId === 'entry-detail' && shellSnapshot.value.detail !== null);
@@ -259,12 +275,12 @@ const failureNoticeMessage = computed(() => localizedText(shellSnapshot.value?.f
 // <lang><zh-CN>retry 按钮只在 canonical failure 明确标记 retryable 时可见；页面不能从 code、text 或用户输入猜测 retryability。</zh-CN><en>Retry button is visible only when canonical failure explicitly marks retryable; page cannot guess retryability from code, text, or user input.</en></lang>
 const isRetryAvailable = computed(() => shellSnapshot.value?.failure?.retryable === true);
 
-// <lang><zh-CN>初始化 validation state 只反映 shell 创建是否成功；它不把普通 query/detail failure 伪装成表单验证。</zh-CN><en>Initialization validation state reflects only whether shell creation succeeded; it does not disguise ordinary query/detail failure as form validation.</en></lang>
-const initializationValidationState = computed(() => (shellInitialization.ok ? 'idle' : 'error'));
+// <lang><zh-CN>初始化 validation state 反映 profile/source/lifecycle/shell 整体创建是否成功；它不把普通 query/detail failure 伪装成表单验证。</zh-CN><en>Initialization validation state reflects whether profile, source, lifecycle, and shell creation succeeded as a whole; it does not disguise ordinary query or detail failure as form validation.</en></lang>
+const initializationValidationState = computed(() => (runtimeInitialization.ok ? 'idle' : 'error'));
 
-// <lang><zh-CN>初始化失败时只显示首个安全 diagnostic 的既有 localized message；没有错误时保持空，不生成默认成功文案。</zh-CN><en>On initialization failure display only existing localized message of first safe diagnostic; with no error stay empty and generate no default success copy.</en></lang>
+// <lang><zh-CN>初始化失败时只显示 app runtime 首个安全 diagnostic 的 localized message；没有错误时保持空，不生成默认成功文案。</zh-CN><en>On initialization failure display only the localized message of the app runtime's first safe diagnostic; with no error stay empty and generate no default success copy.</en></lang>
 const initializationValidationMessage = computed(() => (
-  shellInitialization.ok ? '' : localizedText(shellInitialization.diagnostics[0]?.message)
+  runtimeInitialization.ok ? '' : localizedText(runtimeInitialization.diagnostics[0]?.message)
 ));
 
 /**
@@ -287,22 +303,6 @@ function synchronizeSnapshot() {
 }
 
 /**
- * <lang><zh-CN>构造中性 example 所需的最小 canonical catalog query。</zh-CN><en>Constructs the minimum canonical catalog query required by neutral example.</en></lang>
- * @returns {{contractVersion: string, filter: object, page: number, pageSize: number}} <lang><zh-CN>完整且无行业筛选字段的 query request。</zh-CN><en>Complete query request without industry filter fields.</en></lang>
- * @lang zh-CN filter 固定为空对象是当前 module schema 的明确边界，不读取或序列化 queryContext。
- * @lang en Fixed empty filter is explicit boundary of current module schema and neither reads nor serializes queryContext.
- */
-function createCatalogQueryRequest() {
-  // <lang><zh-CN>返回完整分页契约，避免 shell 在 app 层补默认 page/pageSize 或根据 UI 文案猜测分页。</zh-CN><en>Return complete pagination contract, avoiding shell defaulting page/pageSize at app layer or guessing pagination from UI copy.</en></lang>
-  return {
-    contractVersion: CONTRACT_VERSION,
-    filter: {},
-    page: 1,
-    pageSize: 20
-  };
-}
-
-/**
  * <lang><zh-CN>写入受控输入报告的下一 query-context 字符串。</zh-CN><en>Writes next query-context string reported by controlled input.</en></lang>
  * @param {string} nextContext <lang><zh-CN>UInput 原样发出的下一文本。</zh-CN><en>Next text emitted unchanged by UInput.</en></lang>
  * @returns {void} <lang><zh-CN>无返回值；仅更新页面本地 ref。</zh-CN><en>No return value; updates only page-local ref.</en></lang>
@@ -322,8 +322,8 @@ function updateQueryContext(nextContext) {
 /**
  * <lang><zh-CN>运行一次明确的 canonical catalog query，并同步其 page 或 failure 投影。</zh-CN><en>Runs one explicit canonical catalog query and synchronizes its page or failure projection.</en></lang>
  * @returns {void} <lang><zh-CN>无返回值；shell result 通过后续 snapshot 呈现。</zh-CN><en>No return value; shell result is presented through following snapshot.</en></lang>
- * @lang zh-CN 只读 mock provider 同步返回，不访问 HTTP、Directus、真实数据、网络或异步 transport。
- * @lang en Read-only mock provider returns synchronously and accesses no HTTP, Directus, real data, network, or asynchronous transport.
+ * @lang zh-CN 显式选择的本地只读 mock/wire fixture 同步返回，不访问 HTTP、Directus、真实数据、网络或异步 transport。
+ * @lang en The explicitly selected local read-only mock or wire fixture returns synchronously and accesses no HTTP, Directus, real data, network, or asynchronous transport.
  */
 function runCatalogQuery() {
   // <lang><zh-CN>初始化失败时没有合法调用边界，不能用页面默认数据绕过 shell。</zh-CN><en>With initialization failure there is no valid invocation boundary and page default data cannot bypass shell.</en></lang>
@@ -331,8 +331,8 @@ function runCatalogQuery() {
     return;
   }
 
-  // <lang><zh-CN>提交显式最小 request；shell 决定 page/failure 投影，页面不改写 provider 的 canonical outcome。</zh-CN><en>Submit explicit minimum request; shell decides page/failure projection and page does not rewrite provider canonical outcome.</en></lang>
-  applicationShell.query(createCatalogQueryRequest());
+  // <lang><zh-CN>提交 app runtime 从已验证 profile 创建的 request；shell 决定 page/failure 投影，页面不补分页默认值或改写 canonical outcome。</zh-CN><en>Submit the request created by app runtime from the validated profile; shell decides page or failure projection, while page adds no paging default and rewrites no canonical outcome.</en></lang>
+  applicationShell.query(runtimeInitialization.createQueryRequest());
 
   // <lang><zh-CN>在 action 完成后读取新 snapshot，使目录、empty 或 failure 分支同时从同一 shell state 派生。</zh-CN><en>Read fresh snapshot after action so catalog, empty, or failure branches all derive from same shell state.</en></lang>
   synchronizeSnapshot();

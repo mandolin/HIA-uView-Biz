@@ -12,6 +12,7 @@ These files define data contracts for HIA-uView-Biz composition. They are review
 | [Implementation-package manifest schema / 实现包 manifest schema](schemas/implementation-package.manifest.v1.schema.json) | Declares installed engineering delivery facts for one module / 声明一个模块的已安装工程交付事实 |
 | [Module example / 模块示例](examples/example.catalog-query-detail.module.manifest.json) | A neutral read-only `entry` catalog, query, and detail capability / 中性的只读 `entry` 目录、查询与详情能力 |
 | [Implementation example / 实现示例](examples/example.catalog-query-detail.mock-implementation.manifest.json) | A fixture-only mock implementation declaration / 仅供 fixture 使用的 mock 实现声明 |
+| [Catalog-query-detail contract / 目录—查询—详情契约](catalog-query-detail.md) | Canonical query, detail, outcome, mock-session, adapter, route-projection, and fixture behavior / 规范化 query、detail、结果、mock session、adapter、路由投影与 fixture 行为 |
 
 ## Two manifest responsibilities / 两类 manifest 的主责
 

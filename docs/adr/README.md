@@ -7,3 +7,4 @@ Architecture Decision Records (ADRs) capture public decisions that shape package
 - [ADR-0001: Business composition and contract boundaries / 业务组合与契约边界](ADR-0001-biz-composition-and-contract-boundaries.md)
 - [ADR-0002: Local HIA-uView consumption and application-shell boundary / 本地 HIA-uView 消费与应用 shell 边界](ADR-0002-local-hia-uview-consumption-and-shell-boundary.md)
 - [ADR-0003: Adapter, session, and cache boundary / Adapter、会话与缓存边界](ADR-0003-adapter-session-and-cache-boundary.md)
+- [ADR-0004: Capability composition and lifecycle / 能力组合与生命周期](ADR-0004-capability-composition-and-lifecycle.md)

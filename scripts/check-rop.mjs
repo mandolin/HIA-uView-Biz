@@ -16,8 +16,10 @@ const documentedSourceFiles = [
   'scripts/verify-workspace.mjs',
   'scripts/check-rop.mjs',
   'packages/core/src/index.mjs',
+  'packages/app-shell/src/index.mjs',
   'modules/example-catalog-query-detail/src/index.mjs',
-  'test/core-and-example.test.mjs'
+  'test/core-and-example.test.mjs',
+  'test/app-shell.test.mjs'
 ];
 
 /**

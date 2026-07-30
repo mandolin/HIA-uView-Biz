@@ -1,0 +1,18 @@
+{
+  "name": "@hia-uview/biz-app-shell",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pure declarative application-shell state for HIA-uView-Biz fixtures.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

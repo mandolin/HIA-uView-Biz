@@ -19,12 +19,15 @@ const requiredFiles = [
   'package.json',
   'packages/core/package.json',
   'packages/core/src/index.mjs',
+  'packages/app-shell/package.json',
+  'packages/app-shell/src/index.mjs',
   'modules/example-catalog-query-detail/package.json',
   'modules/example-catalog-query-detail/src/index.mjs',
   'docs/development.md',
   'docs/architecture.md',
   'docs/contracts/catalog-query-detail.md',
-  'test/core-and-example.test.mjs'
+  'test/core-and-example.test.mjs',
+  'test/app-shell.test.mjs'
 ];
 
 /**

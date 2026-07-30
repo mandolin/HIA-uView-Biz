@@ -1,0 +1,2 @@
+/* <lang><zh-CN>显式导入已验证本地 HIA-uView UI 样式入口；Vite alias 仅在 guarded local build 中解析它，不构成 registry 或 `file:` 依赖。</zh-CN><en>Explicitly imports the verified local HIA-uView UI style entry; Vite alias resolves it only in a guarded local build and it creates no registry or `file:` dependency.</en></lang> */
+@import "@hia-uview/ui/style.css";

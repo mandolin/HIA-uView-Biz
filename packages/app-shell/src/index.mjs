@@ -296,7 +296,7 @@ function getCapabilityDenial(composition, screenId, capabilitiesByScreenId) {
 /**
  * <lang><zh-CN>创建声明式应用 shell，并返回结构化初始化结果。</zh-CN><en>Creates a declarative application shell and returns a structured initialization result.</en></lang>
  * @param {{composition: object, routeProjection: object, screenCapabilityPolicy: Record<string, string[]>}} input <lang><zh-CN>显式 composition、route projection 与 screen policy。</zh-CN><en>Explicit composition, route projection, and screen policy.</en></lang>
- * @returns {{ok: boolean, diagnostics: Array<object>, shell?: object}} <lang><zh-CN>成功时包含 shell；失败时只包含安全 diagnostics。</zh-CN><en>Contains shell on success and only safe diagnostics on failure.</en></lang>
+ * @returns {object} <lang><zh-CN>成功时包含 shell；失败时只包含安全 diagnostics。</zh-CN><en>Contains shell on success and only safe diagnostics on failure.</en></lang>
  * @lang zh-CN 创建过程不调用 query/detail port；它只校验可运行状态边界，避免初始化产生业务数据读取副作用。
  * @lang en Creation invokes no query or detail port; it validates only runnable state boundaries, avoiding business-data read side effects during initialization.
  */
@@ -361,7 +361,7 @@ export function createApplicationShell(input) {
 
   /**
    * <lang><zh-CN>保存 shell 最近可重放的 canonical command。</zh-CN><en>Stores the shell's most recent replayable canonical command.</en></lang>
-   * @param {{kind: 'query'|'detail', request?: object, entryId?: string}|null} command <lang><zh-CN>成功或 retryable failure 后应保留的命令。</zh-CN><en>Command to retain after success or retryable failure.</en></lang>
+   * @param {object|null} command <lang><zh-CN>成功或 retryable failure 后应保留的命令。</zh-CN><en>Command to retain after success or retryable failure.</en></lang>
    * @returns {void} <lang><zh-CN>无返回值；只更新内部 retry 状态。</zh-CN><en>Returns no value and updates only internal retry state.</en></lang>
    * @lang zh-CN command 只保存 canonical request 或 entry ID，不保存结果、session 或 UI event。
    * @lang en Command stores only canonical request or entry ID and stores no result, session, or UI event.
@@ -477,7 +477,7 @@ export function createApplicationShell(input) {
   /**
    * <lang><zh-CN>按照已登记 action 进入目标 screen，并在 detail action 时读取 entry。</zh-CN><en>Enters a target screen through a registered action and reads entry for a detail action.</en></lang>
    * @param {string} actionId <lang><zh-CN>调用方请求的 action ID。</zh-CN><en>Action ID requested by the caller.</en></lang>
-   * @param {{entryId?: string}} [input={}] <lang><zh-CN>action 所需的最小输入。</zh-CN><en>Minimum input required by the action.</en></lang>
+   * @param {object} [input={}] <lang><zh-CN>action 所需的最小输入。</zh-CN><en>Minimum input required by the action.</en></lang>
    * @returns {object} <lang><zh-CN>detail、capability failure 或 route/input failure。</zh-CN><en>Detail, capability failure, or route/input failure.</en></lang>
    * @lang zh-CN 只有 projection action 才能改变 detail screen；未知字符串永不映射为 URL、组件路径或 host navigation。
    * @lang en Only a projection action can change detail screen; an unknown string never maps to a URL, component path, or host navigation.

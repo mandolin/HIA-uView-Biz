@@ -1,0 +1,19 @@
+<!doctype html>
+<!--
+@lang zh-CN 仅供受控 UniApp compiler 解析入口的最小 HTML 壳；它不代表 H5 目标、浏览器运行、线上站点或发布物。
+@lang en Minimal HTML shell only for controlled UniApp compiler entry resolution; it represents no H5 target, browser runtime, online site, or release artifact.
+<lang><zh-CN>根文档只提供 app 挂载点与受控模块入口，不加载字体、图标、分析、网络脚本或第三方资源。</zh-CN><en>The root document provides only app mount point and controlled module entry and loads no font, icon, analytics, network script, or third-party resource.</en></lang>
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Catalog fixture</title>
+  </head>
+  <body>
+    <!-- <lang><zh-CN>固定挂载点只由 UniApp compiler 使用；页面不依赖浏览器 DOM 来定义业务状态。</zh-CN><en>The fixed mount point is used only by UniApp compiler; page does not rely on browser DOM to define business state.</en></lang> -->
+    <div id="app"></div>
+    <!-- <lang><zh-CN>模块入口是本 fixture 自有的 UniApp Vue 3 entry，不注册全局 UI plugin 或运行开发服务。</zh-CN><en>Module entry is this fixture's own UniApp Vue 3 entry and registers no global UI plugin or development service.</en></lang> -->
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

@@ -449,7 +449,7 @@ function validatePortProviders(businessModule, portProviders, diagnostics) {
  * @param {object} implementationPackage 已验证实现包。 / Validated implementation package.
  * @param {object} profile 已验证 profile。 / Validated profile.
  * @param {object} portProviders 已验证 provider 集合。 / Validated provider collection.
- * @returns {{moduleId: string, implementationPackageId: string, routeProjection: object|undefined, invoke: (portId: string, input: unknown) => unknown}} 不可变组合调用面。 / Immutable composition invocation surface.
+ * @returns {object} 不可变组合调用面。 / Immutable composition invocation surface.
  * @lang zh-CN 本函数不包裹 provider 返回值，保留 module-owned canonical result/failure 语义。
  * @lang en This function does not wrap provider returns, preserving module-owned canonical result/failure semantics.
  */
@@ -491,7 +491,7 @@ function createComposition(businessModule, implementationPackage, profile, portP
  * <lang><zh-CN>装配一个受 manifest/profile/port 约束的纯 Biz composition。</zh-CN><en>Assembles a pure Biz composition constrained by manifests, a profile, and ports.</en></lang>
  *
  * @param {{businessModule: unknown, implementationPackage: unknown, profile: unknown, portProviders: unknown}} input 显式装配输入。 / Explicit assembly input.
- * @returns {{ok: boolean, diagnostics: Array<object>, composition?: object}} 装配结果。 / Assembly result.
+ * @returns {object} 装配结果。 / Assembly result.
  * @lang zh-CN 任何关系错误都会阻止 composition 创建；函数不执行 provider，不修改输入，也不访问外部资源。
  * @lang en Any relation error prevents composition creation; the function invokes no provider, mutates no input, and accesses no external resource.
  */

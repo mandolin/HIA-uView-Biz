@@ -4,6 +4,7 @@ coverage/
 output/
 temp/
 unpackage/
+.hia-uview-ui-source/
 .DS_Store
 *.log
 *.tgz

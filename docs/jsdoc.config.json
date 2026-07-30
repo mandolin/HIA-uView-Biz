@@ -1,0 +1,69 @@
+{
+  "plugins": [
+    "node_modules/@mandolin/jsdoc-plugin-hia-sys/src/index.cjs"
+  ],
+  "source": {
+    "include": [
+      "packages",
+      "modules",
+      "scripts"
+    ],
+    "includePattern": ".+\\.(m?js)$",
+    "excludePattern": "(^|\\\\|/)node_modules(\\\\|/)|(^|\\\\|/)temp(\\\\|/)"
+  },
+  "opts": {
+    "encoding": "utf8",
+    "template": "node_modules/@mandolin/jsdoc-theme-hia",
+    "destination": "temp/documentation/jsdoc/reference",
+    "recurse": true,
+    "hia": {
+      "mode": "hiaIntegration",
+      "microPlugins": [
+        "doc-i18n",
+        "doclet-normalizer",
+        "hia-ir-exporter",
+        "diagnostics"
+      ],
+      "source": {
+        "basePath": ".",
+        "mode": "metadata-only",
+        "link": {
+          "enabled": false,
+          "rootUrl": "",
+          "openMode": "same-tab"
+        },
+        "preview": {
+          "enabled": false,
+          "defaultExpanded": false
+        },
+        "references": {
+          "enabled": false,
+          "defaultExpanded": false
+        }
+      },
+      "i18n": {
+        "enabled": true,
+        "defaultLocale": "zh-CN",
+        "fallbackLocale": "en",
+        "locales": [
+          "zh-CN",
+          "en"
+        ],
+        "mode": "runtimeSwitch",
+        "resourceBasePath": ".",
+        "resources": []
+      },
+      "integration": {
+        "enabled": true,
+        "outputFile": "temp/documentation/jsdoc/hia-integration.json"
+      },
+      "theme": {
+        "skin": "classic",
+        "languageControls": {
+          "mode": "auto",
+          "dropdownThreshold": 4
+        }
+      }
+    }
+  }
+}

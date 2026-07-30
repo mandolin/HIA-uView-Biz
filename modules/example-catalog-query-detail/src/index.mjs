@@ -241,8 +241,8 @@ export function createExampleManifests() {
 /**
  * <lang><zh-CN>创建 `example.catalog-query-detail` 的确定性 mock provider 集合与 route action 解析器。</zh-CN><en>Creates deterministic mock providers and a route-action resolver for `example.catalog-query-detail`.</en></lang>
  *
- * @param {{fixtureCase?: 'first-page'|'last-page'|'empty-query'|'adapter-failure'|'detail-section-failure'}} [options] fixture 行为选择。 / Fixture behavior selection.
- * @returns {{portProviders: object, routeProjection: object, resolveRouteAction: (actionId: string) => object|undefined}} mock 能力集合。 / Mock capability collection.
+ * @param {object} [options] fixture 行为选择。 / Fixture behavior selection.
+ * @returns {object} mock 能力集合。 / Mock capability collection.
  * @lang zh-CN fixtureCase 只选择预定义的本地测试行为，不接受远端代码、数据源或动态 import。
  * @lang en fixtureCase selects only predefined local test behavior and accepts no remote code, data source, or dynamic import.
  */

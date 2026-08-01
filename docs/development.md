@@ -16,6 +16,7 @@ Install the committed development dependency graph without lifecycle scripts, th
 npm ci --ignore-scripts
 npm run check
 npm test
+npm run quality:release-candidate
 ```
 
 `npm run check` verifies required workspace files and the minimum bilingual ROP markers in controlled JavaScript, Vue, and CSS source. `npm test` runs that gate first and then executes deterministic Node contracts for core, the neutral mock, application shell, adapter runtime, capability lifecycle, complete-set adoption/replacement, application-template integration, the injected neutral wire fixture, and the representative app runtime.
@@ -25,6 +26,10 @@ npm test
 These commands use the committed lockfile and installed dependencies. They do not start a service, access production data, or create a runtime backend connection.
 
 这些命令使用 committed lockfile 和已安装依赖。它们不启动服务、不访问生产数据，也不创建运行时后端连接。
+
+`npm run quality:release-candidate` is an offline static package-quality gate. A passing result is candidate evidence only: it does not publish, upload, make a release decision, prove device behavior, or certify security or accessibility. See [release-quality candidate](quality.md).
+
+`npm run quality:release-candidate` 是离线静态 package-quality 门禁。通过结果仅是候选证据：它不会 publish、upload、作出 release 决定、证明设备行为或认证安全/无障碍。详见[发布质量候选](quality.md)。
 
 ## Application-template development / 应用模板开发
 

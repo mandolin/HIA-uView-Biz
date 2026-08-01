@@ -38,7 +38,7 @@ npm test
 
 `npm test` runs the workspace/ROP gates and deterministic Node contract fixtures. With dependencies already installed from the committed lockfile, it performs no install and does not create a lockfile. See the [development notes / 开发说明](docs/development.md), [architecture overview / 架构概览](docs/architecture.md), [representative slice contract / 代表性纵切契约](docs/contracts/representative-mp-weixin-slice.md), [application-template contract / 应用模板契约](docs/contracts/application-template.md), [contracts / 契约](docs/contracts/README.md), and [application-integration API / 应用集成 API](docs/api/app-integration.md).
 
-`npm test` 运行 workspace/ROP 门禁和确定性 Node 契约 fixture。在已按 committed lockfile 安装依赖后，它不执行安装，也不创建 lockfile。详见[开发说明](docs/development.md)、[架构概览](docs/architecture.md)、[代表性纵切契约](docs/contracts/representative-mp-weixin-slice.md)、[应用模板契约](docs/contracts/application-template.md)、[契约](docs/contracts/README.md)和[应用集成 API](docs/api/app-integration.md)。
+`npm test` 运行 workspace/ROP 门禁和确定性 Node 契约 fixture。在已按 committed lockfile 安装依赖后，它不执行安装，也不创建 lockfile。详见[开发说明](docs/development.md)、[发布质量候选](docs/quality.md)、[架构概览](docs/architecture.md)、[代表性纵切契约](docs/contracts/representative-mp-weixin-slice.md)、[应用模板契约](docs/contracts/application-template.md)、[契约](docs/contracts/README.md)和[应用集成 API](docs/api/app-integration.md)。
 
 ## License / 许可证
 

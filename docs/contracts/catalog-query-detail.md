@@ -1,8 +1,8 @@
 # Catalog-query-detail contract / 目录—查询—详情契约
 
-This document defines the first neutral contract example for the module identifier `example.catalog-query-detail`. Its object is always called `entry`. The contract proves composition boundaries with deterministic fixtures; it is not an industry module, a production API, a backend adapter, or a UI implementation.
+This document defines the first neutral contract example for the module identifier `example.catalog-query-detail`. Its object is always called `entry`. The contract proves composition boundaries with deterministic fixtures, including one bounded acknowledgement command; it is not an industry module, a production API, a backend adapter, or a UI implementation.
 
-本文档定义模块标识 `example.catalog-query-detail` 的首个中性契约示例。其对象始终称为 `entry`。该契约使用确定性 fixture 验证组合边界；它不是行业模块、生产 API、后端 adapter 或 UI 实现。
+本文档定义模块标识 `example.catalog-query-detail` 的首个中性契约示例。其对象始终称为 `entry`。该契约使用确定性 fixture 验证组合边界，包括一个受限确认命令；它不是行业模块、生产 API、后端 adapter 或 UI 实现。
 
 Read this document together with the [business-module manifest example](examples/example.catalog-query-detail.module.manifest.json), the [implementation-package manifest example](examples/example.catalog-query-detail.mock-implementation.manifest.json), and [ADR-0001](../adr/ADR-0001-biz-composition-and-contract-boundaries.md).
 
@@ -158,10 +158,20 @@ Every port failure uses this envelope. The `code` is stable for programmatic bra
 | `not-found` | `request` | The requested `entryId` has no result in the selected adapter / 所选 adapter 中没有该 `entryId` 的结果 |
 | `section-unavailable` | `section` | A non-primary detail section failed independently / 非主详情 section 独立失败 |
 | `session-not-capable` | `session` | The declared session state lacks a required capability / 已声明 session 状态缺少所需能力 |
+| `invalid-command` | `command` | A canonical acknowledgement command failed exact-shape validation / 规范化确认命令未通过精确形态校验 |
+| `command-id-conflict` | `command` | A command ID was previously bound to another entry / command ID 先前已绑定另一 entry |
+| `command-not-applicable` | `command` | An acknowledged entry cannot receive a different acknowledgement command / 已确认 entry 不能接收不同确认命令 |
+| `command-transaction-failed` | `transaction` | The deterministic local mock did not commit and changed no state / 确定性本地 mock 未提交且未改变 state |
 
 An adapter can retain HTTP status, a `{ code, message, data }` envelope, Directus errors, or other backend facts in its own diagnostics. Those values do not extend this canonical failure without a new contract version.
 
 adapter 可以在自己的诊断信息中保留 HTTP status、`{ code, message, data }` envelope、Directus 错误或其他后端事实。没有新的契约版本，这些值不能扩展本规范化失败。
+
+## Bounded acknowledgement command / 受限确认命令
+
+The first command is described in the separate [entry acknowledgement contract](entry-acknowledgement.md). It is a strict four-field `acknowledge-entry` input and returns either detached `command-receipt` metadata or the canonical failures above. The command has no UI control in the representative page and does not turn the existing query/detail adapters into write transports.
+
+首个命令在独立的 [entry 确认命令契约](entry-acknowledgement.md)中说明。它是严格四字段的 `acknowledge-entry` 输入，返回分离的 `command-receipt` metadata 或上文的规范化 failure。该命令在代表性页面没有 UI 控件，也不会把现有 query/detail adapter 变成写 transport。
 
 ## Mock session port / Mock session port
 
@@ -259,6 +269,6 @@ The first implementation must provide fixtures for each case below. Fixture iden
 
 ## Non-goals / 非目标
 
-This contract does not define a real HTTP request, Directus collection, token transport, write operation, preference store, rich-text policy, industry field, CMS layout, published package, or HIA-uView component API.
+This contract does not define a real HTTP request, Directus collection, token transport, persistent/backend write operation, preference store, rich-text policy, industry field, CMS layout, published package, or HIA-uView component API. The isolated deterministic mock command is defined only by the separate acknowledgement contract and is not a persistent write claim.
 
-本契约不定义真实 HTTP 请求、Directus collection、token 传输、写操作、偏好存储、富文本策略、行业字段、CMS 布局、已发布包或 HIA-uView 组件 API。
+本契约不定义真实 HTTP 请求、Directus collection、token 传输、持久/后端写操作、偏好存储、富文本策略、行业字段、CMS 布局、已发布包或 HIA-uView 组件 API。隔离确定性 mock 命令仅由独立确认契约定义，不是持久写入声明。

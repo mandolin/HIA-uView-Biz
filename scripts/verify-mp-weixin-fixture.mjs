@@ -138,8 +138,8 @@ async function verifyMpWeixinFixtureOutput() {
   );
   assert.match(
     pageScript,
-    /capabilityPackageIds:\["example\.catalog-query-detail\.read"\]/,
-    'Generated page script must retain the bounded top-level solution package selection.'
+    /capabilityPackageIds:\["example\.catalog-query-detail\.read","example\.catalog-query-detail\.acknowledge"\]/,
+    'Generated page script must retain the bounded top-level solution package selections.'
   );
 
   // <lang><zh-CN>生成首页必须调用 runtime 的受限 projection，并只把有限整数加固定 offset 写入 flex order；不接受动态 component/template/script 标记。</zh-CN><en>The generated home page must call runtime bounded projection and write only a finite integer plus fixed offset into flex order; it accepts no dynamic component/template/script marker.</en></lang>

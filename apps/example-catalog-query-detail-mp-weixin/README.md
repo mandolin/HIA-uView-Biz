@@ -39,9 +39,9 @@ The checked-in profile selects `wire-fixture`, page `1`, page size `1`, and four
 
 仓内 profile 选择 `wire-fixture`、第 `1` 页、每页 `1` 项和四个已登记的已编译区块。`catalog-list` 与 `entry-detail` 必选。`runtime-status` 与 `query-context` 可以声明式隐藏。区块 ID 只控制既有 template 分支；它们不能成为组件导入、路由、URL、依赖、连接、表达式或数据字段。
 
-`wire-fixture` is the default explicit catalog source and proves injected adapter conversion through the application-template integration boundary. `mock` remains a mandatory explicit offline/regression catalog source. The template returns a complete candidate containing neutral `example.reference-data` and the selected catalog implementation; the adoption runtime validates and enables them in dependency-first order. An invalid or unavailable selection fails initialization; neither mode falls back to the other. Both are deterministic, local, synchronous, and read-only.
+`wire-fixture` is the default explicit catalog source and proves injected adapter conversion through the application-template integration boundary. `mock` remains a mandatory explicit offline/regression catalog source. The template returns a complete candidate containing neutral `example.reference-data` and the selected catalog implementation; the adoption runtime validates and enables them in dependency-first order. An invalid or unavailable selection fails initialization; neither mode falls back to the other. Both catalog query/detail paths are deterministic, local, synchronous, and read-only. Each selected implementation also supplies the separately contracted, instance-local `mock-command` surface; it has no wire write exchange or persistent/backend effect.
 
-`wire-fixture` 是默认显式 catalog source，用于通过 application-template 集成边界证明注入式 adapter 转换。`mock` 仍是必备的显式离线/回归 catalog source。模板返回包含中性 `example.reference-data` 与所选 catalog 实现的完整候选；adoption runtime 按依赖优先顺序校验并启用它们。无效或不可用选择会使初始化失败；两种模式都不会回退到另一模式。二者都具有确定性、仅在本地、同步且只读。
+`wire-fixture` 是默认显式 catalog source，用于通过 application-template 集成边界证明注入式 adapter 转换。`mock` 仍是必备的显式离线/回归 catalog source。模板返回包含中性 `example.reference-data` 与所选 catalog 实现的完整候选；adoption runtime 按依赖优先顺序校验并启用它们。无效或不可用选择会使初始化失败；两种模式都不会回退到另一模式。二者的 catalog query/detail 路径均具有确定性、仅在本地、同步且只读。每个选定实现还提供另行契约化、instance-local 的 `mock-command` 表面；它没有 wire 写入 exchange，也不产生持久化/后端效果。
 
 ## Behavior and limits / 行为与限制
 
@@ -53,9 +53,9 @@ The page consumes only the app-owned fixture runtime's safe shell, profile/adopt
 
 页面只消费 app-owned fixture runtime 的安全 shell、profile/adoption snapshot、query factory、source observation 与已登记区块判断。app runtime 校验自身 app profile，并把完整候选装配委托给模板，把 adoption/shell 组合委托给 application integration；它不装配 core、provider、adapter、manifest、route 或 lifecycle 转换。默认 wire observation 只公开计数；mock observation 只公开其显式 source mode。
 
-The query-context input is visible caller-owned text, but the neutral contract currently declares no filter fields, so that text is not sent as a hidden or invented query filter. The fixture has no HTTP, Directus, real identity, token, cookie, storage, write operation, URL/router, deep link, persisted state, dynamic page/block import, executable configuration, industry field, or production data.
+The query-context input is visible caller-owned text, but the neutral contract currently declares no filter fields, so that text is not sent as a hidden or invented query filter. The checked-in page exposes no write control. The fixture has no HTTP, Directus, real identity, token, cookie, storage, persistent or backend write operation, URL/router, deep link, persisted state, dynamic page/block import, executable configuration, industry field, or production data; its separately tested acknowledgement mock is instance-local only.
 
-query-context 输入是可见的调用方自有文本，但中性契约当前不声明 filter 字段，因此该文本不会作为隐藏或虚构的 query filter 发送。fixture 没有 HTTP、Directus、真实身份、token、cookie、storage、写操作、URL/router、deep link、持久状态、动态 page/block import、可执行配置、行业字段或生产数据。
+query-context 输入是可见的调用方自有文本，但中性契约当前不声明 filter 字段，因此该文本不会作为隐藏或虚构的 query filter 发送。仓内页面不提供写入 control。fixture 没有 HTTP、Directus、真实身份、token、cookie、storage、持久化或后端写操作、URL/router、deep link、持久状态、动态 page/block import、可执行配置、行业字段或生产数据；其另行测试的确认 mock 仅为 instance-local。
 
 Compilation demonstrates only this constrained local compiler path. It does not prove WeChat DevTools import, runtime interaction, simulator/device behavior, accessibility tree, screen reader, keyboard focus, App, H5, other mini-program targets, security acceptance, or release readiness.
 

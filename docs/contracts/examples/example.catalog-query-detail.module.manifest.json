@@ -8,8 +8,8 @@
   },
   "business": {
     "responsibility": {
-      "zh-Hans": "提供只读 entry 目录、查询与详情能力，不主张行业或生产数据主责。",
-      "en": "Provides read-only entry catalog, query, and detail behavior without claiming industry or production data ownership."
+      "zh-Hans": "提供中性 entry 目录、查询、详情与受限确认命令，不主张行业或生产数据主责。",
+      "en": "Provides neutral entry catalog, query, detail, and bounded acknowledgement command without claiming industry or production data ownership."
     },
     "lifecycle": "profile-selected",
     "permissions": []
@@ -33,6 +33,14 @@
         }
       },
       {
+        "id": "entry-acknowledge",
+        "direction": "required",
+        "contract": {
+          "id": "catalog-query-detail.acknowledgement",
+          "version": "1.0"
+        }
+      },
+      {
         "id": "session-state",
         "direction": "required",
         "contract": {
@@ -52,6 +60,10 @@
       },
       {
         "id": "catalog-query-detail.detail-result",
+        "version": "1.0"
+      },
+      {
+        "id": "catalog-query-detail.command-receipt",
         "version": "1.0"
       },
       {

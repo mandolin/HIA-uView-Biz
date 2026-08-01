@@ -161,7 +161,7 @@ export function createExampleCatalogApplicationTemplate() {
         id: 'catalog-adapter',
         moduleId: PRIMARY_MODULE_ID,
         requiredState: 'enabled',
-        requiredSurfaces: ['adapter', 'mock-session']
+        requiredSurfaces: ['adapter', 'mock-command', 'mock-session']
       }
     ],
     hostPolicy: {

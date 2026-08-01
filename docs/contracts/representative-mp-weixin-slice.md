@@ -60,9 +60,9 @@ The default checked-in profile selects `wire-fixture`, page `1`, page size `1`, 
 
 ## Source modes / 数据源模式
 
-Both modes are deterministic, local, read-only, and free of network I/O. They share the same canonical port contracts and application-shell projection.
+Both catalog query/detail modes are deterministic, local, read-only, and free of network I/O. Their selected implementations also provide the separately contracted, instance-local acknowledgement mock command; it has no wire write exchange or persistent/backend effect. They share the same canonical port contracts and application-shell projection.
 
-两种模式都具有确定性、仅在本地、只读且不访问网络。它们共享相同的规范化 port 契约与应用 shell 投影。
+两种 catalog query/detail 模式都具有确定性、仅在本地、只读且不访问网络。其选定实现还提供另行契约化、instance-local 的确认 mock command；它没有 wire 写入 exchange，也不产生持久化/后端效果。它们共享相同的规范化 port 契约与应用 shell 投影。
 
 | Mode / 模式 | Responsibility / 主责 | Evidence / 证据 |
 | --- | --- | --- |
@@ -103,12 +103,12 @@ The controlled compiler and output verifier remain separate evidence. They prove
 | Fixture runtime / Fixture runtime | App-profile validation, explicit template-candidate request, query factory, registered-block predicate/projection, and bounded observation / app-profile 校验、显式模板候选请求、query factory、已登记 block 判断/投影与受限 observation | Manifest/provider/lifecycle/shell assembly, UI refs, platform navigation, hidden fallback, real backend discovery / manifest/provider/lifecycle/shell 装配、UI ref、平台导航、隐藏回退、真实后端发现 |
 | Template package / 模板包 | Versioned application-template metadata and complete explicit reference-data plus selected catalog unit assembly / 版本化 application-template metadata 与完整显式 reference-data 加所选 catalog 单元装配 | Generator, scaffold copying, discovery, installation, remote catalog, industry fields, fallback / 生成器、脚手架复制、发现、安装、远端目录、行业字段、回退 |
 | Application integration / 应用集成 | Template/slot/surface gate, complete-set adoption delegation, fixed-primary-module shell, safe receipts/snapshots / 模板/slot/surface 门禁、完整集合采用委托、固定主模块 shell、安全 receipt/snapshot | File/package loading, provider invention, dynamic component/script, backend or external state / 文件/package 加载、provider 虚构、动态组件/脚本、后端或外部状态 |
-| Adapter or mock / Adapter 或 mock | Canonical read-port results for the selected explicit mode / 为明确选择的模式提供规范化只读 port 结果 | UI layout, route ownership, raw wire leakage, implicit mode selection / UI 布局、路由主责、原始 wire 泄露、隐式模式选择 |
+| Adapter or mock / Adapter 或 mock | Canonical read-port results plus the separately contracted bounded local acknowledgement mock for the selected explicit mode / 为明确选择的模式提供规范化只读 port 结果加另行契约化的受限本地确认 mock | UI layout, route ownership, raw wire leakage, implicit mode selection, persistent/backend writes / UI 布局、路由主责、原始 wire 泄露、隐式模式选择、持久化/后端写入 |
 | Application shell / 应用 shell | Screen/action gate and detached presentation state / screen/action gate 与隔离呈现状态 | Provider construction, profile parsing, backend protocol / provider 构造、profile 解析、后端协议 |
 | Vue page / Vue 页面 | Named HIA-uView presentation, local input text, explicit user actions / HIA-uView 命名呈现、本地输入文字、明确用户操作 | Core/provider assembly, source fallback, business-data duplication, dynamic import / core/provider 装配、数据源回退、业务数据复制、动态 import |
 
 ## Non-goals / 非目标
 
-This slice does not add a real HTTP client, Directus adapter, authentication provider, token transport, storage, preference service, write port, industry field, enterprise-capability package, remote configuration, CMS layout, arbitrary script, dynamic dependency, online module installation, native route, production data, release, or a general application generator.
+This slice does not add a real HTTP client, Directus adapter, authentication provider, token transport, storage, preference service, persistent/backend write port, industry field, enterprise-capability package, remote configuration, CMS layout, arbitrary script, dynamic dependency, online module installation, native route, production data, release, or a general application generator. The P38 acknowledgement contract is a separately tested, instance-local mock boundary and is not exposed through this Vue page.
 
-本纵切不增加真实 HTTP client、Directus adapter、认证 provider、token 传输、存储、偏好服务、写入 port、行业字段、企业能力包、远程配置、CMS 布局、任意脚本、动态依赖、在线模块安装、原生路由、生产数据、发布或通用应用生成器。
+本纵切不增加真实 HTTP client、Directus adapter、认证 provider、token 传输、存储、偏好服务、持久化/后端写入 port、行业字段、企业能力包、远程配置、CMS 布局、任意脚本、动态依赖、在线模块安装、原生路由、生产数据、发布或通用应用生成器。P38 确认契约是另行测试的 instance-local mock 边界，不通过此 Vue 页面暴露。

@@ -4,6 +4,7 @@
   "id": "example.catalog-query-detail.neutral",
   "channelProfileId": "example.catalog-query-detail.representative-mp-weixin",
   "capabilityPackageIds": [
-    "example.catalog-query-detail.read"
+    "example.catalog-query-detail.read",
+    "example.catalog-query-detail.acknowledge"
   ]
 }

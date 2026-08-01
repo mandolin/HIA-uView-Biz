@@ -172,11 +172,15 @@ async function testRunsDefaultWireSliceEndToEnd() {
   assert.deepEqual(representativeRuntime.getSolutionSnapshot(), {
     id: 'example.catalog-query-detail.neutral',
     channelProfileId: 'example.catalog-query-detail.representative-mp-weixin',
-    capabilityPackageIds: ['example.catalog-query-detail.read']
+    capabilityPackageIds: [
+      'example.catalog-query-detail.read',
+      'example.catalog-query-detail.acknowledge'
+    ]
   });
   assert.deepEqual(representativeRuntime.getCapabilityAvailabilitySnapshot(), [
     { id: 'example.reference-data.read', state: 'available' },
-    { id: 'example.catalog-query-detail.read', state: 'available' }
+    { id: 'example.catalog-query-detail.read', state: 'available' },
+    { id: 'example.catalog-query-detail.acknowledge', state: 'available' }
   ]);
 
   // <lang><zh-CN>默认 profile 的排序是受限 block metadata；snapshot 不包含 component、template、style、URL 或 profile 原文。</zh-CN><en>The default profile order is bounded block metadata; the snapshot contains no component, template, style, URL, or raw profile content.</en></lang>
@@ -384,6 +388,35 @@ async function testRejectsInvalidSolutionBeforeTemplateAndProvider() {
   assert.equal(JSON.stringify(initialization).includes('javascript:untrusted'), false);
 }
 
+/**
+ * <lang><zh-CN>验证缺少 acknowledge capability selection 时 fixture 在 template/provider 前失败。</zh-CN><en>Verifies fixture fails before template/provider when acknowledge capability selection is missing.</en></lang>
+ * @lang zh-CN 保持 solution schema 合法，只移除当前 template 固定 command port 所需的独立 package，证明不是 generic profile shape failure。
+ * @lang en Keep solution schema valid and remove only independent package required by current template's fixed command port, proving this is not generic profile-shape failure.
+ */
+async function testRejectsSolutionWithoutAcknowledgeCapabilityBeforeProvider() {
+  // <lang><zh-CN>从默认 solution 新对象移除 acknowledge selection；catalog read 保持存在，隔离组合完整性 gate。</zh-CN><en>Remove acknowledge selection from fresh default solution while keeping catalog read, isolating composition-completeness gate.</en></lang>
+  const incompleteSolutionProfile = await loadRepresentativeSolutionProfile();
+  incompleteSolutionProfile.capabilityPackageIds = ['example.catalog-query-detail.read'];
+
+  // <lang><zh-CN>合法 app profile 使失败只来自 required solution capability，而不是 source/profile 规则。</zh-CN><en>A valid app profile makes failure arise only from required solution capability, not source/profile rules.</en></lang>
+  const initialization = await createRepresentativeRuntime(
+    await loadRepresentativeProfile(),
+    {},
+    incompleteSolutionProfile
+  );
+
+  // <lang><zh-CN>失败不形成 shell、source、observation 或 command/provider 表面，也不回显完整 solution JSON。</zh-CN><en>Failure forms no shell, source, observation, or command/provider surface and echoes no full solution JSON.</en></lang>
+  assert.deepEqual(Object.keys(initialization).sort(), ['diagnostics', 'ok']);
+  assert.equal(initialization.ok, false);
+  assert.equal(
+    initialization.diagnostics.some(
+      (diagnostic) => diagnostic.code === 'representative.solution.capability.unavailable'
+    ),
+    true
+  );
+  assert.equal(JSON.stringify(initialization).includes('capabilityPackageIds'), false);
+}
+
 // <lang><zh-CN>按公开验收责任登记测试，名称不暴露私有阶段、路径或会话上下文。</zh-CN><en>Register tests by public acceptance responsibility; names expose no private stage, path, or session context.</en></lang>
 test('rejects an invalid application profile without source fallback', testRejectsInvalidProfileWithoutFallback);
 test('runs the default wire fixture through lifecycle, shell, query, detail, and back', testRunsDefaultWireSliceEndToEnd);
@@ -391,3 +424,4 @@ test('runs an explicit mock with registered presentation projection', testRunsEx
 test('rejects an invalid presentation order before provider use', testRejectsInvalidPresentationOrderBeforeProvider);
 test('projects deterministic empty and failure states through the same shell', testProjectsMockEmptyAndFailureStates);
 test('rejects an invalid solution package before template and provider use', testRejectsInvalidSolutionBeforeTemplateAndProvider);
+test('rejects a solution missing required acknowledge capability before template and provider use', testRejectsSolutionWithoutAcknowledgeCapabilityBeforeProvider);

@@ -15,6 +15,7 @@
       "adapter",
       "channel-projection",
       "mock-session",
+      "mock-command",
       "presentation-block"
     ]
   },
@@ -32,6 +33,14 @@
       "kind": "adapter",
       "contract": {
         "id": "catalog-query-detail.detail",
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "entry-acknowledge",
+      "kind": "mock-command",
+      "contract": {
+        "id": "catalog-query-detail.acknowledgement",
         "version": "1.0"
       }
     },

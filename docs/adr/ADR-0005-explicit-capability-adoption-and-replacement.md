@@ -60,14 +60,14 @@ A successful receipt lists deterministic `install`, `enable`, `disable`, `uninst
 
 ## Initial capability set / 首批能力集合
 
-The first composed fixture uses two neutral, read-only capabilities:
+The first composed fixture uses two neutral capabilities whose reference-data and catalog query/detail paths are read-only:
 
-首个组合 fixture 使用两项中性只读能力：
+首个组合 fixture 使用两项中性能力；其 reference-data 和 catalog query/detail 路径均为只读：
 
 - `example.reference-data` owns deterministic reference-option lookup for declared filters. It owns no industry dictionary or production fact.
 - `example.reference-data` 拥有已声明 filter 的确定性 reference option 查询；不拥有行业字典或生产事实。
-- `example.catalog-query-detail` owns read-only catalog query and entry detail behavior and declares `example.reference-data` as a dependency.
-- `example.catalog-query-detail` 拥有只读目录查询与 entry 详情行为，并声明依赖 `example.reference-data`。
+- `example.catalog-query-detail` owns read-only catalog query and entry detail behavior, a separately contracted instance-local acknowledgement mock command, and declares `example.reference-data` as a dependency.
+- `example.catalog-query-detail` 拥有只读目录查询与 entry 详情行为、一个另行契约化的 instance-local 确认 mock command，并声明依赖 `example.reference-data`。
 
 Presentation remains an application projection. Registered block selection does not become a third business module and does not grant a block ownership of catalog or reference data.
 
@@ -107,4 +107,3 @@ Engineering package metadata cannot represent one application’s complete desir
 Review this decision before adding filesystem or registry discovery, asynchronous or concurrent reconciliation, persistent lifecycle state, migration or cleanup hooks, remote configuration, real credentials, external writes, a package installer, or production upgrade claims.
 
 在加入文件系统或 registry discovery、异步或并发协调、持久化 lifecycle state、migration/cleanup hook、远程配置、真实 credential、外部写入、package installer 或生产升级声明前，复审本决定。
-

@@ -19,6 +19,7 @@
       "requiredState": "enabled",
       "requiredSurfaces": [
         "adapter",
+        "mock-command",
         "mock-session"
       ]
     }

@@ -1,7 +1,7 @@
 /**
- * <lang><zh-CN>中性目录—查询—详情 example 的确定性 mock 实现：提供只读 port、mock session 与受限 route action，不连接任何后端。</zh-CN><en>Deterministic mock implementation for the neutral catalog-query-detail example: provides read-only ports, mock session, and restricted route actions without connecting to any backend.</en></lang>
- * @lang zh-CN 所有 entry 与失败文案均为本模块自有测试数据；本模块不读取文件、网络、环境变量或用户存储。
- * @lang en Every entry and failure message is module-owned test data; this module reads no file, network, environment variable, or user storage.
+ * <lang><zh-CN>中性目录—查询—详情 example 的确定性 mock 实现：提供查询/详情、受限 acknowledge command、mock session 与 route action，不连接任何后端。</zh-CN><en>Deterministic mock implementation for the neutral catalog-query-detail example: provides query/detail, bounded acknowledge command, mock session, and route action without connecting to any backend.</en></lang>
+ * @lang zh-CN 所有 entry、receipt 与失败文案均为本模块自有测试数据；本模块不读取文件、网络、环境变量、真实时间、随机值或用户存储。
+ * @lang en Every entry, receipt, and failure message is module-owned test data; this module reads no file, network, environment variable, real time, random value, or user storage.
  */
 
 /**
@@ -33,6 +33,53 @@ const IMPLEMENTATION_ID = 'example.catalog-query-detail.mock-implementation';
 const REFERENCE_DATA_MODULE_ID = 'example.reference-data';
 
 /**
+ * <lang><zh-CN>中性 entry acknowledge command 的稳定 required port ID。</zh-CN><en>Stable required-port ID of the neutral entry acknowledge command.</en></lang>
+ * @lang zh-CN ID 只表示当前 module 内的明确 command 边界，不是 URL、route、事件名或动态 provider selector。
+ * @lang en The ID denotes only the explicit command boundary in current module and is not a URL, route, event name, or dynamic provider selector.
+ */
+const ENTRY_ACKNOWLEDGE_PORT_ID = 'entry-acknowledge';
+
+/**
+ * <lang><zh-CN>中性 acknowledge command 与 receipt 共用的稳定契约 ID。</zh-CN><en>Stable contract ID shared by neutral acknowledge command and receipt.</en></lang>
+ * @lang zh-CN 此 ID 只用于 manifest/provider 精确对应，不表述 HTTP operation、数据库表或行业事件。
+ * @lang en This ID is used only for exact manifest/provider correspondence and expresses no HTTP operation, database table, or industry event.
+ */
+const ENTRY_ACKNOWLEDGEMENT_CONTRACT_ID = 'catalog-query-detail.acknowledgement';
+
+/**
+ * <lang><zh-CN>当前 deterministic transaction 唯一拥有的中性 entry ID。</zh-CN><en>Only neutral entry ID owned by current deterministic transaction.</en></lang>
+ * @lang zh-CN 该 ID 是 fixture 数据，不代表真实目录、外部主键或可发现的 entry 集合。
+ * @lang en This ID is fixture data and represents neither a real catalog, external key, nor discoverable entry set.
+ */
+const ACKNOWLEDGEMENT_ENTRY_ID = 'entry-001';
+
+/**
+ * <lang><zh-CN>canonical acknowledge command 根对象允许的精确字段。</zh-CN><en>Exact fields allowed on canonical acknowledge-command root object.</en></lang>
+ * @lang zh-CN 精确键集合阻止 payload、patch、自由文本、身份、URL 与其他未审阅控制字段进入 transaction。
+ * @lang en The exact key set prevents payload, patch, free text, identity, URL, and other unreviewed control fields from entering transaction.
+ */
+const ACKNOWLEDGEMENT_COMMAND_KEYS = Object.freeze([
+  'contractVersion',
+  'kind',
+  'commandId',
+  'entryId'
+]);
+
+/**
+ * <lang><zh-CN>transaction factory options 允许的精确字段。</zh-CN><en>Exact fields allowed by transaction-factory options.</en></lang>
+ * @lang zh-CN 该选项只供 checked-in deterministic tests 使用，不进入 command、profile、manifest 或 app 配置。
+ * @lang en This option serves only checked-in deterministic tests and enters no command, profile, manifest, or app configuration.
+ */
+const TRANSACTION_OPTION_KEYS = Object.freeze(['transactionMode']);
+
+/**
+ * <lang><zh-CN>允许的固定 transaction 模式。</zh-CN><en>Allowed fixed transaction modes.</en></lang>
+ * @lang zh-CN `commit-failure` 只证明 rollback/no-partial-mutation，不模拟网络、超时、存储或真实故障。
+ * @lang en `commit-failure` proves only rollback/no-partial-mutation and simulates no network, timeout, storage, or real fault.
+ */
+const TRANSACTION_MODES = new Set(['success', 'commit-failure']);
+
+/**
  * <lang><zh-CN>创建双语显示文本。</zh-CN><en>Creates bilingual display text.</en></lang>
  *
  * @param {string} zhHans 中文文本。 / Chinese text.
@@ -50,13 +97,63 @@ function createLocalizedText(zhHans, en) {
 }
 
 /**
+ * <lang><zh-CN>判断值是否为可受限检查自有字段的 plain 非数组对象。</zh-CN><en>Determines whether a value is a plain non-array object whose own fields can be inspected within a boundary.</en></lang>
+ *
+ * @param {unknown} value <lang><zh-CN>待检查值。</zh-CN><en>Value to inspect.</en></lang>
+ * @returns {boolean} <lang><zh-CN>是否满足最小 plain-record shape。</zh-CN><en>Whether it satisfies minimum plain-record shape.</en></lang>
+ * @lang zh-CN guard 只建立受限字段检查前提，不把调用方原型、class instance 或 getter 视为可信 transaction 数据。
+ * @lang en Guard establishes only a bounded field-inspection precondition and treats no caller prototype, class instance, or getter as trusted transaction data.
+ */
+function isRecord(value) {
+  // <lang><zh-CN>排除 null、数组和自定义原型，避免位置值、class instance 或原型字段伪装成命名 command 配置。</zh-CN><en>Exclude null, arrays, and custom prototypes, preventing positional values, class instances, or prototype fields from masquerading as named command configuration.</en></lang>
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  // <lang><zh-CN>仅接受普通对象或无原型对象；后续 exact-key guard 还会拒绝 accessor 属性。</zh-CN><en>Accept only ordinary or null-prototype objects; the following exact-key guard also rejects accessor properties.</en></lang>
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+/**
+ * <lang><zh-CN>判断 record 是否精确拥有给定字段集合。</zh-CN><en>Determines whether a record owns exactly a given field set.</en></lang>
+ *
+ * @param {object} record <lang><zh-CN>已通过最小 record guard 的对象。</zh-CN><en>Object that passed minimum record guard.</en></lang>
+ * @param {string[]} expectedKeys <lang><zh-CN>完整允许字段列表。</zh-CN><en>Complete allowed field list.</en></lang>
+ * @returns {boolean} <lang><zh-CN>没有缺失或额外 enumerable 自有字段时为 true。</zh-CN><en>True when no enumerable own field is missing or extra.</en></lang>
+ * @lang zh-CN 该检查拒绝 command payload/patch/accessor 扩张，且不从原型链借用配置。
+ * @lang en This check rejects command payload/patch/accessor expansion and borrows no configuration through prototype chain.
+ */
+function hasExactOwnKeys(record, expectedKeys) {
+  // <lang><zh-CN>先比较数量，随后逐个确认允许键是 enumerable 自有 data property，拒绝 getter/setter 执行。</zh-CN><en>Compare count first and then confirm every allowed key is an enumerable own data property, rejecting getter/setter execution.</en></lang>
+  return Object.keys(record).length === expectedKeys.length
+    && expectedKeys.every((expectedKey) => {
+      const descriptor = Object.getOwnPropertyDescriptor(record, expectedKey);
+      return descriptor !== undefined && descriptor.enumerable && Object.hasOwn(descriptor, 'value');
+    });
+}
+
+/**
+ * <lang><zh-CN>判断字符串是否是当前 command contract 接受的稳定小写连字符标识。</zh-CN><en>Determines whether a string is a stable lowercase-hyphen identifier accepted by current command contract.</en></lang>
+ *
+ * @param {unknown} value <lang><zh-CN>待校验值。</zh-CN><en>Value to validate.</en></lang>
+ * @returns {boolean} <lang><zh-CN>满足有限 command ID pattern 时为 true。</zh-CN><en>True when it meets the finite command-ID pattern.</en></lang>
+ * @lang zh-CN pattern 只建立本地 mock 的审阅边界，不生成、规范化或持久化 command ID。
+ * @lang en Pattern establishes only the reviewed boundary of local mock and generates, normalizes, and persists no command ID.
+ */
+function isCommandIdentifier(value) {
+  // <lang><zh-CN>长度和字符集同时限制，防止空白、路径、URL、表达式或无界文本成为 idempotency key。</zh-CN><en>Limit length and character set together, preventing whitespace, path, URL, expression, or unbounded text from becoming idempotency key.</en></lang>
+  return typeof value === 'string' && /^[a-z][a-z0-9-]{2,63}$/.test(value);
+}
+
+/**
  * <lang><zh-CN>创建不含 wire 细节的规范化 failure。</zh-CN><en>Creates a canonical failure that contains no wire details.</en></lang>
  *
  * @param {string} code 稳定失败代码。 / Stable failure code.
  * @param {string} zhHans 中文失败说明。 / Chinese failure explanation.
  * @param {string} en English failure explanation.
  * @param {boolean} retryable 是否允许调用方重试。 / Whether a caller may retry.
- * @param {'request'|'adapter'|'section'|'session'} scope 失败所属范围。 / Failure scope.
+ * @param {'request'|'adapter'|'section'|'session'|'command'|'transaction'} scope 失败所属范围。 / Failure scope.
  * @returns {object} 规范化失败对象。 / Canonical failure object.
  * @lang zh-CN failure 不包含 HTTP、Directus、token、URL 或原始请求数据。
  * @lang en A failure contains no HTTP, Directus, token, URL, or raw request data.
@@ -119,6 +216,207 @@ function validatePageQuery(request) {
 }
 
 /**
+ * <lang><zh-CN>创建一个 instance-local、确定性的中性 entry acknowledgement mock transaction。</zh-CN><en>Creates an instance-local deterministic neutral-entry acknowledgement mock transaction.</en></lang>
+ *
+ * @param {object} [options={}] <lang><zh-CN>仅测试拥有的固定 transaction mode 选择。</zh-CN><en>Fixed transaction-mode selection owned only by tests.</en></lang>
+ * @returns {object} <lang><zh-CN>只暴露 canonical command invoke 与受限 state snapshot 的 transaction。</zh-CN><en>Transaction exposing only canonical command invocation and bounded state snapshot.</en></lang>
+ * @lang zh-CN factory 不读取/写入文件、网络、环境、storage、真实时间、随机数或身份；所有 state 在闭包内并随 instance 丢弃。
+ * @lang en Factory reads or writes no file, network, environment, storage, real time, random value, or identity; all state remains in closure and is discarded with instance.
+ */
+export function createEntryAcknowledgementMockTransaction(options = { transactionMode: 'success' }) {
+  // <lang><zh-CN>options 必须是 exact plain record，防止测试控制字段扩展到 command 或生产配置面。</zh-CN><en>Options must be an exact plain record, preventing test control fields from expanding into command or production configuration surfaces.</en></lang>
+  if (!isRecord(options) || !hasExactOwnKeys(options, TRANSACTION_OPTION_KEYS)) {
+    throw new TypeError('Acknowledgement transaction options are invalid.');
+  }
+
+  // <lang><zh-CN>只允许两种固定模式；未知值不会变成异常脚本、动态行为或 fallback。</zh-CN><en>Allow only two fixed modes; an unknown value becomes neither exception script, dynamic behavior, nor fallback.</en></lang>
+  const transactionMode = options.transactionMode ?? 'success';
+  if (!TRANSACTION_MODES.has(transactionMode)) {
+    throw new RangeError('Acknowledgement transaction mode is unsupported.');
+  }
+
+  // <lang><zh-CN>state 只含单一 fixture entry 的 acknowledgement/revision；不保存 command payload、session、provider 或 UI event。</zh-CN><en>State contains acknowledgement/revision only for one fixture entry and retains no command payload, session, provider, or UI event.</en></lang>
+  const state = {
+    acknowledgement: 'pending',
+    revision: 0
+  };
+
+  // <lang><zh-CN>receipt 按 command ID 缓存为不可变 plain data，以实现同 ID retry 的确定性等值结果。</zh-CN><en>Cache receipts by command ID as immutable plain data to implement deterministic equivalent result for same-ID retry.</en></lang>
+  const receiptsByCommandId = new Map();
+
+  // <lang><zh-CN>记录 command ID 首次绑定的 entry ID，明确拒绝同一 idempotency key 的不兼容重用。</zh-CN><en>Record entry ID first bound by command ID, explicitly rejecting incompatible reuse of same idempotency key.</en></lang>
+  const entryIdByCommandId = new Map();
+
+  /**
+   * <lang><zh-CN>返回 transaction 自有 state 的最小隔离快照。</zh-CN><en>Returns minimum detached snapshot of transaction-owned state.</en></lang>
+   *
+ * @returns {object} <lang><zh-CN>仅含 fixture entry ID、acknowledgement 与非负 revision 的新对象。</zh-CN><en>New object containing only fixture entry ID, acknowledgement, and nonnegative revision.</en></lang>
+   * @lang zh-CN snapshot 不含 command ID 历史、receipt map、provider、session 或内部选项；调用方修改不会写回 transaction。
+   * @lang en Snapshot contains no command-ID history, receipt map, provider, session, or internal option; caller changes cannot write back into transaction.
+   */
+  const getSnapshot = () => ({
+    entryId: ACKNOWLEDGEMENT_ENTRY_ID,
+    acknowledgement: state.acknowledgement,
+    revision: state.revision
+  });
+
+  /**
+   * <lang><zh-CN>构造 canonical acknowledge-entry receipt 的独立副本。</zh-CN><en>Constructs an independent copy of canonical acknowledge-entry receipt.</en></lang>
+   *
+   * @param {object} receipt <lang><zh-CN>transaction 已保存的稳定 receipt metadata。</zh-CN><en>Stable receipt metadata already saved by transaction.</en></lang>
+   * @returns {object} <lang><zh-CN>调用方可修改但不会回写的 receipt 副本。</zh-CN><en>Receipt copy caller may mutate without writeback.</en></lang>
+   * @lang zh-CN helper 明确列出公开字段，不把 map entry、state 或 command 原文泄露给调用方。
+   * @lang en Helper explicitly lists public fields and leaks no map entry, state, or raw command to caller.
+   */
+  const copyReceipt = (receipt) => ({
+    contractVersion: receipt.contractVersion,
+    kind: receipt.kind,
+    commandId: receipt.commandId,
+    entryId: receipt.entryId,
+    outcome: receipt.outcome,
+    revision: receipt.revision
+  });
+
+  /**
+   * <lang><zh-CN>以精确 shape 校验并复制当前 command 的稳定字段。</zh-CN><en>Validates exact shape and copies stable fields of current command.</en></lang>
+   *
+   * @param {unknown} command <lang><zh-CN>调用方提供的候选 command。</zh-CN><en>Candidate command supplied by caller.</en></lang>
+   * @returns {{ok: true, commandId: string, entryId: string}|{ok: false, failure: object}} <lang><zh-CN>安全 command metadata 或 canonical failure。</zh-CN><en>Safe command metadata or canonical failure.</en></lang>
+   * @lang zh-CN validation 不回显输入值；任一 invalid shape 都在 state/map 检查和 mutation 前拒绝。
+   * @lang en Validation echoes no input value; any invalid shape is rejected before state/map inspection and mutation.
+   */
+  const validateCommand = (command) => {
+    // <lang><zh-CN>只读取经过 guard 的 exact own keys，避免 payload、prototype 或 getter 成为 transaction 输入。</zh-CN><en>Read only exact own keys that passed guard, preventing payload, prototype, or getter from becoming transaction input.</en></lang>
+    if (!isRecord(command) || !hasExactOwnKeys(command, ACKNOWLEDGEMENT_COMMAND_KEYS)) {
+      return {
+        ok: false,
+        failure: createFailure(
+          'invalid-command',
+          '确认命令不符合最小契约。',
+          'The acknowledgement command does not satisfy the minimum contract.',
+          false,
+          'command'
+        )
+      };
+    }
+
+    // <lang><zh-CN>版本、kind、command ID 与唯一 entry ID 同时固定，当前 contract 不接受 alias、patch 或其他 command kind。</zh-CN><en>Fix version, kind, command ID, and sole entry ID together; current contract accepts no alias, patch, or other command kind.</en></lang>
+    const isValid = command.contractVersion === CONTRACT_VERSION
+      && command.kind === 'acknowledge-entry'
+      && isCommandIdentifier(command.commandId)
+      && typeof command.entryId === 'string';
+    if (!isValid) {
+      return {
+        ok: false,
+        failure: createFailure(
+          'invalid-command',
+          '确认命令不符合最小契约。',
+          'The acknowledgement command does not satisfy the minimum contract.',
+          false,
+          'command'
+        )
+      };
+    }
+
+    // <lang><zh-CN>只复制两个稳定标识；command 原对象随后修改不能影响本次 idempotency/entry 分支。</zh-CN><en>Copy only two stable identifiers so later mutation of original command cannot affect this idempotency/entry branch.</en></lang>
+    return {
+      ok: true,
+      commandId: command.commandId,
+      entryId: command.entryId
+    };
+  };
+
+  /**
+   * <lang><zh-CN>执行一次 canonical acknowledge-entry command。</zh-CN><en>Executes one canonical acknowledge-entry command.</en></lang>
+   *
+   * @param {unknown} command <lang><zh-CN>调用方传入的候选 command plain data。</zh-CN><en>Candidate command plain data passed by caller.</en></lang>
+   * @returns {object} <lang><zh-CN>成功时为 detached receipt，失败时为 canonical failure。</zh-CN><en>Detached receipt on success, canonical failure on failure.</en></lang>
+   * @lang zh-CN 函数只对当前 closure state 进行受控 mutation；没有 I/O、并发、timer、queue、storage 或真实 rollback protocol。
+   * @lang en Function performs controlled mutation only on current closure state; it has no I/O, concurrency, timer, queue, storage, or real rollback protocol.
+   */
+  const invoke = (command) => {
+    // <lang><zh-CN>无效 command 在读取 receipt/state 前直接返回安全 failure，避免 caller 值影响任何可观察 transaction 结果。</zh-CN><en>Invalid command returns safe failure before receipt/state read, preventing caller values from affecting any observable transaction result.</en></lang>
+    const validation = validateCommand(command);
+    if (!validation.ok) {
+      return validation.failure;
+    }
+
+    // <lang><zh-CN>相同 command ID 若曾绑定其他 entry，必须明确拒绝而不是把 retry 误当成新 command。</zh-CN><en>If same command ID was bound to another entry, reject explicitly instead of mistaking retry for new command.</en></lang>
+    const boundEntryId = entryIdByCommandId.get(validation.commandId);
+    if (boundEntryId !== undefined && boundEntryId !== validation.entryId) {
+      return createFailure(
+        'command-id-conflict',
+        '命令标识已绑定到不兼容的确认请求。',
+        'The command identifier is already bound to an incompatible acknowledgement request.',
+        false,
+        'command'
+      );
+    }
+
+    // <lang><zh-CN>相同已提交 command ID 返回保存 receipt 的独立副本；不触碰 revision 或 acknowledgement。</zh-CN><en>Return detached copy of saved receipt for same submitted command ID; touch neither revision nor acknowledgement.</en></lang>
+    const previousReceipt = receiptsByCommandId.get(validation.commandId);
+    if (previousReceipt !== undefined) {
+      return copyReceipt(previousReceipt);
+    }
+
+    // <lang><zh-CN>未知 entry 在任何 map/state mutation 前拒绝，且不列出该 fixture 唯一允许 ID。</zh-CN><en>Reject unknown entry before any map/state mutation and do not list this fixture's sole allowed ID.</en></lang>
+    if (validation.entryId !== ACKNOWLEDGEMENT_ENTRY_ID) {
+      return createFailure(
+        'not-found',
+        '未找到请求的示例 entry。',
+        'The requested example entry was not found.',
+        false,
+        'request'
+      );
+    }
+
+    // <lang><zh-CN>已确认 entry 的不同 command ID 不是 retry；按维护者确定的规则返回不可重试 command failure，并保持 state 不变。</zh-CN><en>A different command ID for an acknowledged entry is not a retry; per confirmed rule return non-retryable command failure and retain state.</en></lang>
+    if (state.acknowledgement === 'acknowledged') {
+      return createFailure(
+        'command-not-applicable',
+        '当前 entry 已确认，不能应用新的确认命令。',
+        'The current entry is already acknowledged and cannot accept a new acknowledgement command.',
+        false,
+        'command'
+      );
+    }
+
+    // <lang><zh-CN>固定失败模式在提交前返回 transaction failure；不会写入 command ID、receipt、acknowledgement 或 revision，形成显式 rollback/no-partial-mutation 证据。</zh-CN><en>The fixed failure mode returns transaction failure before commit; it writes no command ID, receipt, acknowledgement, or revision, forming explicit rollback/no-partial-mutation evidence.</en></lang>
+    if (transactionMode === 'commit-failure') {
+      return createFailure(
+        'command-transaction-failed',
+        '示例确认事务未提交。',
+        'The example acknowledgement transaction did not commit.',
+        false,
+        'transaction'
+      );
+    }
+
+    // <lang><zh-CN>所有 precondition 已满足后才一次性推进有限 state；revision 只在首个成功 command 增加一次。</zh-CN><en>Advance finite state only after every precondition passes; revision increases once only for first successful command.</en></lang>
+    state.acknowledgement = 'acknowledged';
+    state.revision += 1;
+    const receipt = {
+      contractVersion: CONTRACT_VERSION,
+      kind: 'command-receipt',
+      commandId: validation.commandId,
+      entryId: ACKNOWLEDGEMENT_ENTRY_ID,
+      outcome: 'acknowledged',
+      revision: state.revision
+    };
+
+    // <lang><zh-CN>成功后同时保存 command-to-entry 关系和 receipt；两者只保存安全 metadata，不保留调用方 command 对象。</zh-CN><en>After success save command-to-entry relationship and receipt; both retain only safe metadata and no caller command object.</en></lang>
+    entryIdByCommandId.set(validation.commandId, ACKNOWLEDGEMENT_ENTRY_ID);
+    receiptsByCommandId.set(validation.commandId, receipt);
+
+    // <lang><zh-CN>返回新 receipt 副本，调用方无法通过返回值改写 idempotency cache。</zh-CN><en>Return new receipt copy so caller cannot rewrite idempotency cache through returned value.</en></lang>
+    return copyReceipt(receipt);
+  };
+
+  // <lang><zh-CN>冻结最小 API，不泄露 mutable Map、state、transaction mode 或内部 validation helper。</zh-CN><en>Freeze minimum API and expose no mutable map, state, transaction mode, or internal validation helper.</en></lang>
+  return Object.freeze({ invoke, getSnapshot });
+}
+
+/**
  * <lang><zh-CN>创建中性 example 的 module、implementation package 与 profile 声明。</zh-CN><en>Creates module, implementation-package, and profile declarations for the neutral example.</en></lang>
  *
  * @returns {{businessModule: object, implementationPackage: object, profile: object}} 可显式交给 core 的声明集合。 / A declaration set that can be passed explicitly to the core.
@@ -133,7 +431,7 @@ export function createExampleManifests() {
     id: MODULE_ID,
     displayName: createLocalizedText('通用目录—查询—详情示例', 'Catalog query and detail example'),
     business: {
-      responsibility: createLocalizedText('提供只读 entry 目录、查询与详情能力。', 'Provides read-only entry catalog, query, and detail behavior.'),
+      responsibility: createLocalizedText('提供中性 entry 目录、查询、详情与受限确认命令。', 'Provides neutral entry catalog, query, detail, and bounded acknowledgement command.'),
       lifecycle: 'profile-selected',
       permissions: []
     },
@@ -150,6 +448,11 @@ export function createExampleManifests() {
           contract: { id: 'catalog-query-detail.detail', version: CONTRACT_VERSION }
         },
         {
+          id: ENTRY_ACKNOWLEDGE_PORT_ID,
+          direction: 'required',
+          contract: { id: ENTRY_ACKNOWLEDGEMENT_CONTRACT_ID, version: CONTRACT_VERSION }
+        },
+        {
           id: 'session-state',
           direction: 'required',
           contract: { id: 'catalog-query-detail.session', version: CONTRACT_VERSION }
@@ -159,6 +462,7 @@ export function createExampleManifests() {
       outcomes: [
         { id: 'catalog-query-detail.query-result', version: CONTRACT_VERSION },
         { id: 'catalog-query-detail.detail-result', version: CONTRACT_VERSION },
+        { id: 'catalog-query-detail.command-receipt', version: CONTRACT_VERSION },
         { id: 'catalog-query-detail.failure', version: CONTRACT_VERSION }
       ]
     },
@@ -185,7 +489,7 @@ export function createExampleManifests() {
     },
     runtime: {
       targets: ['mp-weixin'],
-      surfaces: ['adapter', 'channel-projection', 'mock-session', 'presentation-block']
+      surfaces: ['adapter', 'channel-projection', 'mock-session', 'mock-command', 'presentation-block']
     },
     provides: [
       {
@@ -197,6 +501,11 @@ export function createExampleManifests() {
         id: 'entry-detail',
         kind: 'adapter',
         contract: { id: 'catalog-query-detail.detail', version: CONTRACT_VERSION }
+      },
+      {
+        id: ENTRY_ACKNOWLEDGE_PORT_ID,
+        kind: 'mock-command',
+        contract: { id: ENTRY_ACKNOWLEDGEMENT_CONTRACT_ID, version: CONTRACT_VERSION }
       },
       {
         id: 'session-state',
@@ -267,6 +576,11 @@ export function createCatalogQueryDetailMock(options = {}) {
     // <lang><zh-CN>错误只包含 allowlisted fixture 名称，便于维护者修正本地测试设置。</zh-CN><en>The error includes only allowlisted fixture names, helping maintainers correct local test setup.</en></lang>
     throw new RangeError(`Unsupported fixture case: ${fixtureCase}`);
   }
+
+  // <lang><zh-CN>每个 catalog mock instance 取得自己的 success transaction；query/detail fixture 不读取或修改 command state。</zh-CN><en>Each catalog mock instance receives its own success transaction; query/detail fixtures neither read nor modify command state.</en></lang>
+  const acknowledgementTransaction = createEntryAcknowledgementMockTransaction({
+    transactionMode: 'success'
+  });
 
   /**
    * <lang><zh-CN>按当前 fixture 处理规范化 catalog query。</zh-CN><en>Handles a canonical catalog query for the current fixture.</en></lang>
@@ -394,6 +708,19 @@ export function createCatalogQueryDetailMock(options = {}) {
     };
   };
 
+  /**
+   * <lang><zh-CN>通过当前 mock 的明确 required port 执行一个 canonical acknowledge command。</zh-CN><en>Executes one canonical acknowledge command through current mock's explicit required port.</en></lang>
+   *
+   * @param {unknown} command <lang><zh-CN>调用方提供的候选 command。</zh-CN><en>Candidate command supplied by caller.</en></lang>
+   * @returns {object} <lang><zh-CN>command receipt 或 canonical failure。</zh-CN><en>Command receipt or canonical failure.</en></lang>
+   * @lang zh-CN provider 只委托 instance-local transaction；不创建 adapter exchange、HTTP、storage、session mutation 或 UI side effect。
+   * @lang en Provider delegates only to instance-local transaction; it creates no adapter exchange, HTTP, storage, session mutation, or UI side effect.
+   */
+  const acknowledgeEntry = (command) => {
+    // <lang><zh-CN>transaction 负责完整 validation/idempotency/rollback；mock provider 不复制或解释 command 字段。</zh-CN><en>Transaction owns complete validation, idempotency, and rollback; mock provider neither copies nor interprets command fields.</en></lang>
+    return acknowledgementTransaction.invoke(command);
+  };
+
   // <lang><zh-CN>route projection 只含已登记 ID；它不携带页面路径、URL 或组件 import 信息。</zh-CN><en>The route projection contains only registered IDs and carries no page path, URL, or component-import information.</en></lang>
   const routeProjection = {
     contractVersion: CONTRACT_VERSION,
@@ -423,7 +750,7 @@ export function createCatalogQueryDetailMock(options = {}) {
     return action === undefined ? undefined : { ...action };
   };
 
-  // <lang><zh-CN>三个 provider 使用公开 contract reference，供 core 精确验证 required port 对应关系。</zh-CN><en>The three providers use public contract references so the core can precisely validate required-port correspondence.</en></lang>
+  // <lang><zh-CN>四个 provider 使用公开 contract reference，供 core 精确验证 query/detail/command/session required port 对应关系。</zh-CN><en>The four providers use public contract references so core can precisely validate query/detail/command/session required-port correspondence.</en></lang>
   const portProviders = {
     'catalog-query': {
       contract: { id: 'catalog-query-detail.query', version: CONTRACT_VERSION },
@@ -432,6 +759,10 @@ export function createCatalogQueryDetailMock(options = {}) {
     'entry-detail': {
       contract: { id: 'catalog-query-detail.detail', version: CONTRACT_VERSION },
       invoke: detail
+    },
+    [ENTRY_ACKNOWLEDGE_PORT_ID]: {
+      contract: { id: ENTRY_ACKNOWLEDGEMENT_CONTRACT_ID, version: CONTRACT_VERSION },
+      invoke: acknowledgeEntry
     },
     'session-state': {
       contract: { id: 'catalog-query-detail.session', version: CONTRACT_VERSION },

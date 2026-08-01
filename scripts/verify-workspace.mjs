@@ -108,10 +108,15 @@ const requiredFiles = [
   'docs/contracts/capability-adoption.md',
   'docs/contracts/application-template.md',
   'docs/contracts/solution-profile.md',
+  // <lang><zh-CN>受限确认 command 必须同时具备公开契约、schema 与正反向 plain-data 示例，避免把本地 mock 行为隐为实现细节。</zh-CN><en>The bounded acknowledgement command must include a public contract, schema, and positive/negative plain-data examples, avoiding concealment of local mock behavior as an implementation detail.</en></lang>
+  'docs/contracts/entry-acknowledgement.md',
   'docs/contracts/schemas/application-template.manifest.v1.schema.json',
   'docs/contracts/schemas/solution-profile.v1.schema.json',
+  'docs/contracts/schemas/entry-acknowledgement.command.v1.schema.json',
   'docs/contracts/examples/example.catalog-query-detail.mp-weixin.template.manifest.json',
   'docs/contracts/examples/example.catalog-query-detail.neutral.solution.profile.json',
+  'docs/contracts/examples/example.catalog-query-detail.acknowledge-entry.command.json',
+  'docs/contracts/examples/example.catalog-query-detail.acknowledge-entry.receipt.json',
   'docs/contracts/schemas/capability-adoption.profile.v1.schema.json',
   'docs/contracts/examples/example.catalog-composed.adoption.profile.json',
   'docs/contracts/examples/example.catalog-composed.replacement.profile.json',
@@ -133,6 +138,8 @@ const requiredFiles = [
   'test/solution-profile-runtime.test.mjs',
   // <lang><zh-CN>端到端纯 Node 测试固定 profile、显式 source、lifecycle、shell 与脱敏 observation。</zh-CN><en>The end-to-end pure-Node test fixes profile, explicit source, lifecycle, shell, and redacted observation.</en></lang>
   'test/representative-mp-weixin-slice.test.mjs',
+  // <lang><zh-CN>命令 transaction 测试固定 receipt、幂等、失败回退与 required port，不把命令接入页面。</zh-CN><en>The command-transaction test fixes receipt, idempotency, failure rollback, and required port without wiring the command into the page.</en></lang>
+  'test/command-transaction.test.mjs',
   // <lang><zh-CN>候选质量门禁是独立契约，测试文件必须可被基线 Node suite 直接执行。</zh-CN><en>The candidate quality gate is an independent contract and its test file must be directly executable by the baseline Node suite.</en></lang>
   'test/release-quality.test.mjs',
   // <lang><zh-CN>doctor JSON report 是支持 intake 的可复现边界，测试文件必须成为基线 Node suite 的显式入口。</zh-CN><en>The doctor JSON report is reproducible boundary for support intake and its test must be an explicit entry of baseline Node suite.</en></lang>

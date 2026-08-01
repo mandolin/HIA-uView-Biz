@@ -1,0 +1,8 @@
+{
+  "contractVersion": "1.0",
+  "kind": "command-receipt",
+  "commandId": "acknowledge-001",
+  "entryId": "entry-001",
+  "outcome": "acknowledged",
+  "revision": 1
+}

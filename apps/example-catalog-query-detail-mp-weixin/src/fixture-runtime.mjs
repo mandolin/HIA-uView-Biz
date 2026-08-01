@@ -561,6 +561,22 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
     return createFailure(copyDiagnostics(solutionResolution.diagnostics));
   }
 
+  // <lang><zh-CN>代表性模板当前固定提供 acknowledge command port，因此 read 与 acknowledge package 都必须可用；页面尚不投影 command control，检查只阻止未授权组合形成 provider。</zh-CN><en>The representative template currently fixes an acknowledge-command port, so both read and acknowledge packages must be available; page projects no command control yet, and this check only prevents unauthorized composition from forming provider.</en></lang>
+  const hasRequiredSolutionCapabilities = solutionResolution.isCapabilityAvailable(
+    'example.catalog-query-detail.read'
+  ) && solutionResolution.isCapabilityAvailable(
+    'example.catalog-query-detail.acknowledge'
+  );
+
+  // <lang><zh-CN>若 static solution 未选择完整中性组合，返回本层固定 diagnostic，而不以 template/source fallback 掩盖缺少 capability。</zh-CN><en>When static solution does not select complete neutral composition, return this layer's fixed diagnostic and do not hide missing capability through template/source fallback.</en></lang>
+  if (!hasRequiredSolutionCapabilities) {
+    return createFailure([createDiagnostic(
+      'representative.solution.capability.unavailable',
+      '代表性解决方案缺少必需的中性能力组合。',
+      'The representative solution lacks the required neutral capability composition.'
+    )]);
+  }
+
   // <lang><zh-CN>fixture options 在 source 构造前校验，拒绝任意 callback 或连接字段。</zh-CN><en>Validate fixture options before source construction, rejecting an arbitrary callback or connection field.</en></lang>
   const fixtureValidation = validateFixtureOptions(profile.sourceMode, fixtureOptions);
 

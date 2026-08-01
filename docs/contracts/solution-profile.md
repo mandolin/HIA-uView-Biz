@@ -9,7 +9,7 @@ solution profile 为一个已声明的渠道应用 profile 选择已审阅的静
 | Artifact / 产物 | Responsibility / 主责 |
 | --- | --- |
 | [Solution-profile schema / solution-profile schema](schemas/solution-profile.v1.schema.json) | Local JSON shape for solution identity, target channel profile, and top-level package selections / solution 身份、目标渠道 profile 与顶层 package 选择的本地 JSON 形态 |
-| [Neutral catalog solution example / 中性目录 solution 示例](examples/example.catalog-query-detail.neutral.solution.profile.json) | Selects the neutral read-only catalog package for the representative `mp-weixin` channel / 为代表性 `mp-weixin` 渠道选择中性只读目录 package |
+| [Neutral catalog solution example / 中性目录 solution 示例](examples/example.catalog-query-detail.neutral.solution.profile.json) | Selects neutral catalog-read plus bounded acknowledge capability packages for the representative `mp-weixin` channel / 为代表性 `mp-weixin` 渠道选择中性目录读取加受限确认 capability package |
 | `@hia-uview/biz-solution-profile-runtime` | Pure resolver for supplied profile/session plain data and reviewed static host descriptors / 针对提供的 profile/session plain data 与已审阅静态宿主描述符的纯 resolver |
 
 ## Shape and ownership / 形态与主责
@@ -28,15 +28,15 @@ The first slice supplies an anonymous mock session solely to test local availabi
 
 首轮只提供匿名 mock session 来测试本地 availability。它不含 subject、用户、租户、角色、token、cookie、storage key、过期时间、后端凭据、transport 或持久化。其本地 grant ID 不是实际授权系统，也不绑定微信或企业身份。
 
-The representative neutral solution selects `example.catalog-query-detail.read`. Its reviewed static closure also requires `example.reference-data.read`; the anonymous mock session supplies the two bounded grants necessary for that closure. The app still delegates actual module/implementation candidate assembly, lifecycle, and shell creation to the existing template/adoption/integration layers.
+The representative neutral solution selects `example.catalog-query-detail.read` and `example.catalog-query-detail.acknowledge`. The acknowledge package statically depends on the read package and requires the same catalog module. Their reviewed static closure also requires `example.reference-data.read`; the anonymous mock session supplies the three bounded grants necessary for that closure. This only proves reviewed local availability for the bounded mock command. The app still delegates actual module/implementation candidate assembly, lifecycle, and shell creation to the existing template/adoption/integration layers.
 
-代表性中性 solution 选择 `example.catalog-query-detail.read`。其已审阅静态闭包还要求 `example.reference-data.read`；匿名 mock session 提供该闭包所需的两个受限 grant。应用仍把实际 module/implementation candidate 装配、lifecycle 与 shell 创建委托给既有 template/adoption/integration 层。
+代表性中性 solution 选择 `example.catalog-query-detail.read` 与 `example.catalog-query-detail.acknowledge`。确认 package 在静态上依赖读取 package，且要求同一个 catalog module。其已审阅静态闭包还要求 `example.reference-data.read`；匿名 mock session 提供该闭包所需的三个受限 grant。这只证明受限 mock command 的已审阅本地 availability。应用仍把实际 module/implementation candidate 装配、lifecycle 与 shell 创建委托给既有 template/adoption/integration 层。
 
 ## Deliberate limits and future direction / 刻意限制与后续方向
 
-This first contract has no package discovery, loading, installation, dynamic import, arbitrary script, arbitrary dependency, remote configuration, URL, backend connection, HTTP, storage, real authentication, identity binding, role/tenant policy, write operation, industry profile, or dynamic component/template/style interpretation. Declarative dynamic presentation remains a future product capability, but any expansion must use a versioned contract and fixed compiled boundaries rather than executable configuration.
+This first contract has no package discovery, loading, installation, dynamic import, arbitrary script, arbitrary dependency, remote configuration, URL, backend connection, HTTP, storage, real authentication, identity binding, role/tenant policy, persistent or backend write operation, industry profile, or dynamic component/template/style interpretation. It permits only the separately contracted, instance-local mock acknowledgement command. Declarative dynamic presentation remains a future product capability, but any expansion must use a versioned contract and fixed compiled boundaries rather than executable configuration.
 
-此首轮契约不包含 package discovery、加载、安装、动态 import、任意脚本、任意依赖、远端配置、URL、后端连接、HTTP、storage、真实认证、身份绑定、角色/租户 policy、写操作、行业 profile 或动态 component/template/style 解释。声明式动态呈现仍是未来产品能力，但任何扩展都必须使用版本化契约与固定已编译边界，而非可执行配置。
+此首轮契约不包含 package discovery、加载、安装、动态 import、任意脚本、任意依赖、远端配置、URL、后端连接、HTTP、storage、真实认证、身份绑定、角色/租户 policy、持久化或后端写操作、行业 profile 或动态 component/template/style 解释。它只允许另行契约化、instance-local 的 mock 确认 command。声明式动态呈现仍是未来产品能力，但任何扩展都必须使用版本化契约与固定已编译边界，而非可执行配置。
 
 These capabilities are temporarily not adopted, not permanently excluded. A later adoption requires a reviewed trust model, versioned contract, tests, rollback plan, and explicit product decision.
 

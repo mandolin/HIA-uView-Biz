@@ -1,7 +1,7 @@
 /**
- * <lang><zh-CN>中性目录—查询—详情能力的 injected-wire adapter fixture：独立实现 query/detail wire mapping、mock session 与可选进程内 query cache，不连接实际后端。</zh-CN><en>Injected-wire adapter fixture for the neutral catalog-query-detail capability: independently implements query/detail wire mapping, mock session, and optional process-local query cache without connecting to a real backend.</en></lang>
- * @lang zh-CN 所有 wire 值和 entry 均为本 extension 自有测试数据；本模块不读取网络、环境、文件、storage、credential、identity provider、Directus、UI 或 route。
- * @lang en Every wire value and entry is test data owned by this extension; this module reads no network, environment, file, storage, credential, identity provider, Directus, UI, or route.
+ * <lang><zh-CN>中性目录—查询—详情能力的 injected-wire adapter fixture：独立实现 query/detail wire mapping、mock session、局部 acknowledge transaction 与可选进程内 query cache，不连接实际后端。</zh-CN><en>Injected-wire adapter fixture for the neutral catalog-query-detail capability: independently implements query/detail wire mapping, mock session, local acknowledge transaction, and optional process-local query cache without connecting to a real backend.</en></lang>
+ * @lang zh-CN 所有 wire 值和 entry 均为本 extension 自有测试数据；command 只复用同仓中性 transaction contract。本模块不读取网络、环境、文件、storage、credential、identity provider、Directus、UI 或 route。
+ * @lang en Every wire value and entry is test data owned by this extension; command reuses only same-repository neutral transaction contract. This module reads no network, environment, file, storage, credential, identity provider, Directus, UI, or route.
  */
 
 // <lang><zh-CN>只依赖同仓纯 adapter runtime，不导入 core、app shell、UI 或 backend SDK。</zh-CN><en>Depend only on the same-repository pure adapter runtime, importing neither core, app shell, UI, nor a backend SDK.</en></lang>
@@ -9,6 +9,11 @@ import {
   ADAPTER_CONTRACT_VERSION,
   createReadAdapter
 } from '@hia-uview/biz-adapter-runtime';
+
+// <lang><zh-CN>command 使用 module-owned 的纯 in-memory transaction；它不是 wire request、HTTP write 或 adapter runtime 的扩张。</zh-CN><en>Command uses module-owned pure in-memory transaction; it is neither wire request, HTTP write, nor an expansion of adapter runtime.</en></lang>
+import {
+  createEntryAcknowledgementMockTransaction
+} from '@hia-uview/biz-example-catalog-query-detail';
 
 /**
  * <lang><zh-CN>中性 module 与 adapter port 共用的固定 contract version。</zh-CN><en>The fixed contract version shared by the neutral module and adapter ports.</en></lang>
@@ -220,7 +225,7 @@ function createDetailDeclaration() {
  * @lang en The manifest describes fixture-only engineering delivery and does not acquire module business ownership.
  */
 function createImplementationPackage() {
-  // <lang><zh-CN>提供 query/detail adapter 和同契约 mock session，供 core 显式校验。</zh-CN><en>Provide query/detail adapters and a same-contract mock session for explicit core validation.</en></lang>
+  // <lang><zh-CN>提供 query/detail adapter、同契约 mock session 与明确 mock-command port，供 core 显式校验。</zh-CN><en>Provide query/detail adapters, same-contract mock session, and explicit mock-command port for core validation.</en></lang>
   return {
     manifestVersion: CONTRACT_VERSION,
     kind: 'implementation-package',
@@ -232,7 +237,7 @@ function createImplementationPackage() {
     },
     runtime: {
       targets: ['node'],
-      surfaces: ['adapter', 'mock-session']
+      surfaces: ['adapter', 'mock-command', 'mock-session']
     },
     provides: [
       {
@@ -248,6 +253,14 @@ function createImplementationPackage() {
         kind: 'adapter',
         contract: {
           id: 'catalog-query-detail.detail',
+          version: CONTRACT_VERSION
+        }
+      },
+      {
+        id: 'entry-acknowledge',
+        kind: 'mock-command',
+        contract: {
+          id: 'catalog-query-detail.acknowledgement',
           version: CONTRACT_VERSION
         }
       },
@@ -588,6 +601,11 @@ export function createCatalogQueryDetailAdapterFixture(options = {}) {
     };
   };
 
+  // <lang><zh-CN>wire fixture 也拥有自己的成功 transaction instance；它不穿透或模拟 write wire exchange，且与 query/detail cache 相互隔离。</zh-CN><en>Wire fixture also owns its own success transaction instance; it performs or simulates no write-wire exchange and remains isolated from query/detail cache.</en></lang>
+  const acknowledgementTransaction = createEntryAcknowledgementMockTransaction({
+    transactionMode: 'success'
+  });
+
   /**
    * <lang><zh-CN>合并 query/detail runtime 的计数 observation。</zh-CN><en>Combines count-only observations from query/detail runtimes.</en></lang>
    *
@@ -616,12 +634,20 @@ export function createCatalogQueryDetailAdapterFixture(options = {}) {
     detailInitialization.controller.clearCache();
   };
 
-  // <lang><zh-CN>core 只接收 implementation package 和三个显式 provider；adapter controller/declarations 保留在 fixture owner 一侧。</zh-CN><en>The core receives only the implementation package and three explicit providers; adapter controllers/declarations stay with the fixture owner.</en></lang>
+  // <lang><zh-CN>core 只接收 implementation package 和四个显式 provider；adapter controller/declarations 与 transaction state 保留在 fixture owner 一侧。</zh-CN><en>The core receives only implementation package and four explicit providers; adapter controllers/declarations and transaction state remain with fixture owner.</en></lang>
   return {
     implementationPackage: createImplementationPackage(),
     portProviders: {
       'catalog-query': queryInitialization.provider,
       'entry-detail': detailInitialization.provider,
+      'entry-acknowledge': {
+        contract: {
+          id: 'catalog-query-detail.acknowledgement',
+          version: CONTRACT_VERSION
+        },
+        // <lang><zh-CN>provider 只委托本 instance 的纯 transaction，不携带 query/detail wire、adapter controller 或 session 值。</zh-CN><en>Provider delegates only to this instance's pure transaction and carries no query/detail wire, adapter controller, or session value.</en></lang>
+        invoke: acknowledgementTransaction.invoke
+      },
       'session-state': {
         contract: {
           id: 'catalog-query-detail.session',

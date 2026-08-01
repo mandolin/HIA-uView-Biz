@@ -34,6 +34,14 @@ function createRepresentativeCapabilityPackages() {
       dependsOn: ['example.reference-data.read'],
       requiredModuleIds: ['example.catalog-query-detail'],
       requiredGrantIds: ['catalog.read']
+    },
+    {
+      packageVersion: '1.0',
+      kind: 'solution-capability-package',
+      id: 'example.catalog-query-detail.acknowledge',
+      dependsOn: ['example.catalog-query-detail.read'],
+      requiredModuleIds: ['example.catalog-query-detail'],
+      requiredGrantIds: ['catalog.acknowledge']
     }
   ];
 }
@@ -65,6 +73,6 @@ export function createAnonymousMockSession() {
   return {
     sessionVersion: '1.0',
     kind: 'anonymous-mock-session',
-    grantIds: ['reference-data.read', 'catalog.read']
+    grantIds: ['reference-data.read', 'catalog.read', 'catalog.acknowledge']
   };
 }

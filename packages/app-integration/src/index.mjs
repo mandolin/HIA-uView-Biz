@@ -97,6 +97,7 @@ const ACTION_KEYS = Object.freeze(['id', 'from', 'to']);
 const ALLOWED_SURFACES = new Set([
   'adapter',
   'channel-projection',
+  'mock-command',
   'mock-session',
   'presentation-block'
 ]);

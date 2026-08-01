@@ -89,19 +89,23 @@ shell bridge 始终使用固定 primary module ID 调用活动 adoption runtime�
 
 ## Adapter extension boundary / Adapter 扩展边界
 
-A slot can require implementation surface kinds such as `adapter` or `mock-session`. The integration runtime checks only reviewed implementation-manifest metadata. It does not call a provider during validation and does not infer a package from an implementation ID.
+A slot can require implementation surface kinds such as `adapter`, `mock-session`, or `mock-command`. The integration runtime checks only reviewed implementation-manifest metadata. It does not call a provider during validation and does not infer a package from an implementation ID.
 
-slot 可以要求 `adapter`、`mock-session` 等 implementation surface kind。integration runtime 只检查已审阅 implementation-manifest metadata；它不会在校验时调用 provider，也不会从 implementation ID 推断 package。
+slot 可以要求 `adapter`、`mock-session`、`mock-command` 等 implementation surface kind。integration runtime 只检查已审阅 implementation-manifest metadata；它不会在校验时调用 provider，也不会从 implementation ID 推断 package。
 
 The neutral template can therefore accept either the mandatory mock implementation or the existing injected-wire adapter extension when the caller supplies the corresponding complete unit explicitly. There is no implicit fallback between them.
 
 因此，当调用方显式提供对应完整 unit 时，中性 template 可以接受必备 mock implementation 或现有 injected-wire adapter extension。二者之间不存在隐式 fallback。
 
+The current catalog slot also requires a `mock-command` surface for its bounded `entry-acknowledge` port. Both local implementations supply an instance-local deterministic transaction; the injected-wire fixture still has no write wire exchange, and the representative page has no command control in this cycle.
+
+当前 catalog slot 还要求其受限 `entry-acknowledge` port 的 `mock-command` surface。两个本地 implementation 都提供 instance-local 确定性事务；injected-wire fixture 仍没有写 wire exchange，代表性页面在本周期也没有命令控件。
+
 ## Deliberate limits / 刻意限制
 
-The contract does not define optional/repeated slots, template inheritance, source copying, code generation, a CLI, filesystem loading, JSON/YAML parsing, package discovery, npm installation, dynamic import, scripts, expressions, component paths, URLs, connections, real backend or identity, credential handling, storage, writes, industry fields, deployment, or publication.
+The contract does not define optional/repeated slots, template inheritance, source copying, code generation, a CLI, filesystem loading, JSON/YAML parsing, package discovery, npm installation, dynamic import, scripts, expressions, component paths, URLs, connections, real backend or identity, credential handling, storage, persistent/backend writes, industry fields, deployment, or publication. Its one `mock-command` surface is only the separately contracted in-memory fixture transaction.
 
-本契约不定义 optional/repeated slot、template inheritance、源码复制、代码生成、CLI、文件加载、JSON/YAML 解析、package discovery、npm 安装、动态 import、脚本、表达式、组件路径、URL、连接、真实 backend/identity、credential 处理、storage、写操作、行业字段、部署或发布。
+本契约不定义 optional/repeated slot、template inheritance、源码复制、代码生成、CLI、文件加载、JSON/YAML 解析、package discovery、npm 安装、动态 import、脚本、表达式、组件路径、URL、连接、真实 backend/identity、credential 处理、storage、持久/后端写操作、行业字段、部署或发布。其唯一 `mock-command` surface 只是独立契约定义的内存 fixture transaction。
 
 These capabilities are not permanently excluded. Each requires a separate versioned contract, trust model, tests, rollback plan, and explicit adoption decision.
 

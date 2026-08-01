@@ -1,0 +1,6 @@
+{
+  "contractVersion": "1.0",
+  "kind": "acknowledge-entry",
+  "commandId": "acknowledge-001",
+  "entryId": "entry-001"
+}

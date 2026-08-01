@@ -443,7 +443,7 @@ function validatePortProviders(businessModule, portProviders, diagnostics) {
 }
 
 /**
- * <lang><zh-CN>由已验证的显式 provider 创建只读 composition 调用面。</zh-CN><en>Creates a read-only composition invocation surface from validated explicit providers.</en></lang>
+ * <lang><zh-CN>由已验证的显式 provider 创建受限 composition 调用面。</zh-CN><en>Creates a bounded composition invocation surface from validated explicit providers.</en></lang>
  *
  * @param {object} businessModule 已验证业务模块。 / Validated business module.
  * @param {object} implementationPackage 已验证实现包。 / Validated implementation package.

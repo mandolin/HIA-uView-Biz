@@ -61,17 +61,17 @@ HIA-uView 只作为呈现层依赖。未来集成可以使用已发布且带版�
 
 ## Initial example boundary / 首个示例边界
 
-The initial neutral profile identifier is `example.catalog-query-detail`, and its example object is `entry`. It is a read-only example for catalog, query, and detail behavior, not an industry package or a production data model.
+The initial neutral profile identifier is `example.catalog-query-detail`, and its example object is `entry`. Its catalog, query, and detail behavior is read-only; it additionally defines one separately contracted instance-local acknowledgement mock command. It is not an industry package or a production data model.
 
-首个中性 profile 标识为 `example.catalog-query-detail`，示例对象为 `entry`。它是用于目录、查询和详情行为的只读示例，不是行业包或生产数据模型。
+首个中性 profile 标识为 `example.catalog-query-detail`，示例对象为 `entry`。其目录、查询和详情行为为只读；另行定义一个已契约化、instance-local 的确认 mock command。它不是行业包或生产数据模型。
 
 The canonical query uses a module-owned filter schema plus `page` and `pageSize`. Cursor or offset can be an adapter capability only when conversion is lossless; otherwise the adapter declares its supported pagination mode rather than pretending to support page jumps.
 
 规范化 query 使用模块自有的 filter schema 加 `page` 与 `pageSize`。cursor 或 offset 只能在转换无损时作为 adapter capability；否则 adapter 必须声明其支持的分页模式，不能假装支持页码跳转。
 
-The initial boundary includes deterministic mock data, a mock or anonymous session port, canonical query/detail result and failure contracts, and a restricted route projection. It excludes real authentication, writes, preferences, CMS or rich text, industry packages, a Directus adapter, and production data.
+The initial boundary includes deterministic mock data, a mock or anonymous session port, canonical query/detail result and failure contracts, one bounded instance-local acknowledgement mock command, and a restricted route projection. It excludes real authentication, persistent/backend writes, preferences, CMS or rich text, industry packages, a Directus adapter, and production data.
 
-首个边界包含确定性的 mock 数据、mock 或匿名 session port、规范化的 query/detail 结果与失败契约，以及受限路由投影。它不包含真实认证、写操作、偏好、CMS 或富文本、行业包、Directus adapter 或生产数据。
+首个边界包含确定性的 mock 数据、mock 或匿名 session port、规范化的 query/detail 结果与失败契约、一个受限 instance-local 确认 mock command，以及受限路由投影。它不包含真实认证、持久化/后端写操作、偏好、CMS 或富文本、行业包、Directus adapter 或生产数据。
 
 ## Alternatives considered / 备选项
 

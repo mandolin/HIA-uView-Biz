@@ -83,6 +83,8 @@ const requiredFiles = [
   'docs/development.md',
   'docs/adoption.md',
   'docs/migration.md',
+  // <lang><zh-CN>生命周期与选择过渡指南必须与迁移/采用说明同步存在，避免把进程内 replacement 写成持久 migration。</zh-CN><en>The lifecycle-and-selection-transition guide must exist alongside migration/adoption guidance, preventing process-local replacement from being described as persistent migration.</en></lang>
+  'docs/lifecycle-transition.md',
   'docs/doctor.md',
   'docs/support.md',
   // <lang><zh-CN>local source-trial 公开指南固定 commit-bound 评估、显式 compiler/simulator 和 source-control rollback 边界。</zh-CN><en>The local source-trial public guide fixes commit-bound evaluation and explicit compiler, simulator, and source-control rollback boundaries.</en></lang>

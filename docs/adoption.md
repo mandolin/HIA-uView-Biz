@@ -56,6 +56,13 @@ The current framework does not supply real transport, identity, storage, write f
 
 当前框架不提供真实 transport、identity、storage、write flow、router/deep-link、dynamic component、remote configuration、package discovery、installer、generator 或 migration engine。加入这些边界前必须分别设计。
 
+An explicit candidate replacement is limited to one current process: it is not a package upgrade or a persistent migration.
+Use the [lifecycle and selection-transition boundary](lifecycle-transition.md) to distinguish contract shape versions,
+in-memory replacement receipts, and manual source-checkout rollback.
+
+显式 candidate replacement 仅限于当前进程：它不是 package upgrade 或 persistent migration。请使用[生命周期与选择过渡边界]
+(lifecycle-transition.md) 区分 contract shape version、内存 replacement receipt 与人工 source-checkout rollback。
+
 Continue with the [migration guide](migration.md), [doctor reference](doctor.md), [support guide](support.md), and [development notes](development.md).
 
 接下来请阅读[migration 指南](migration.md)、[doctor 参考](doctor.md)、[support 指南](support.md)和[开发说明](development.md)。

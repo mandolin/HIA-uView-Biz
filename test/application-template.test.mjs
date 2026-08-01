@@ -217,6 +217,11 @@ function assertAdapterReplacementAndRollback() {
     'example.catalog-query-detail.mock-implementation'
   );
 
+  // <lang><zh-CN>初始 shell 已可完成 canonical 查询；后续断言只证明同一 bridge 的候选替换，不形成 profile loader 或运行时迁移 API。</zh-CN><en>The initial shell can already complete a canonical query; later assertions prove only candidate replacement through the same bridge and create neither a profile loader nor a runtime migration API.</en></lang>
+  const initialPage = initialization.shell.query(createQueryRequest());
+  assert.equal(initialPage.kind, 'page');
+  assert.equal(initialPage.entries[0].id, 'entry-001');
+
   // <lang><zh-CN>显式提供完整 wire candidate，并通过 integration 的 slot gate 后原子协调。</zh-CN><en>Supply a complete wire candidate explicitly and reconcile it atomically after the integration slot gate.</en></lang>
   const wireCandidate = createCandidate('wire-fixture', 'success');
   const replacement = initialization.reconcile({
@@ -253,6 +258,12 @@ function assertAdapterReplacementAndRollback() {
     'application-integration.slot-surface-missing'
   );
   assert.deepEqual(initialization.getAdoptionSnapshot(), beforeFailure);
+
+  // <lang><zh-CN>失败候选后，同一 shell 仍路由到已成功的 wire candidate；这只验证当前进程回退，不保留或迁移任何外部状态。</zh-CN><en>After a failed candidate, the same shell still routes to the successfully adopted wire candidate; this verifies current-process rollback only and retains or migrates no external state.</en></lang>
+  const pageAfterFailedReplacement = initialization.shell.query(createQueryRequest());
+  assert.equal(pageAfterFailedReplacement.kind, 'page');
+  assert.equal(pageAfterFailedReplacement.entries[0].id, 'entry-001');
+  assert.equal(wireCandidate.getObservation().query.exchanges, 2);
 }
 
 /**

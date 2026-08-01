@@ -10,6 +10,12 @@ The framework is informed by the uView ecosystem at the presentation level, but 
 
 框架在 presentation 层面受到 uView 生态启发，但不声明与这些项目的 API、option、theme、routing、transport、session、data-model 或 lifecycle compatibility。
 
+Read the [lifecycle and selection-transition boundary](lifecycle-transition.md) before interpreting a contract version or an
+in-memory candidate replacement as migration. They are separate concerns with different evidence and rollback meanings.
+
+在把 contract version 或内存 candidate replacement 解释为 migration 前，请阅读[生命周期与选择过渡边界](lifecycle-transition.md)。
+它们是具有不同证据和回退含义的独立事项。
+
 ## Use a staged manual path / 使用分阶段手工路径
 
 1. Record the current application behavior, user-visible states, data ownership, failure modes, and rollback point before changing code.

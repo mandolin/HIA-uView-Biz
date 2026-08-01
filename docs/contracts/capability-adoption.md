@@ -86,6 +86,12 @@ A `replace` action also states the previous and next implementation IDs. It does
 
 `replace` 动作还会说明先前与后继 implementation ID，但不会暴露任一单元。
 
+The action is a bounded current-process composition receipt, not a package upgrade, profile-data conversion, persistent
+migration checkpoint, or deployment record. See the [lifecycle and selection-transition boundary](../lifecycle-transition.md).
+
+该动作是受限的当前进程 composition receipt，不是 package upgrade、profile-data conversion、persistent migration checkpoint
+或 deployment record。参见[生命周期与选择过渡边界](../lifecycle-transition.md)。
+
 ## Runtime surface / Runtime 表面
 
 The initial adoption runtime exposes:
@@ -127,4 +133,3 @@ This contract does not authorize package discovery, npm installation, filesystem
 These capabilities are not permanently excluded. Each requires a separate versioned design and explicit validation before adoption.
 
 这些能力并非永久排除。每一项都必须先建立独立版本化设计并明确验证，才能采用。
-

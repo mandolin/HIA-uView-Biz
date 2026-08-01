@@ -110,8 +110,10 @@ async function testRunsDefaultWireSliceEndToEnd() {
   assert.deepEqual(Object.keys(representativeRuntime).sort(), [
     'createQueryRequest',
     'diagnostics',
+    'getBlockProjection',
     'getLifecycleSnapshot',
     'getObservation',
+    'getPresentationSnapshot',
     'getProfileSnapshot',
     'isBlockEnabled',
     'ok',
@@ -120,6 +122,22 @@ async function testRunsDefaultWireSliceEndToEnd() {
   ]);
   assert.equal(representativeRuntime.ok, true);
   assert.equal(representativeRuntime.sourceMode, 'wire-fixture');
+
+  // <lang><zh-CN>默认 profile 的排序是受限 block metadata；snapshot 不包含 component、template、style、URL 或 profile 原文。</zh-CN><en>The default profile order is bounded block metadata; the snapshot contains no component, template, style, URL, or raw profile content.</en></lang>
+  assert.deepEqual(representativeRuntime.getPresentationSnapshot(), [
+    { id: 'query-context', visible: true, order: 1 },
+    { id: 'runtime-status', visible: true, order: 2 },
+    { id: 'catalog-list', visible: true, order: 3 },
+    { id: 'entry-detail', visible: true, order: 4 }
+  ]);
+
+  // <lang><zh-CN>单个 projection 只允许读取已注册 block 的稳定显示/排序值；未知 ID 不能成为动态组件选择。</zh-CN><en>An individual projection exposes only stable visibility and order for a registered block; an unknown ID cannot become a dynamic component selection.</en></lang>
+  assert.deepEqual(representativeRuntime.getBlockProjection('catalog-list'), {
+    id: 'catalog-list',
+    visible: true,
+    order: 3
+  });
+  assert.equal(representativeRuntime.getBlockProjection('unknown-block'), null);
 
   // <lang><zh-CN>lifecycle snapshot 证明明确实现已启用，同时不暴露 composition 或 provider。</zh-CN><en>The lifecycle snapshot proves the explicit implementation is enabled while exposing no composition or provider.</en></lang>
   const initialLifecycle = representativeRuntime.getLifecycleSnapshot();
@@ -169,6 +187,11 @@ async function testRunsDefaultWireSliceEndToEnd() {
   // <lang><zh-CN>调用方修改 lifecycle snapshot 后重新读取，必须仍得到 runtime 自有 enabled 状态。</zh-CN><en>After caller mutation of a lifecycle snapshot, rereading must still return the runtime-owned enabled state.</en></lang>
   initialLifecycle[0].state = 'caller-mutated';
   assert.equal(representativeRuntime.getLifecycleSnapshot()[0].state, 'enabled');
+
+  // <lang><zh-CN>调用方修改 presentation snapshot 不会改变 runtime 拥有的排序；下一次读取仍返回已验证默认顺序。</zh-CN><en>Caller mutation of a presentation snapshot cannot change runtime-owned ordering; the next read still returns the validated default order.</en></lang>
+  const presentationSnapshot = representativeRuntime.getPresentationSnapshot();
+  presentationSnapshot[0].order = 99;
+  assert.equal(representativeRuntime.getBlockProjection('query-context').order, 1);
 }
 
 /**
@@ -180,6 +203,7 @@ async function testRunsExplicitMockAndPresentationProjection() {
   // <lang><zh-CN>mock profile 显式隐藏两个可选应用区块，但保留契约要求的目录与详情区块。</zh-CN><en>The mock profile explicitly hides both optional application blocks while retaining contract-required catalog and detail blocks.</en></lang>
   const profile = await createMockProfile();
   profile.presentation.enabledBlocks = ['catalog-list', 'entry-detail'];
+  profile.presentation.blockOrder = ['entry-detail', 'catalog-list'];
 
   // <lang><zh-CN>first-page 是 allowlisted 本地 fixture case，不来自 profile、远端配置或脚本。</zh-CN><en>`first-page` is an allowlisted local fixture case and comes from neither profile, remote configuration, nor script.</en></lang>
   const representativeRuntime = createRepresentativeFixtureRuntime(profile, { fixtureCase: 'first-page' });
@@ -196,6 +220,12 @@ async function testRunsExplicitMockAndPresentationProjection() {
   assert.equal(representativeRuntime.isBlockEnabled('entry-detail'), true);
   assert.equal(representativeRuntime.isBlockEnabled('unknown-block'), false);
 
+  // <lang><zh-CN>mock profile 的全排列可与默认 profile 不同，但仍只排序两个已编译且已启用的 block。</zh-CN><en>The mock profile permutation may differ from the default profile, but still orders only two compiled and enabled blocks.</en></lang>
+  assert.deepEqual(representativeRuntime.getPresentationSnapshot(), [
+    { id: 'entry-detail', visible: true, order: 1 },
+    { id: 'catalog-list', visible: true, order: 2 }
+  ]);
+
   // <lang><zh-CN>mock query 使用 profile 的 pageSize 1，并保留 mock 公开的下一页语义。</zh-CN><en>The mock query uses profile page size 1 and retains the mock's public next-page semantics.</en></lang>
   const page = representativeRuntime.shell.query(representativeRuntime.createQueryRequest());
   assert.equal(page.pageSize, 1);
@@ -205,6 +235,36 @@ async function testRunsExplicitMockAndPresentationProjection() {
   const profileSnapshot = representativeRuntime.getProfileSnapshot();
   profileSnapshot.presentation.enabledBlocks.length = 0;
   assert.equal(representativeRuntime.isBlockEnabled('catalog-list'), true);
+}
+
+/**
+ * <lang><zh-CN>验证 presentation order 必须是 enabled 已登记 block 的完整无重复排列，并在 provider 前被拒绝。</zh-CN><en>Verifies presentation order must be a complete duplicate-free permutation of enabled registered blocks and is rejected before a provider.</en></lang>
+ * @lang zh-CN 反向输入含有类似脚本的字符串，以证明其只被当作不允许的 block 值，不被记录、解析或执行。
+ * @lang en The negative input contains a script-like string to prove it is treated only as a disallowed block value and is neither logged, parsed, nor executed.
+ */
+async function testRejectsInvalidPresentationOrderBeforeProvider() {
+  // <lang><zh-CN>保留合法 enabled 集合，只把 order 改为重复值和未登记值，隔离本断言的失败原因。</zh-CN><en>Keep the valid enabled set and change only order to duplicate and unregistered values, isolating the failure cause of this assertion.</en></lang>
+  const profile = await loadRepresentativeProfile();
+  profile.presentation.blockOrder = [
+    'query-context',
+    'runtime-status',
+    'catalog-list',
+    'javascript:untrusted'
+  ];
+
+  // <lang><zh-CN>失败 runtime 不创建 observation 或 shell，因而无法调用 provider。</zh-CN><en>A failed runtime creates neither observation nor shell and therefore cannot invoke a provider.</en></lang>
+  const initialization = createRepresentativeFixtureRuntime(profile);
+  assert.deepEqual(Object.keys(initialization).sort(), ['diagnostics', 'ok']);
+  assert.equal(initialization.ok, false);
+  assert.equal(
+    initialization.diagnostics.some(
+      (diagnostic) => diagnostic.code === 'representative.profile.presentation.block-order.invalid'
+    ),
+    true
+  );
+
+  // <lang><zh-CN>序列化诊断不得回显调用方提供的类似脚本值或任意 profile body。</zh-CN><en>Serialized diagnostics must not echo the caller-supplied script-like value or arbitrary profile body.</en></lang>
+  assert.equal(JSON.stringify(initialization).includes('javascript:untrusted'), false);
 }
 
 /**
@@ -243,4 +303,5 @@ async function testProjectsMockEmptyAndFailureStates() {
 test('rejects an invalid application profile without source fallback', testRejectsInvalidProfileWithoutFallback);
 test('runs the default wire fixture through lifecycle, shell, query, detail, and back', testRunsDefaultWireSliceEndToEnd);
 test('runs an explicit mock with registered presentation projection', testRunsExplicitMockAndPresentationProjection);
+test('rejects an invalid presentation order before provider use', testRejectsInvalidPresentationOrderBeforeProvider);
 test('projects deterministic empty and failure states through the same shell', testProjectsMockEmptyAndFailureStates);

@@ -24,6 +24,7 @@
     <!-- <lang><zh-CN>runtime status 是 profile 可选的已编译区块；它只显示显式 source、enabled lifecycle 与受限初始分页，不暴露 provider 或 manifest。</zh-CN><en>Runtime status is a profile-optional compiled block; it displays only explicit source, enabled lifecycle, and bounded initial paging and exposes no provider or manifest.</en></lang> -->
     <u-cell
       v-if="isRuntimeStatusVisible"
+      :style="presentationBlockStyle('runtime-status')"
       label="运行状态 / Runtime status"
       :value="runtimeStatusValue"
       :description="runtimeStatusDescription"
@@ -32,6 +33,7 @@
     <!-- <lang><zh-CN>query field 只在已验证 profile 启用该已编译区块时显示；中性 contract 当前不声明 filter 字段，因此按钮提交的 canonical filter 始终为空对象。</zh-CN><en>The query field displays only when the validated profile enables this compiled block; neutral contract declares no filter field at present, so the button submits an empty object as canonical filter.</en></lang> -->
     <u-field
       v-if="isQueryContextVisible"
+      :style="presentationBlockStyle('query-context')"
       label="查询上下文 / Query context"
       help-text="中性示例暂不解释筛选字段；提交仍验证目录 query 契约。 / The neutral example does not yet interpret filter fields; submission still validates the catalog-query contract."
     >
@@ -50,7 +52,11 @@
     />
 
     <!-- <lang><zh-CN>目录分支只在 shell 未投影 detail screen 时显示；它是组件内条件呈现，不是 host router 或页面栈。</zh-CN><en>The catalog branch displays only while shell has not projected detail screen; it is component-local conditional presentation, not a host router or page stack.</en></lang> -->
-    <u-stack v-if="isCatalogBlockVisible && !isDetailVisible" gap="md">
+    <u-stack
+      v-if="isCatalogBlockVisible && !isDetailVisible"
+      :style="presentationBlockStyle('catalog-list')"
+      gap="md"
+    >
       <!-- <lang><zh-CN>按钮提交完整最小 canonical request；其文案不承诺 queryContext 会成为未声明的业务筛选条件。</zh-CN><en>The button submits the complete minimum canonical request; its label does not promise queryContext becomes an undeclared business filter condition.</en></lang> -->
       <u-button
         label="运行目录查询 / Run catalog query"
@@ -87,7 +93,12 @@
     </u-stack>
 
     <!-- <lang><zh-CN>详情分支仅使用 shell 已选 entry 的 canonical detail；返回按钮调用单页 state reset，不操作平台回退栈。</zh-CN><en>The detail branch uses only canonical detail for shell-selected entry; its back button calls a single-page state reset and does not operate a platform back stack.</en></lang> -->
-    <u-stack v-else-if="isEntryDetailBlockVisible" class="catalog-fixture__detail" gap="md">
+    <u-stack
+      v-else-if="isEntryDetailBlockVisible"
+      :style="presentationBlockStyle('entry-detail')"
+      class="catalog-fixture__detail"
+      gap="md"
+    >
       <!-- <lang><zh-CN>主 entry 字段来自 canonical detail；页面不补充行业字段、服务端字段、身份信息或未声明 metadata。</zh-CN><en>Primary entry fields come from canonical detail; the page adds no industry field, server field, identity information, or undeclared metadata.</en></lang> -->
       <u-cell
         label="条目 / Entry"
@@ -187,6 +198,32 @@ function sectionDescription(section) {
 
 // <lang><zh-CN>以仓内 profile 创建本页唯一代表性 runtime；初始化完成 profile/source/install/enable/shell，但不调用 query/detail port。</zh-CN><en>Create the page's sole representative runtime from the checked-in profile; initialization completes profile, source, install, enable, and shell but invokes no query or detail port.</en></lang>
 const runtimeInitialization = createRepresentativeFixtureRuntime(representativeProfile);
+
+/**
+ * <lang><zh-CN>将 runtime 已验证的 block projection 转为当前固定页面可消费的有限 flex 排序样式。</zh-CN><en>Converts a runtime-validated block projection into finite flex-order style consumable by the current fixed page.</en></lang>
+ *
+ * @param {string} blockId <lang><zh-CN>页面源码中写死的已登记 block 标识。</zh-CN><en>Registered block identifier written literally in page source.</en></lang>
+ * @returns {{order: number}|object} <lang><zh-CN>安全的整数 order 样式，或失败时空样式。</zh-CN><en>Safe integer order style, or an empty style on failure.</en></lang>
+ * @lang zh-CN helper 不接受 profile 值作为 CSS、class、component 或 template；它只读取 runtime 对字面 registered ID 返回的有限整数。
+ * @lang en The helper accepts no profile value as CSS, class, component, or template; it reads only a finite integer returned by runtime for a literal registered ID.
+ */
+function presentationBlockStyle(blockId) {
+  // <lang><zh-CN>初始化失败时没有可信 projection，返回空对象以让 validation message 保持独立处理。</zh-CN><en>With failed initialization there is no trusted projection, so return an empty object and let validation message handle it separately.</en></lang>
+  if (!runtimeInitialization.ok) {
+    return {};
+  }
+
+  // <lang><zh-CN>runtime 只会为已登记 block 返回 metadata；未知/隐藏/非整数情形不产生任意样式。</zh-CN><en>Runtime returns metadata only for registered blocks; unknown, hidden, or non-integer cases produce no arbitrary style.</en></lang>
+  const projection = runtimeInitialization.getBlockProjection(blockId);
+  if (projection === null || projection.visible !== true || !Number.isInteger(projection.order)) {
+    return {};
+  }
+
+  // <lang><zh-CN>预留固定 offset，使导航、notice 与初始化 validation 等非 profile 层保持在投影 block 前；结果仍是小型有限整数。</zh-CN><en>Reserve a fixed offset so non-profile layers such as navigation, notice, and initialization validation remain before projected blocks; the result is still a small finite integer.</en></lang>
+  return {
+    order: projection.order + 10
+  };
+}
 
 // <lang><zh-CN>仅在完整 runtime 初始化成功时保留 shell；失败时保持 null，所有 handler 都会安全地成为零 provider 调用。</zh-CN><en>Retain shell only after complete runtime initialization succeeds; otherwise keep null and every handler safely becomes zero provider invocation.</en></lang>
 const applicationShell = runtimeInitialization.ok ? runtimeInitialization.shell : null;

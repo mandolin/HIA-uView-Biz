@@ -1,5 +1,5 @@
 /**
- * <lang><zh-CN>校验受控 Biz `mp-weixin` fixture 的最小生成文件与固定项目配置；它只读取已生成的受忽略产物，不启动 compiler、DevTools、模拟器、设备、网络服务或发布。</zh-CN><en>Validates minimum generated files and fixed project configuration of controlled Biz `mp-weixin` fixture; it only reads generated ignored output and starts no compiler, DevTools, simulator, device, network service, or release.</en></lang>
+ * <lang><zh-CN>校验受控 Biz `mp-weixin` fixture 的最小生成文件、固定项目配置与受限 block-order 投影标记；它只读取已生成的受忽略产物，不启动 compiler、DevTools、模拟器、设备、网络服务或发布。</zh-CN><en>Validates minimum generated files, fixed project configuration, and bounded block-order projection markers of controlled Biz `mp-weixin` fixture; it only reads generated ignored output and starts no compiler, DevTools, simulator, device, network service, or release.</en></lang>
  * @lang zh-CN 调用方应先运行受控 build；本脚本不能把文件存在性升级为真实导入、运行、无障碍、跨端或发布证据。
  * @lang en Caller should run controlled build first; this script cannot elevate file existence to real import, runtime, accessibility, cross-platform, or release evidence.
  */
@@ -49,17 +49,33 @@ async function readGeneratedJson(relativePath) {
 }
 
 /**
+ * <lang><zh-CN>读取生成 output 内一个明确的纯文本文件，不执行其内容。</zh-CN><en>Reads one explicit plain-text file inside generated output without executing its content.</en></lang>
+ * @param {string} relativePath <lang><zh-CN>相对 output 根的白名单文本路径。</zh-CN><en>Allowlisted text path relative to output root.</en></lang>
+ * @returns {Promise<string>} <lang><zh-CN>仅供静态 marker 断言的 UTF-8 文本。</zh-CN><en>UTF-8 text used only for static-marker assertions.</en></lang>
+ * @lang zh-CN helper 不解析、import、eval 或运行生成脚本；它只读取固定首页 JS，防止检查器接触任意 output 路径。
+ * @lang en The helper neither parses, imports, evaluates, nor runs generated script; it reads only fixed home-page JS, preventing checker access to arbitrary output paths.
+ */
+async function readGeneratedText(relativePath) {
+  // <lang><zh-CN>固定相对路径与唯一 output root 组合，不能由命令行或环境改写。</zh-CN><en>Combine a fixed relative path with the sole output root; neither command line nor environment can rewrite it.</en></lang>
+  const filePath = resolve(outputDirectory, relativePath);
+
+  // <lang><zh-CN>只以 UTF-8 返回文字供正则断言；内容不会进入日志、诊断或任何运行时执行路径。</zh-CN><en>Return text only as UTF-8 for regular-expression assertions; content enters no log, diagnostic, or runtime-execution path.</en></lang>
+  return readFile(filePath, 'utf8');
+}
+
+/**
  * <lang><zh-CN>验证微信小程序可导入前提所需的最小静态 output 文件与配置。</zh-CN><en>Validates minimum static output files and configuration required as prerequisites for WeChat Mini Program import.</en></lang>
  * @returns {Promise<void>} <lang><zh-CN>全部文件与断言通过时 resolve。</zh-CN><en>Resolves when every file and assertion passes.</en></lang>
  * @lang zh-CN 检查不打开开发者工具；“可导入前提”只表示生成项目结构，而非实际 DevTools 导入或运行结论。
  * @lang en Check does not open DevTools; “import prerequisite” means only generated project structure, not actual DevTools import or runtime conclusion.
  */
 async function verifyMpWeixinFixtureOutput() {
-  // <lang><zh-CN>先读取三个编译器直接生成的 JSON 配置，后续断言不依赖命令行输出或本机语言环境。</zh-CN><en>Read three JSON configurations generated directly by compiler first; later assertions do not depend on command-line output or local language environment.</en></lang>
-  const [appConfiguration, projectConfiguration, pageConfiguration] = await Promise.all([
+  // <lang><zh-CN>先读取三个编译器直接生成的 JSON 配置及唯一首页脚本的文本；后续断言不依赖命令行输出或本机语言环境。</zh-CN><en>Read three compiler-generated JSON configurations and text of the sole home-page script first; later assertions do not depend on command-line output or local language environment.</en></lang>
+  const [appConfiguration, projectConfiguration, pageConfiguration, pageScript] = await Promise.all([
     readGeneratedJson('app.json'),
     readGeneratedJson('project.config.json'),
-    readGeneratedJson('pages/index/index.json')
+    readGeneratedJson('pages/index/index.json'),
+    readGeneratedText('pages/index/index.js')
   ]);
 
   // <lang><zh-CN>页面数组必须只声明 fixture 的唯一首页，防止 compiler 输出悄然扩展到未审阅页面路径。</zh-CN><en>Pages array must declare only fixture's sole home page, preventing compiler output from silently expanding to an unreviewed page path.</en></lang>
@@ -101,6 +117,25 @@ async function verifyMpWeixinFixtureOutput() {
       `Generated component path for ${componentName} must remain inside the controlled UI source subtree.`
     );
   }
+
+  // <lang><zh-CN>生成首页必须保留默认 profile 的四个 block 排列；该断言只确认静态数据被编译，不执行页面或动态解释其值。</zh-CN><en>The generated home page must retain the default profile's four-block permutation; this assertion confirms only static-data compilation and executes neither page nor dynamic interpretation of its values.</en></lang>
+  assert.match(
+    pageScript,
+    /blockOrder:\["query-context","runtime-status","catalog-list","entry-detail"\]/,
+    'Generated page script must retain the checked-in bounded block order.'
+  );
+
+  // <lang><zh-CN>生成首页必须调用 runtime 的受限 projection，并只把有限整数加固定 offset 写入 flex order；不接受动态 component/template/script 标记。</zh-CN><en>The generated home page must call runtime bounded projection and write only a finite integer plus fixed offset into flex order; it accepts no dynamic component/template/script marker.</en></lang>
+  assert.match(
+    pageScript,
+    /getBlockProjection/,
+    'Generated page script must retain the registered-block projection boundary.'
+  );
+  assert.match(
+    pageScript,
+    /order:[A-Za-z_$][A-Za-z0-9_$]*\.order\+10/,
+    'Generated page script must derive flex order from the bounded projection integer.'
+  );
 
   // <lang><zh-CN>把每个已登记组件展开为微信运行时实际需要的四类生成文件，避免 registry 路径存在但模块或模板缺失。</zh-CN><en>Expand every registered component into the four generated file types required by WeChat runtime, preventing a registry path from existing while its module or template is absent.</en></lang>
   const requiredGeneratedComponentFiles = expectedComponentNames.flatMap((componentName) => (

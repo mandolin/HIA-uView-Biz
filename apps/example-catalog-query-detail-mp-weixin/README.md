@@ -2,7 +2,7 @@
 
 This non-published representative fixture consumes the private versioned catalog application template through one validated app profile and renders one UniApp Vue 3 `mp-weixin` page. The template package supplies the complete explicit reference-data plus selected catalog candidate; the generic integration runtime validates its slots/surfaces, adopts it, and establishes the shell. Pure Node acceptance exercises profile, template integration, explicit source, query, detail, and back-to-catalog behavior; the controlled compiler verifies the checked-in Vue projection. It is not a published application, generator, copied scaffold, production backend adapter, authentication sample, or industry starter.
 
-此非发布代表性 fixture 通过一个已校验 app profile 消费私有版本化 catalog 应用模板，并呈现一个 UniApp Vue 3 `mp-weixin` 页面。模板包提供完整显式 reference-data 加所选 catalog 候选；通用 integration runtime 校验其 slots/surfaces、采用候选并建立 shell。纯 Node 验收执行 profile、模板集成、显式 source、query、detail 与返回目录行为；受控 compiler 校验仓内 Vue 投影。它不是已发布应用、生成器、复制式脚手架、生产后端 adapter、认证示例或行业 starter。
+此非发布代表性 fixture 通过一个已校验 app profile 消费私有版本化 catalog 应用模板，并呈现一个 UniApp Vue 3 `mp-weixin` 页面。模板包提供完整显式 reference-data 加所选 catalog 候选；通用 integration runtime 校验其 slots/surfaces、采用候选并建立 shell。profile 只可控制已编译区块的可见性、无重复完整排序和初始分页，绝不解释组件、模板、样式文本或脚本。纯 Node 验收执行 profile、模板集成、显式 source、query、detail 与返回目录行为；受控 compiler 校验仓内 Vue 投影。它不是已发布应用、生成器、复制式脚手架、生产后端 adapter、认证示例或行业 starter。
 
 The acceptance boundary is defined by the [representative slice contract](../../docs/contracts/representative-mp-weixin-slice.md). The app consumes `src/representative.profile.json`, whose shape is fixed by the [versioned profile schema](../../docs/contracts/schemas/representative-mp-weixin.profile.v1.schema.json).
 

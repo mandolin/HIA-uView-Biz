@@ -50,10 +50,10 @@ const QUERY_KEYS = Object.freeze(['page', 'pageSize']);
 
 /**
  * <lang><zh-CN>presentation 对象唯一允许的字段集合。</zh-CN><en>Only fields allowed on the presentation object.</en></lang>
- * @lang zh-CN 区块选择是唯一声明式呈现控制面，不包含组件路径或表达式。
- * @lang en Block selection is the sole declarative presentation surface and contains no component path or expression.
+ * @lang zh-CN 区块选择与排序是唯一声明式呈现控制面，不包含组件路径、样式文本或表达式。
+ * @lang en Block selection and order are the sole declarative presentation surface and contain no component path, style text, or expression.
  */
-const PRESENTATION_KEYS = Object.freeze(['enabledBlocks']);
+const PRESENTATION_KEYS = Object.freeze(['enabledBlocks', 'blockOrder']);
 
 /**
  * <lang><zh-CN>可显式选择的本地 source mode。</zh-CN><en>Local source modes that may be selected explicitly.</en></lang>
@@ -323,7 +323,7 @@ function validateRepresentativeProfile(candidateProfile) {
     ));
   }
 
-  // <lang><zh-CN>presentation 只能包含 enabledBlocks，其他布局字段需要未来显式版本。</zh-CN><en>Presentation can contain only enabledBlocks; another layout field requires a future explicit version.</en></lang>
+  // <lang><zh-CN>presentation 只能包含 enabledBlocks 与 blockOrder；其他布局字段需要未来显式版本。</zh-CN><en>Presentation can contain only enabledBlocks and blockOrder; another layout field requires a future explicit version.</en></lang>
   const presentationIsRecord = isRecord(candidateProfile.presentation);
   if (!presentationIsRecord || !hasExactOwnKeys(candidateProfile.presentation, PRESENTATION_KEYS)) {
     diagnostics.push(createDiagnostic(
@@ -381,6 +381,28 @@ function validateRepresentativeProfile(candidateProfile) {
     }
   }
 
+  // <lang><zh-CN>blockOrder 必须是 enabledBlocks 的完整无重复排列；它只声明已有 block 的相对位置。</zh-CN><en>Block order must be a complete duplicate-free permutation of enabled blocks; it declares only relative positions of existing blocks.</en></lang>
+  const blockOrder = presentationIsRecord ? candidateProfile.presentation.blockOrder : null;
+  const blockOrderIsArray = Array.isArray(blockOrder);
+  const hasValidBlockOrder = blockOrderIsArray
+    && blocksAreArray
+    && blockOrder.length === enabledBlocks.length
+    && blockOrder.every((blockId) => (
+      typeof blockId === 'string'
+      && REGISTERED_BLOCK_IDS.has(blockId)
+      && enabledBlocks.includes(blockId)
+    ))
+    && new Set(blockOrder).size === blockOrder.length;
+
+  // <lang><zh-CN>拒绝缺失、重复、未知或不匹配排序；不自动推断默认顺序、组件、样式或 route。</zh-CN><en>Reject a missing, duplicate, unknown, or mismatched order; infer no default order, component, style, or route.</en></lang>
+  if (!hasValidBlockOrder) {
+    diagnostics.push(createDiagnostic(
+      'representative.profile.presentation.block-order.invalid',
+      '代表性应用 profile 的呈现区块排序不合法。',
+      'The representative application profile has an invalid presentation-block order.'
+    ));
+  }
+
   // <lang><zh-CN>任一错误都会在 source/provider 构造前返回完整受限诊断列表。</zh-CN><en>Any error returns the complete bounded diagnostic list before source or provider construction.</en></lang>
   if (diagnostics.length > 0) {
     return { ok: false, diagnostics };
@@ -398,7 +420,8 @@ function validateRepresentativeProfile(candidateProfile) {
         pageSize: candidateProfile.query.pageSize
       },
       presentation: {
-        enabledBlocks: [...candidateProfile.presentation.enabledBlocks]
+        enabledBlocks: [...candidateProfile.presentation.enabledBlocks],
+        blockOrder: [...candidateProfile.presentation.blockOrder]
       }
     }
   };
@@ -483,7 +506,7 @@ function validateFixtureOptions(sourceMode, candidateOptions) {
  * @lang en The helper handles only the fixed shape and uses neither generic serialization nor a platform-specific clone API.
  */
 function copyProfile(profile) {
-  // <lang><zh-CN>每层对象与 enabledBlocks 数组都重新创建。</zh-CN><en>Recreate every object layer and the enabledBlocks array.</en></lang>
+  // <lang><zh-CN>每层对象以及 enabledBlocks/blockOrder 数组都重新创建。</zh-CN><en>Recreate every object layer and the enabledBlocks/blockOrder arrays.</en></lang>
   return {
     profileVersion: profile.profileVersion,
     id: profile.id,
@@ -493,7 +516,8 @@ function copyProfile(profile) {
       pageSize: profile.query.pageSize
     },
     presentation: {
-      enabledBlocks: [...profile.presentation.enabledBlocks]
+      enabledBlocks: [...profile.presentation.enabledBlocks],
+      blockOrder: [...profile.presentation.blockOrder]
     }
   };
 }
@@ -527,12 +551,13 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
     return createFailure(fixtureValidation.diagnostics);
   }
 
-  // <lang><zh-CN>模板候选显式接收 app 已验证的 source、fixture、page size 与已编译 block。</zh-CN><en>The template candidate explicitly receives the app-validated source, fixture, page size, and compiled blocks.</en></lang>
+  // <lang><zh-CN>模板候选显式接收 app 已验证的 source、fixture、page size、已编译 block 与 block 排序。</zh-CN><en>The template candidate explicitly receives app-validated source, fixture, page size, compiled blocks, and block order.</en></lang>
   const templateCandidate = createExampleCatalogTemplateCandidate({
     sourceMode: profile.sourceMode,
     fixtureCase: fixtureValidation.fixtureCase,
     pageSize: profile.query.pageSize,
-    enabledBlocks: profile.presentation.enabledBlocks
+    enabledBlocks: profile.presentation.enabledBlocks,
+    blockOrder: profile.presentation.blockOrder
   });
 
   // <lang><zh-CN>通用 integration runtime 先校验 template/slots/surfaces，再原子采用完整 units，最后创建 shell。</zh-CN><en>The generic integration runtime validates template, slots, and surfaces before atomically adopting complete units and finally creating the shell.</en></lang>
@@ -545,6 +570,11 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
 
   // <lang><zh-CN>presentation Set 从已验证副本创建，后续 caller profile/snapshot 修改不能改变可见性。</zh-CN><en>Create the presentation set from the validated copy so later caller profile or snapshot mutation cannot change visibility.</en></lang>
   const enabledBlocks = new Set(profile.presentation.enabledBlocks);
+
+  // <lang><zh-CN>排序 Map 只从已验证的完整排列构造；整数序号可安全投影为固定页面的 flex order。</zh-CN><en>Build the order map only from the validated complete permutation; integer positions can safely project to fixed-page flex order.</en></lang>
+  const orderByBlock = new Map(
+    profile.presentation.blockOrder.map((blockId, index) => [blockId, index + 1])
+  );
 
   /**
    * <lang><zh-CN>按 profile 创建完整 canonical catalog query。</zh-CN><en>Creates a complete canonical catalog query from the profile.</en></lang>
@@ -588,18 +618,66 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
   const getObservation = () => templateCandidate.getObservation();
 
   /**
+ * <lang><zh-CN>返回一个已登记区块的受限显示与排序投影。</zh-CN><en>Returns a bounded visibility and order projection for one registered block.</en></lang>
+ *
+ * @param {unknown} blockId <lang><zh-CN>待检查的区块标识。</zh-CN><en>Block identifier to inspect.</en></lang>
+ * @returns {{id: string, visible: boolean, order: number|null}|null} <lang><zh-CN>已登记区块的 plain-data 投影，或未知 ID 的 null。</zh-CN><en>Plain-data projection for a registered block, or null for an unknown ID.</en></lang>
+ * @lang zh-CN 不返回 component、template、style text、profile 原文或内部 Map/Set。
+ * @lang en It returns no component, template, style text, raw profile, or internal map/set.
+   */
+  const getBlockProjection = (blockId) => {
+    // <lang><zh-CN>未知值没有 projection，因而不能成为组件解析、样式来源或页面结构输入。</zh-CN><en>An unknown value has no projection and therefore cannot become component resolution, a style source, or page-structure input.</en></lang>
+    if (typeof blockId !== 'string' || !REGISTERED_BLOCK_IDS.has(blockId)) {
+      return null;
+    }
+
+    // <lang><zh-CN>已登记但未启用的 block 仍只暴露固定 false/null metadata；不泄露 profile、template 或实现对象。</zh-CN><en>A registered but disabled block still exposes only fixed false/null metadata and leaks no profile, template, or implementation object.</en></lang>
+    if (!enabledBlocks.has(blockId)) {
+      return {
+        id: blockId,
+        visible: false,
+        order: null
+      };
+    }
+
+    // <lang><zh-CN>成功排序必为从一开始的有限整数；防御性 null 保持为不可显示而非猜测默认值。</zh-CN><en>A successful order is a finite one-based integer; defensive null remains non-displayable instead of guessing a default.</en></lang>
+    const order = orderByBlock.get(blockId);
+    if (!Number.isInteger(order) || order < 1) {
+      return {
+        id: blockId,
+        visible: false,
+        order: null
+      };
+    }
+
+    // <lang><zh-CN>返回调用方自有的 plain data，避免其修改影响 runtime Map 或 Set。</zh-CN><en>Return caller-owned plain data so mutation cannot affect runtime map or set.</en></lang>
+    return {
+      id: blockId,
+      visible: true,
+      order
+    };
+  };
+
+  /**
+   * <lang><zh-CN>返回当前启用 block 的已验证顺序快照。</zh-CN><en>Returns a validated ordered snapshot of currently enabled blocks.</en></lang>
+   *
+   * @returns {{id: string, visible: boolean, order: number}[]} <lang><zh-CN>不含 profile 原文或 UI 实现的排序 metadata。</zh-CN><en>Ordered metadata containing no raw profile or UI implementation.</en></lang>
+   * @lang zh-CN 数组按声明排序而非注册顺序；每项均为新对象，调用方写入不会影响 runtime。
+   * @lang en The array follows declared order rather than registration order; every item is new so caller writes cannot affect runtime.
+   */
+  const getPresentationSnapshot = () => profile.presentation.blockOrder.map((blockId) => (
+    getBlockProjection(blockId)
+  ));
+
+  /**
    * <lang><zh-CN>判断一个调用方 ID 是否为当前 profile 已启用的已登记区块。</zh-CN><en>Determines whether a caller ID is a registered block enabled by the current profile.</en></lang>
    *
    * @param {unknown} blockId <lang><zh-CN>待检查的区块标识。</zh-CN><en>Block identifier to inspect.</en></lang>
    * @returns {boolean} <lang><zh-CN>是否可显示对应已编译 template 分支。</zh-CN><en>Whether the corresponding compiled template branch may be displayed.</en></lang>
-   * @lang zh-CN 未知或非字符串值返回 false，不进入组件解析。
-   * @lang en An unknown or non-string value returns false and never enters component resolution.
+   * @lang zh-CN 判断委托受限 projection；未知值始终为 false，不进入组件解析。
+   * @lang en The decision delegates to bounded projection; an unknown value is always false and never enters component resolution.
    */
-  const isBlockEnabled = (blockId) => (
-    typeof blockId === 'string'
-    && REGISTERED_BLOCK_IDS.has(blockId)
-    && enabledBlocks.has(blockId)
-  );
+  const isBlockEnabled = (blockId) => getBlockProjection(blockId)?.visible === true;
 
   // <lang><zh-CN>冻结成功 API 容器；其中不含 capability runtime、provider、manifest、core profile 或 fixture controller。</zh-CN><en>Freeze the successful API container; it contains no capability runtime, provider, manifest, core profile, or fixture controller.</en></lang>
   return Object.freeze({
@@ -608,7 +686,9 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
     sourceMode: profile.sourceMode,
     shell: integration.shell,
     createQueryRequest,
+    getBlockProjection,
     getProfileSnapshot,
+    getPresentationSnapshot,
     getLifecycleSnapshot,
     getObservation,
     isBlockEnabled

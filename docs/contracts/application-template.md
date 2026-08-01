@@ -12,7 +12,7 @@ application template 描述如何把一组已安装、显式提供的能力集�
 | Implementation-package manifest / 实现包 manifest | Package identity, runtime surfaces, provided contracts, compatibility, provenance, and validation / package 身份、runtime surface、提供的 contract、兼容性、来源与验证 |
 | Capability-adoption profile / 能力采用 profile | Exact desired module, implementation, state, and bounded presentation selection / 精确的 module、implementation、state 与受限呈现选择 |
 | Application-template manifest / 应用模板 manifest | Required application slots, primary module, host allowlists, route projection, and screen policy / 必需应用 slot、primary module、宿主 allowlist、route projection 与 screen policy |
-| Channel application profile / 渠道应用 profile | Application-owned source choice, initial query, and compiled presentation selection / 应用拥有的 source 选择、初始 query 与已编译呈现选择 |
+| Channel application profile / 渠道应用 profile | Application-owned source choice, initial query, and compiled presentation visibility/order / 应用拥有的 source 选择、初始 query 与已编译呈现的可见性/排序 |
 | `package.json` | Engineering workspace, dependency, and script metadata only / 仅工程 workspace、依赖与 script metadata |
 
 None of these artifacts substitutes for another.
@@ -38,9 +38,9 @@ The [Draft 7 schema](schemas/application-template.manifest.v1.schema.json) defin
 - static screens/actions and an explicit capability policy for every screen.
 - 静态 screen/action，以及每个 screen 的显式 capability policy。
 
-The schema checks local shape. The runtime additionally checks unique slot/module ownership, exact screen-policy correspondence, route references, primary-module membership, adoption-profile correspondence, desired states, complete units, implementation surface coverage, and bounded presentation.
+The schema checks local shape. The runtime additionally checks unique slot/module ownership, exact screen-policy correspondence, route references, primary-module membership, adoption-profile correspondence, desired states, complete units, implementation surface coverage, and bounded presentation. For this representative app, enabled compiled blocks and their declared order must be the same duplicate-free set; order remains metadata for fixed branches, not a source of component resolution.
 
-schema 检查局部形态。runtime 还会检查唯一 slot/module 主责、screen-policy 精确对应、route 引用、primary-module 成员关系、adoption-profile 对应、期望状态、完整 units、implementation surface 覆盖与受限呈现。
+schema 检查局部形态。runtime 还会检查唯一 slot/module 主责、screen-policy 精确对应、route 引用、primary-module 成员关系、adoption-profile 对应、期望状态、完整 units、implementation surface 覆盖与受限呈现。对于本代表性 app，enabled 的已编译区块与其声明排序必须是同一无重复集合；排序仍只是固定分支的 metadata，不是组件解析来源。
 
 ## Candidate validation / 候选校验
 

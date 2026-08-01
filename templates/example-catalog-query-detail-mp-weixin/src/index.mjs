@@ -43,14 +43,15 @@ const PRIMARY_MODULE_ID = 'example.catalog-query-detail';
 
 /**
  * <lang><zh-CN>模板候选 options 允许的精确根键。</zh-CN><en>Exact root keys allowed for template-candidate options.</en></lang>
- * @lang zh-CN 所有调用方必须明确 source、fixture、分页和已编译 block，不存在隐式 source 默认值。
- * @lang en Every caller must explicitly state source, fixture, paging, and compiled blocks; no implicit source default exists.
+ * @lang zh-CN 所有调用方必须明确 source、fixture、分页、已编译 block 与其排序，不存在隐式 source 或顺序默认值。
+ * @lang en Every caller must explicitly state source, fixture, paging, compiled blocks, and their order; no implicit source or order default exists.
  */
 const CANDIDATE_OPTION_KEYS = Object.freeze([
   'sourceMode',
   'fixtureCase',
   'pageSize',
-  'enabledBlocks'
+  'enabledBlocks',
+  'blockOrder'
 ]);
 
 /**
@@ -214,7 +215,7 @@ export function createExampleCatalogApplicationTemplate() {
  * @throws {TypeError|RangeError} <lang><zh-CN>shape 或 allowlist 不合法时抛出固定错误。</zh-CN><en>Throws a fixed error for an invalid shape or allowlist value.</en></lang>
  */
 function validateCandidateOptions(options) {
-  // <lang><zh-CN>根对象必须精确包含四个声明字段，拒绝 callback、连接与控制字段。</zh-CN><en>The root must contain exactly four declarative fields, rejecting callback, connection, and control fields.</en></lang>
+  // <lang><zh-CN>根对象必须精确包含五个声明字段，拒绝 callback、连接与控制字段。</zh-CN><en>The root must contain exactly five declarative fields, rejecting callback, connection, and control fields.</en></lang>
   if (!isRecord(options) || !hasExactOwnKeys(options, CANDIDATE_OPTION_KEYS)) {
     throw new TypeError('Application-template candidate options are invalid.');
   }
@@ -248,12 +249,26 @@ function validateCandidateOptions(options) {
     throw new RangeError('Application-template enabled blocks are unsupported.');
   }
 
-  // <lang><zh-CN>返回自有数组副本，使候选不受调用方后续修改影响。</zh-CN><en>Return an owned array copy so later caller mutation cannot affect the candidate.</en></lang>
+  // <lang><zh-CN>blockOrder 必须是同一 enabled 集合的无重复全排列；顺序值只定位已编译 block，不创建组件或布局表达式。</zh-CN><en>Block order must be a duplicate-free complete permutation of the same enabled set; its values position only compiled blocks and create no component or layout expression.</en></lang>
+  const hasValidBlockOrder = Array.isArray(options.blockOrder)
+    && options.blockOrder.length === options.enabledBlocks.length
+    && options.blockOrder.every(
+      (blockId) => typeof blockId === 'string' && options.enabledBlocks.includes(blockId)
+    )
+    && new Set(options.blockOrder).size === options.blockOrder.length;
+
+  // <lang><zh-CN>非法排序不作自动补齐、去重或排序；调用方必须修复自身静态声明。</zh-CN><en>An invalid order is neither auto-filled, deduplicated, nor sorted; the caller must repair its own static declaration.</en></lang>
+  if (!hasValidBlockOrder) {
+    throw new RangeError('Application-template block order is unsupported.');
+  }
+
+  // <lang><zh-CN>返回自有数组副本，使候选不受调用方后续修改影响。</zh-CN><en>Return owned array copies so later caller mutation cannot affect the candidate.</en></lang>
   return {
     sourceMode: options.sourceMode,
     fixtureCase: options.fixtureCase,
     pageSize: options.pageSize,
-    enabledBlocks: [...options.enabledBlocks]
+    enabledBlocks: [...options.enabledBlocks],
+    blockOrder: [...options.blockOrder]
   };
 }
 
@@ -331,7 +346,7 @@ function createCatalogUnit(sourceMode, fixtureCase) {
 /**
  * <lang><zh-CN>创建一个可交给 application-integration runtime 的完整显式候选。</zh-CN><en>Creates a complete explicit candidate for the application-integration runtime.</en></lang>
  *
- * @param {unknown} options <lang><zh-CN>精确声明 source、fixture、分页与已编译 block 的选项。</zh-CN><en>Options explicitly declaring source, fixture, paging, and compiled blocks.</en></lang>
+ * @param {unknown} options <lang><zh-CN>精确声明 source、fixture、分页、已编译 block 及其排序的选项。</zh-CN><en>Options explicitly declaring source, fixture, paging, compiled blocks, and their order.</en></lang>
  * @returns {object} <lang><zh-CN>enumerable template/profile/units 与 non-enumerable observation helper。</zh-CN><en>Enumerable template/profile/units and a non-enumerable observation helper.</en></lang>
  * @lang zh-CN 候选完整列出两个 slot，不发现、下载、安装或补齐任何能力包。
  * @lang en The candidate lists both slots completely and discovers, downloads, installs, or auto-fills no capability package.
@@ -351,7 +366,7 @@ export function createExampleCatalogTemplateCandidate(options) {
     validatedOptions.fixtureCase
   );
 
-  // <lang><zh-CN>presentation 对每个已编译 block 使用固定 visibility，不执行表达式。</zh-CN><en>Presentation uses fixed visibility for every compiled block and executes no expression.</en></lang>
+  // <lang><zh-CN>presentation 对每个已编译 block 使用固定 visibility；order 来自已验证全排列，不执行表达式。</zh-CN><en>Presentation uses fixed visibility for every compiled block; order comes from the validated permutation and executes no expression.</en></lang>
   const blocks = validatedOptions.enabledBlocks.map((blockId) => ({
     id: blockId,
     visibility: VISIBILITY_BY_BLOCK[blockId]
@@ -376,7 +391,7 @@ export function createExampleCatalogTemplateCandidate(options) {
     ],
     presentation: {
       blocks,
-      order: [...validatedOptions.enabledBlocks],
+      order: [...validatedOptions.blockOrder],
       pageSize: validatedOptions.pageSize
     }
   };

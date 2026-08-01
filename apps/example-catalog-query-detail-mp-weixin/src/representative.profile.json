@@ -12,6 +12,12 @@
       "query-context",
       "catalog-list",
       "entry-detail"
+    ],
+    "blockOrder": [
+      "query-context",
+      "runtime-status",
+      "catalog-list",
+      "entry-detail"
     ]
   }
 }

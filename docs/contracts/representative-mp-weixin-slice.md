@@ -29,6 +29,12 @@ The application owns one declarative JSON profile. JSON has no comments, so the 
       "query-context",
       "catalog-list",
       "entry-detail"
+    ],
+    "blockOrder": [
+      "query-context",
+      "runtime-status",
+      "catalog-list",
+      "entry-detail"
     ]
   }
 }
@@ -41,15 +47,16 @@ The application owns one declarative JSON profile. JSON has no comments, so the 
 | `sourceMode` | Explicitly `wire-fixture` or `mock`; failure never selects the other source implicitly / 明确选择 `wire-fixture` 或 `mock`；失败时绝不隐式选择另一数据源 |
 | `query.page` | Positive integer beginning at `1` / 从 `1` 开始的正整数 |
 | `query.pageSize` | One of `1`, `5`, `10`, or `20`; the small allowlist keeps the representative states deterministic / 只能为 `1`、`5`、`10` 或 `20`；小型白名单使代表性状态保持确定 |
-| `presentation.enabledBlocks` | A unique subset of registered IDs; order does not create component imports or a free-form layout / 已登记 ID 的无重复子集；顺序不会创建组件导入或自由布局 |
+| `presentation.enabledBlocks` | A unique subset of registered IDs that controls visibility only / 控制可见性的已登记 ID 无重复子集 |
+| `presentation.blockOrder` | A unique complete permutation of the enabled IDs; it supplies only finite relative order for fixed compiled blocks, never a component, template, style text, route, URL, or expression / enabled ID 的无重复完整排列；它只为固定已编译区块提供有限相对顺序，绝不指定组件、模板、样式文本、路由、URL 或表达式 |
 
-`catalog-list` and `entry-detail` are required because removing either would break the accepted query-to-detail slice. `runtime-status` and `query-context` are optional application-owned projections. Enabling a block only reveals already compiled presentation; it cannot name a new component, package, route, URL, expression, dependency, connection, or data field.
+`catalog-list` and `entry-detail` are required because removing either would break the accepted query-to-detail slice. `runtime-status` and `query-context` are optional application-owned projections. Enabling a block only reveals already compiled presentation. `blockOrder` must list exactly the same enabled IDs once each; the page maps only the resulting small integer to its own fixed flex-layout branch. Neither field can name a new component, package, route, URL, expression, dependency, connection, style text, or data field.
 
-`catalog-list` 与 `entry-detail` 必须存在，因为移除任一项都会破坏已验收的 query-to-detail 纵切。`runtime-status` 与 `query-context` 是可选的应用自有投影。启用区块只会显示已经编译的呈现；它不能指定新组件、包、路由、URL、表达式、依赖、连接或数据字段。
+`catalog-list` 与 `entry-detail` 必须存在，因为移除任一项都会破坏已验收的 query-to-detail 纵切。`runtime-status` 与 `query-context` 是可选的应用自有投影。启用区块只会显示已经编译的呈现。`blockOrder` 必须恰好各列一次同一批 enabled ID；页面只把所得的小整数映射到自身固定 flex-layout 分支。两字段都不能指定新组件、包、路由、URL、表达式、依赖、连接、样式文本或数据字段。
 
-The default checked-in profile selects `wire-fixture`, page `1`, page size `1`, and all registered blocks. Page size `1` deliberately makes next-page metadata observable without adding a paging control or claiming a complete pagination UX.
+The default checked-in profile selects `wire-fixture`, page `1`, page size `1`, and all registered blocks. It places query context before runtime status, then catalog and detail; that observable reorder still uses four fixed compiled branches. Page size `1` deliberately makes next-page metadata observable without adding a paging control or claiming a complete pagination UX.
 
-仓内默认 profile 选择 `wire-fixture`、第 `1` 页、每页 `1` 项以及全部已登记区块。每页 `1` 项刻意使下一页 metadata 可观察，但不增加分页控件，也不声称已经形成完整分页 UX。
+仓内默认 profile 选择 `wire-fixture`、第 `1` 页、每页 `1` 项以及全部已登记区块。它把查询上下文排在运行状态之前，再是目录和详情；这个可观察的重排仍只使用四个固定已编译分支。每页 `1` 项刻意使下一页 metadata 可观察，但不增加分页控件，也不声称已经形成完整分页 UX。
 
 ## Source modes / 数据源模式
 
@@ -92,8 +99,8 @@ The controlled compiler and output verifier remain separate evidence. They prove
 
 | Layer / 层 | Owns / 主责 | Must not own / 禁止主责 |
 | --- | --- | --- |
-| App profile / 应用 profile | Source selection, bounded initial paging values, registered block visibility / 数据源选择、受限初始分页值、已登记区块可见性 | Scripts, arbitrary components, URLs, connections, dependencies, business schema / 脚本、任意组件、URL、连接、依赖、业务 schema |
-| Fixture runtime / Fixture runtime | App-profile validation, explicit template-candidate request, query factory, registered-block predicate, and bounded observation / app-profile 校验、显式模板候选请求、query factory、已登记 block 判断与受限 observation | Manifest/provider/lifecycle/shell assembly, UI refs, platform navigation, hidden fallback, real backend discovery / manifest/provider/lifecycle/shell 装配、UI ref、平台导航、隐藏回退、真实后端发现 |
+| App profile / 应用 profile | Source selection, bounded initial paging values, registered block visibility and complete order / 数据源选择、受限初始分页值、已登记区块可见性及完整排序 | Scripts, arbitrary components, URLs, connections, dependencies, style text, business schema / 脚本、任意组件、URL、连接、依赖、样式文本、业务 schema |
+| Fixture runtime / Fixture runtime | App-profile validation, explicit template-candidate request, query factory, registered-block predicate/projection, and bounded observation / app-profile 校验、显式模板候选请求、query factory、已登记 block 判断/投影与受限 observation | Manifest/provider/lifecycle/shell assembly, UI refs, platform navigation, hidden fallback, real backend discovery / manifest/provider/lifecycle/shell 装配、UI ref、平台导航、隐藏回退、真实后端发现 |
 | Template package / 模板包 | Versioned application-template metadata and complete explicit reference-data plus selected catalog unit assembly / 版本化 application-template metadata 与完整显式 reference-data 加所选 catalog 单元装配 | Generator, scaffold copying, discovery, installation, remote catalog, industry fields, fallback / 生成器、脚手架复制、发现、安装、远端目录、行业字段、回退 |
 | Application integration / 应用集成 | Template/slot/surface gate, complete-set adoption delegation, fixed-primary-module shell, safe receipts/snapshots / 模板/slot/surface 门禁、完整集合采用委托、固定主模块 shell、安全 receipt/snapshot | File/package loading, provider invention, dynamic component/script, backend or external state / 文件/package 加载、provider 虚构、动态组件/脚本、后端或外部状态 |
 | Adapter or mock / Adapter 或 mock | Canonical read-port results for the selected explicit mode / 为明确选择的模式提供规范化只读 port 结果 | UI layout, route ownership, raw wire leakage, implicit mode selection / UI 布局、路由主责、原始 wire 泄露、隐式模式选择 |

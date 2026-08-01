@@ -61,12 +61,21 @@ function createCandidate(sourceMode, fixtureCase) {
     'entry-detail'
   ];
 
+  // <lang><zh-CN>候选排序是同一已编译 block 集合的显式全排列；测试不让模板推断或补齐顺序。</zh-CN><en>Candidate order is an explicit permutation of the same compiled-block set; the test does not let the template infer or fill an order.</en></lang>
+  const blockOrder = [
+    'query-context',
+    'runtime-status',
+    'catalog-list',
+    'entry-detail'
+  ];
+
   // <lang><zh-CN>factory 只接收受限 plain-data options，不接收 callback、path 或 connection。</zh-CN><en>The factory receives only bounded plain-data options and no callback, path, or connection.</en></lang>
   return createExampleCatalogTemplateCandidate({
     sourceMode,
     fixtureCase,
     pageSize: 1,
-    enabledBlocks
+    enabledBlocks,
+    blockOrder
   });
 }
 

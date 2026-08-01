@@ -56,12 +56,40 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "enabledBlocks"
+        "enabledBlocks",
+        "blockOrder"
       ],
       "properties": {
         "enabledBlocks": {
           "type": "array",
           "description": "Unique compiled block identifiers; values never become component imports. / 无重复的已编译区块标识；其值绝不成为组件导入。",
+          "minItems": 2,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "runtime-status",
+              "query-context",
+              "catalog-list",
+              "entry-detail"
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "const": "catalog-list"
+              }
+            },
+            {
+              "contains": {
+                "const": "entry-detail"
+              }
+            }
+          ]
+        },
+        "blockOrder": {
+          "type": "array",
+          "description": "A duplicate-free complete order of the enabled compiled block IDs; it never names components, templates, styles, URLs, or expressions. / enabled 的已编译区块标识的无重复完整排序；它绝不指定组件、模板、样式、URL 或表达式。",
           "minItems": 2,
           "maxItems": 4,
           "uniqueItems": true,

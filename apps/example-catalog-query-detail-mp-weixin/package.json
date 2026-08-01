@@ -7,7 +7,8 @@
   "type": "module",
   "dependencies": {
     "@hia-uview/biz-app-integration": "0.0.0",
-    "@hia-uview/biz-example-catalog-query-detail-template": "0.0.0"
+    "@hia-uview/biz-example-catalog-query-detail-template": "0.0.0",
+    "@hia-uview/biz-solution-profile-runtime": "0.0.0"
   },
   "devDependencies": {
     "@dcloudio/uni-mp-weixin": "3.0.0-5010520260709002"

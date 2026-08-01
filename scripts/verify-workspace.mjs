@@ -36,6 +36,10 @@ const requiredFiles = [
   'packages/app-integration/package.json',
   'packages/app-integration/src/index.mjs',
   'packages/app-integration/README.md',
+  // <lang><zh-CN>solution profile resolver 必须作为独立 package、源码与公开说明存在，避免把 solution 选择混入模板或 package manifest。</zh-CN><en>The solution-profile resolver must exist as an independent package, source file, and public guide, preventing solution selection from being mixed into a template or package manifest.</en></lang>
+  'packages/solution-profile-runtime/package.json',
+  'packages/solution-profile-runtime/src/index.mjs',
+  'packages/solution-profile-runtime/README.md',
   'extensions/example-catalog-query-detail-adapter-fixture/package.json',
   'extensions/example-catalog-query-detail-adapter-fixture/src/index.mjs',
   'extensions/example-catalog-query-detail-adapter-fixture/README.md',
@@ -54,6 +58,8 @@ const requiredFiles = [
   'apps/example-catalog-query-detail-mp-weixin/src/manifest.json',
   // <lang><zh-CN>代表性应用必须以仓内版本化 profile 驱动 app-owned pure fixture runtime。</zh-CN><en>The representative app must drive its app-owned pure fixture runtime from a checked-in versioned profile.</en></lang>
   'apps/example-catalog-query-detail-mp-weixin/src/representative.profile.json',
+  'apps/example-catalog-query-detail-mp-weixin/src/solution.profile.json',
+  'apps/example-catalog-query-detail-mp-weixin/src/solution-context.mjs',
   'apps/example-catalog-query-detail-mp-weixin/src/fixture-runtime.mjs',
   'apps/example-catalog-query-detail-mp-weixin/src/pages/index/index.vue',
   'scripts/resolve-hia-uview-ui-source.mjs',
@@ -101,8 +107,11 @@ const requiredFiles = [
   'docs/contracts/capability-lifecycle.md',
   'docs/contracts/capability-adoption.md',
   'docs/contracts/application-template.md',
+  'docs/contracts/solution-profile.md',
   'docs/contracts/schemas/application-template.manifest.v1.schema.json',
+  'docs/contracts/schemas/solution-profile.v1.schema.json',
   'docs/contracts/examples/example.catalog-query-detail.mp-weixin.template.manifest.json',
+  'docs/contracts/examples/example.catalog-query-detail.neutral.solution.profile.json',
   'docs/contracts/schemas/capability-adoption.profile.v1.schema.json',
   'docs/contracts/examples/example.catalog-composed.adoption.profile.json',
   'docs/contracts/examples/example.catalog-composed.replacement.profile.json',
@@ -120,6 +129,8 @@ const requiredFiles = [
   'test/capability-adoption.test.mjs',
   // <lang><zh-CN>应用模板测试固定公开 manifest、完整 slots、mock/wire 集成与原子替换。</zh-CN><en>The application-template test fixes the public manifest, complete slots, mock or wire integration, and atomic replacement.</en></lang>
   'test/application-template.test.mjs',
+  // <lang><zh-CN>solution resolver 测试固定静态 package 闭包、匿名 mock grant、失败脱敏与无 partial API 边界。</zh-CN><en>The solution-resolver test fixes static package closure, anonymous mock grants, failure redaction, and the no-partial-API boundary.</en></lang>
+  'test/solution-profile-runtime.test.mjs',
   // <lang><zh-CN>端到端纯 Node 测试固定 profile、显式 source、lifecycle、shell 与脱敏 observation。</zh-CN><en>The end-to-end pure-Node test fixes profile, explicit source, lifecycle, shell, and redacted observation.</en></lang>
   'test/representative-mp-weixin-slice.test.mjs',
   // <lang><zh-CN>候选质量门禁是独立契约，测试文件必须可被基线 Node suite 直接执行。</zh-CN><en>The candidate quality gate is an independent contract and its test file must be directly executable by the baseline Node suite.</en></lang>

@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/mandolin/HIA-uView-Biz/docs/contracts/schemas/solution-profile.v1.schema.json",
+  "title": "Solution profile v1 / 解决方案 profile v1",
+  "description": "Selects reviewed static capability packages for one declared channel application profile. / 为一个已声明的渠道应用 profile 选择已审阅的静态 capability package。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "solutionProfileVersion",
+    "kind",
+    "id",
+    "channelProfileId",
+    "capabilityPackageIds"
+  ],
+  "properties": {
+    "solutionProfileVersion": {
+      "const": "1.0",
+      "description": "Solution-profile contract version. / 解决方案 profile 契约版本。"
+    },
+    "kind": {
+      "const": "solution-profile",
+      "description": "Separates solution selection from application, adoption, and package manifests. / 将 solution 选择与 application、adoption 及 package manifest 区分。"
+    },
+    "id": {
+      "$ref": "#/$defs/dottedIdentifier"
+    },
+    "channelProfileId": {
+      "$ref": "#/$defs/dottedIdentifier",
+      "description": "Exact application channel profile selected by this solution. / 此 solution 所选择的精确应用渠道 profile。"
+    },
+    "capabilityPackageIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/dottedIdentifier"
+      },
+      "description": "Explicit top-level static capability-package selections; dependency closure is fixed by reviewed host registry. / 显式顶层静态 capability-package 选择；依赖闭包由已审阅宿主登记表固定。"
+    }
+  },
+  "$defs": {
+    "dottedIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)+$",
+      "description": "Stable lowercase dotted identifier. / 稳定的小写点分标识。"
+    }
+  }
+}

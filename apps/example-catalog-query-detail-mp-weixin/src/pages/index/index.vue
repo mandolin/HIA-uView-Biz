@@ -150,8 +150,9 @@ import UStack from '../../hia-uview-ui-source/src/components/u-stack/u-stack.vue
 import UValidationMessage from '../../hia-uview-ui-source/src/components/u-validation-message/u-validation-message.vue';
 // <lang><zh-CN>页面只导入 app-owned fixture factory；core、provider、adapter 与 lifecycle 装配保持在独立纯模块内。</zh-CN><en>The page imports only the app-owned fixture factory; core, provider, adapter, and lifecycle assembly remain inside a separate pure module.</en></lang>
 import { createRepresentativeFixtureRuntime } from '../../fixture-runtime.mjs';
-// <lang><zh-CN>普通 JSON import 提供仓内带版本声明式 profile；Vite 编译它为静态数据，不把值解释为代码或组件路径。</zh-CN><en>A regular JSON import supplies the checked-in versioned declarative profile; Vite compiles it as static data and interprets no value as code or a component path.</en></lang>
+// <lang><zh-CN>两个普通 JSON import 分别提供 app 与 solution 的仓内版本化声明；Vite 将它们编译为静态数据，不把值解释为代码、组件路径或连接。</zh-CN><en>Two regular JSON imports supply checked-in versioned declarations for app and solution; Vite compiles them as static data and interprets no value as code, component path, or connection.</en></lang>
 import representativeProfile from '../../representative.profile.json';
+import representativeSolutionProfile from '../../solution.profile.json';
 
 /**
  * <lang><zh-CN>将已有的双语 localized-text 对象投影为当前 fixture 的单行可见文字。</zh-CN><en>Projects an existing bilingual localized-text object into one line of visible copy for the current fixture.</en></lang>
@@ -196,8 +197,12 @@ function sectionDescription(section) {
   return localizedText(section.failure?.message);
 }
 
-// <lang><zh-CN>以仓内 profile 创建本页唯一代表性 runtime；初始化完成 profile/source/install/enable/shell，但不调用 query/detail port。</zh-CN><en>Create the page's sole representative runtime from the checked-in profile; initialization completes profile, source, install, enable, and shell but invokes no query or detail port.</en></lang>
-const runtimeInitialization = createRepresentativeFixtureRuntime(representativeProfile);
+// <lang><zh-CN>以仓内 app/solution profile 创建本页唯一代表性 runtime；初始化先验证匿名 mock availability，再完成 source/install/enable/shell，但不调用 query/detail port。</zh-CN><en>Create the page's sole representative runtime from checked-in app/solution profiles; initialization validates anonymous-mock availability before source/install/enable/shell and invokes no query or detail port.</en></lang>
+const runtimeInitialization = createRepresentativeFixtureRuntime(
+  representativeProfile,
+  {},
+  representativeSolutionProfile
+);
 
 /**
  * <lang><zh-CN>将 runtime 已验证的 block projection 转为当前固定页面可消费的有限 flex 排序样式。</zh-CN><en>Converts a runtime-validated block projection into finite flex-order style consumable by the current fixed page.</en></lang>

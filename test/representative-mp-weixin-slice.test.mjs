@@ -21,6 +21,16 @@ const REPRESENTATIVE_PROFILE_URL = new URL(
 );
 
 /**
+ * <lang><zh-CN>代表性 solution profile 的仓内 URL。</zh-CN><en>Checked-in URL of the representative solution profile.</en></lang>
+ * @lang zh-CN URL 只指向当前公开仓内固定 JSON；它不是 package discovery、远端目录或可覆盖的配置入口。
+ * @lang en The URL points only to fixed JSON in this public repository; it is not package discovery, a remote catalog, or an overridable configuration entry.
+ */
+const REPRESENTATIVE_SOLUTION_PROFILE_URL = new URL(
+  '../apps/example-catalog-query-detail-mp-weixin/src/solution.profile.json',
+  import.meta.url
+);
+
+/**
  * <lang><zh-CN>中性代表性能力的稳定模块标识。</zh-CN><en>Stable module identifier of the neutral representative capability.</en></lang>
  * @lang zh-CN 该值用于 lifecycle snapshot 断言，不代表行业模块或 npm 包。
  * @lang en The value is used for lifecycle-snapshot assertions and represents neither an industry module nor an npm package.
@@ -40,6 +50,39 @@ async function loadRepresentativeProfile() {
 
   // <lang><zh-CN>解析结果仅作为调用方输入；测试不在共享模块状态中缓存或修改它。</zh-CN><en>The parsed result is only caller input; the test neither caches nor mutates it in shared module state.</en></lang>
   return JSON.parse(profileText);
+}
+
+/**
+ * <lang><zh-CN>读取并解析仓内默认 solution profile。</zh-CN><en>Reads and parses the checked-in default solution profile.</en></lang>
+ *
+ * @returns {Promise<object>} <lang><zh-CN>每次测试独立拥有的新 solution profile 对象。</zh-CN><en>New solution-profile object independently owned by each test.</en></lang>
+ * @lang zh-CN JSON 只声明 package 选择与目标 channel；session grant 由 app-local mock context 固定构造，仍会被 resolver 独立验证。
+ * @lang en JSON declares only package selection and target channel; session grants are fixed by app-local mock context and remain independently validated by resolver.
+ */
+async function loadRepresentativeSolutionProfile() {
+  // <lang><zh-CN>以 UTF-8 读取固定公开 JSON，避免默认编码改变版本或稳定标识。</zh-CN><en>Read fixed public JSON as UTF-8, avoiding default encoding changing version or stable identifiers.</en></lang>
+  const profileText = await readFile(REPRESENTATIVE_SOLUTION_PROFILE_URL, 'utf8');
+
+  // <lang><zh-CN>每次 parse 返回新对象，使负向测试不会共享 package 选择。</zh-CN><en>Each parse returns a new object so negative tests share no package selection.</en></lang>
+  return JSON.parse(profileText);
+}
+
+/**
+ * <lang><zh-CN>以显式 app/solution profile 创建 fixture runtime 的测试 helper。</zh-CN><en>Test helper that creates fixture runtime from explicit app/solution profiles.</en></lang>
+ *
+ * @param {object} profile <lang><zh-CN>待传入 app runtime 的调用方自有 app profile。</zh-CN><en>Caller-owned app profile to pass to app runtime.</en></lang>
+ * @param {object} [fixtureOptions={}] <lang><zh-CN>仅测试拥有的本地 fixture case 选择。</zh-CN><en>Local fixture-case selection owned only by the test.</en></lang>
+ * @param {object|null} [solutionProfile=null] <lang><zh-CN>可选调用方自有 solution profile；空值时读取默认公开 fixture。</zh-CN><en>Optional caller-owned solution profile; when null read the default public fixture.</en></lang>
+ * @returns {Promise<object>} <lang><zh-CN>fixture runtime 的受限初始化结果。</zh-CN><en>Bounded initialization result of fixture runtime.</en></lang>
+ * @lang zh-CN helper 只让每个测试显式传入已解析 plain data，不传递路径、URL、grant 或 provider 给生产 factory。
+ * @lang en The helper only gives every test explicit parsed plain data and passes no path, URL, grant, or provider to production factory.
+ */
+async function createRepresentativeRuntime(profile, fixtureOptions = {}, solutionProfile = null) {
+  // <lang><zh-CN>默认 solution 单独读取，使每个 runtime 解析独立对象，避免测试间调用方修改泄漏。</zh-CN><en>Read default solution separately so each runtime resolves an independent object and caller mutation cannot leak between tests.</en></lang>
+  const resolvedSolutionProfile = solutionProfile ?? await loadRepresentativeSolutionProfile();
+
+  // <lang><zh-CN>生产 factory 仍接收显式第三参数；helper 不引入运行时 fallback。</zh-CN><en>The production factory still receives an explicit third argument; helper introduces no runtime fallback.</en></lang>
+  return createRepresentativeFixtureRuntime(profile, fixtureOptions, resolvedSolutionProfile);
 }
 
 /**
@@ -76,7 +119,7 @@ async function testRejectsInvalidProfileWithoutFallback() {
   invalidProfile.backendUrl = 'https://secret.invalid/private-value';
 
   // <lang><zh-CN>创建调用必须返回结构化失败，而不是抛出原始输入或选择默认数据源。</zh-CN><en>Creation must return a structured failure rather than throw raw input or select a default source.</en></lang>
-  const initialization = createRepresentativeFixtureRuntime(invalidProfile);
+  const initialization = await createRepresentativeRuntime(invalidProfile);
 
   // <lang><zh-CN>失败结果只有状态与受限 diagnostics，不形成 shell、source 或 observation 控制面。</zh-CN><en>The failed result has only status and bounded diagnostics and forms no shell, source, or observation surface.</en></lang>
   assert.deepEqual(Object.keys(initialization).sort(), ['diagnostics', 'ok']);
@@ -104,17 +147,19 @@ async function testRunsDefaultWireSliceEndToEnd() {
   const profile = await loadRepresentativeProfile();
 
   // <lang><zh-CN>创建成功会完成 profile validation、source construction、install、enable 与 shell bridge，但不运行 query/detail。</zh-CN><en>Successful creation completes profile validation, source construction, install, enable, and shell bridging but runs no query or detail.</en></lang>
-  const representativeRuntime = createRepresentativeFixtureRuntime(profile);
+  const representativeRuntime = await createRepresentativeRuntime(profile);
 
   // <lang><zh-CN>公开 API 只含明确的查询、snapshot、呈现判断和 shell 表面。</zh-CN><en>The public API contains only explicit query, snapshot, presentation-check, and shell surfaces.</en></lang>
   assert.deepEqual(Object.keys(representativeRuntime).sort(), [
     'createQueryRequest',
     'diagnostics',
     'getBlockProjection',
+    'getCapabilityAvailabilitySnapshot',
     'getLifecycleSnapshot',
     'getObservation',
     'getPresentationSnapshot',
     'getProfileSnapshot',
+    'getSolutionSnapshot',
     'isBlockEnabled',
     'ok',
     'shell',
@@ -122,6 +167,17 @@ async function testRunsDefaultWireSliceEndToEnd() {
   ]);
   assert.equal(representativeRuntime.ok, true);
   assert.equal(representativeRuntime.sourceMode, 'wire-fixture');
+
+  // <lang><zh-CN>solution snapshot 只披露静态 solution/channel/package 选择；availability 不披露匿名 session grant。</zh-CN><en>The solution snapshot discloses only static solution/channel/package selection; availability discloses no anonymous-session grant.</en></lang>
+  assert.deepEqual(representativeRuntime.getSolutionSnapshot(), {
+    id: 'example.catalog-query-detail.neutral',
+    channelProfileId: 'example.catalog-query-detail.representative-mp-weixin',
+    capabilityPackageIds: ['example.catalog-query-detail.read']
+  });
+  assert.deepEqual(representativeRuntime.getCapabilityAvailabilitySnapshot(), [
+    { id: 'example.reference-data.read', state: 'available' },
+    { id: 'example.catalog-query-detail.read', state: 'available' }
+  ]);
 
   // <lang><zh-CN>默认 profile 的排序是受限 block metadata；snapshot 不包含 component、template、style、URL 或 profile 原文。</zh-CN><en>The default profile order is bounded block metadata; the snapshot contains no component, template, style, URL, or raw profile content.</en></lang>
   assert.deepEqual(representativeRuntime.getPresentationSnapshot(), [
@@ -206,7 +262,7 @@ async function testRunsExplicitMockAndPresentationProjection() {
   profile.presentation.blockOrder = ['entry-detail', 'catalog-list'];
 
   // <lang><zh-CN>first-page 是 allowlisted 本地 fixture case，不来自 profile、远端配置或脚本。</zh-CN><en>`first-page` is an allowlisted local fixture case and comes from neither profile, remote configuration, nor script.</en></lang>
-  const representativeRuntime = createRepresentativeFixtureRuntime(profile, { fixtureCase: 'first-page' });
+  const representativeRuntime = await createRepresentativeRuntime(profile, { fixtureCase: 'first-page' });
 
   // <lang><zh-CN>显式 source 与生命周期实现 ID 都必须指向 mock。</zh-CN><en>Both explicit source and lifecycle implementation ID must point to mock.</en></lang>
   assert.equal(representativeRuntime.ok, true);
@@ -253,7 +309,7 @@ async function testRejectsInvalidPresentationOrderBeforeProvider() {
   ];
 
   // <lang><zh-CN>失败 runtime 不创建 observation 或 shell，因而无法调用 provider。</zh-CN><en>A failed runtime creates neither observation nor shell and therefore cannot invoke a provider.</en></lang>
-  const initialization = createRepresentativeFixtureRuntime(profile);
+  const initialization = await createRepresentativeRuntime(profile);
   assert.deepEqual(Object.keys(initialization).sort(), ['diagnostics', 'ok']);
   assert.equal(initialization.ok, false);
   assert.equal(
@@ -274,11 +330,11 @@ async function testRejectsInvalidPresentationOrderBeforeProvider() {
  */
 async function testProjectsMockEmptyAndFailureStates() {
   // <lang><zh-CN>两个 runtime 使用独立 profile 与 provider 闭包，避免 failure/empty state 相互污染。</zh-CN><en>The two runtimes use independent profiles and provider closures, preventing failure and empty state from contaminating each other.</en></lang>
-  const emptyRuntime = createRepresentativeFixtureRuntime(
+  const emptyRuntime = await createRepresentativeRuntime(
     await createMockProfile(),
     { fixtureCase: 'empty-query' }
   );
-  const failureRuntime = createRepresentativeFixtureRuntime(
+  const failureRuntime = await createRepresentativeRuntime(
     await createMockProfile(),
     { fixtureCase: 'adapter-failure' }
   );
@@ -299,9 +355,39 @@ async function testProjectsMockEmptyAndFailureStates() {
   assert.equal(JSON.stringify(failure).includes('http'), false);
 }
 
+/**
+ * <lang><zh-CN>验证非法 solution package 选择在 template/provider 形成前被拒绝且不回显输入。</zh-CN><en>Verifies an invalid solution package selection is rejected before template/provider formation and echoes no input.</en></lang>
+ * @lang zh-CN 该测试隔离 solution profile 失败，保持 app profile 合法；失败结果不得带 observation、shell 或 package 描述符。
+ * @lang en This test isolates solution-profile failure while keeping app profile valid; failure result must contain no observation, shell, or package descriptor.
+ */
+async function testRejectsInvalidSolutionBeforeTemplateAndProvider() {
+  // <lang><zh-CN>从默认 solution 开始，只替换为未登记的 script-like package ID。</zh-CN><en>Start from default solution and replace only with an unregistered script-like package ID.</en></lang>
+  const invalidSolutionProfile = await loadRepresentativeSolutionProfile();
+  invalidSolutionProfile.capabilityPackageIds = ['javascript:untrusted'];
+
+  // <lang><zh-CN>合法 app profile 确保失败来自 solution gate，而不是 app profile/source 规则。</zh-CN><en>A valid app profile ensures failure comes from solution gate rather than app-profile/source rules.</en></lang>
+  const initialization = await createRepresentativeRuntime(
+    await loadRepresentativeProfile(),
+    {},
+    invalidSolutionProfile
+  );
+
+  // <lang><zh-CN>失败 API 不形成 template/provider 相关可调用表面，diagnostic 也不回显类似脚本值。</zh-CN><en>The failed API forms no template/provider-related invokable surface and diagnostics do not echo the script-like value.</en></lang>
+  assert.deepEqual(Object.keys(initialization).sort(), ['diagnostics', 'ok']);
+  assert.equal(initialization.ok, false);
+  assert.equal(
+    initialization.diagnostics.some(
+      (diagnostic) => diagnostic.code === 'solution-profile.profile.capability-package.invalid'
+    ),
+    true
+  );
+  assert.equal(JSON.stringify(initialization).includes('javascript:untrusted'), false);
+}
+
 // <lang><zh-CN>按公开验收责任登记测试，名称不暴露私有阶段、路径或会话上下文。</zh-CN><en>Register tests by public acceptance responsibility; names expose no private stage, path, or session context.</en></lang>
 test('rejects an invalid application profile without source fallback', testRejectsInvalidProfileWithoutFallback);
 test('runs the default wire fixture through lifecycle, shell, query, detail, and back', testRunsDefaultWireSliceEndToEnd);
 test('runs an explicit mock with registered presentation projection', testRunsExplicitMockAndPresentationProjection);
 test('rejects an invalid presentation order before provider use', testRejectsInvalidPresentationOrderBeforeProvider);
 test('projects deterministic empty and failure states through the same shell', testProjectsMockEmptyAndFailureStates);
+test('rejects an invalid solution package before template and provider use', testRejectsInvalidSolutionBeforeTemplateAndProvider);

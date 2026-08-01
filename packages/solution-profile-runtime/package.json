@@ -1,0 +1,18 @@
+{
+  "name": "@hia-uview/biz-solution-profile-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pure allowlisted solution-profile and mock-session availability runtime for HIA-uView-Biz.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

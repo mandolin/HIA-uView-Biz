@@ -1,5 +1,5 @@
 /**
- * <lang><zh-CN>校验受控 Biz `mp-weixin` fixture 的最小生成文件、固定项目配置与受限 block-order 投影标记；它只读取已生成的受忽略产物，不启动 compiler、DevTools、模拟器、设备、网络服务或发布。</zh-CN><en>Validates minimum generated files, fixed project configuration, and bounded block-order projection markers of controlled Biz `mp-weixin` fixture; it only reads generated ignored output and starts no compiler, DevTools, simulator, device, network service, or release.</en></lang>
+ * <lang><zh-CN>校验受控 Biz `mp-weixin` fixture 的最小生成文件、固定项目配置、静态 solution profile 与受限 block-order 投影标记；它只读取已生成的受忽略产物，不启动 compiler、DevTools、模拟器、设备、网络服务或发布。</zh-CN><en>Validates minimum generated files, fixed project configuration, static solution-profile, and bounded block-order projection markers of controlled Biz `mp-weixin` fixture; it only reads generated ignored output and starts no compiler, DevTools, simulator, device, network service, or release.</en></lang>
  * @lang zh-CN 调用方应先运行受控 build；本脚本不能把文件存在性升级为真实导入、运行、无障碍、跨端或发布证据。
  * @lang en Caller should run controlled build first; this script cannot elevate file existence to real import, runtime, accessibility, cross-platform, or release evidence.
  */
@@ -123,6 +123,23 @@ async function verifyMpWeixinFixtureOutput() {
     pageScript,
     /blockOrder:\["query-context","runtime-status","catalog-list","entry-detail"\]/,
     'Generated page script must retain the checked-in bounded block order.'
+  );
+
+  // <lang><zh-CN>生成首页必须保留 solution profile 的固定版本、目标 channel 与顶层 package 选择；该断言只确认静态 JSON 被编译，不读取 session 或运行 resolver。</zh-CN><en>The generated home page must retain solution profile's fixed version, target channel, and top-level package selection; this assertion confirms only static JSON compilation and neither reads session nor runs resolver.</en></lang>
+  assert.match(
+    pageScript,
+    /solutionProfileVersion:"1\.0"/,
+    'Generated page script must retain the checked-in solution-profile version.'
+  );
+  assert.match(
+    pageScript,
+    /channelProfileId:"example\.catalog-query-detail\.representative-mp-weixin"/,
+    'Generated page script must retain the fixed solution-to-channel correspondence.'
+  );
+  assert.match(
+    pageScript,
+    /capabilityPackageIds:\["example\.catalog-query-detail\.read"\]/,
+    'Generated page script must retain the bounded top-level solution package selection.'
   );
 
   // <lang><zh-CN>生成首页必须调用 runtime 的受限 projection，并只把有限整数加固定 offset 写入 flex order；不接受动态 component/template/script 标记。</zh-CN><en>The generated home page must call runtime bounded projection and write only a finite integer plus fixed offset into flex order; it accepts no dynamic component/template/script marker.</en></lang>

@@ -14,6 +14,12 @@ import {
   createExampleCatalogTemplateCandidate
 } from '@hia-uview/biz-example-catalog-query-detail-template';
 
+// <lang><zh-CN>app-local context 固定登记中性 package 与匿名 mock session；该层不暴露真实身份或后端实现。</zh-CN><en>The app-local context fixes neutral-package registration and anonymous mock session; this layer exposes neither real identity nor backend implementation.</en></lang>
+import {
+  createAnonymousMockSession,
+  createRepresentativeSolutionProfileRuntime
+} from './solution-context.mjs';
+
 /**
  * <lang><zh-CN>当前代表性 app profile 与 canonical port 共享的固定契约版本。</zh-CN><en>Fixed contract version shared by the current representative app profile and canonical ports.</en></lang>
  * @lang zh-CN 版本不从 source 或环境推断，避免不同本地 fixture 悄然分叉。
@@ -527,11 +533,12 @@ function copyProfile(profile) {
  *
  * @param {unknown} candidateProfile <lang><zh-CN>待完整校验的声明式 app profile。</zh-CN><en>Declarative app profile to validate completely.</en></lang>
  * @param {object} [fixtureOptions={}] <lang><zh-CN>代码自有、仅含 allowlisted fixtureCase 的本地证据选择。</zh-CN><en>Code-owned local evidence selection containing only an allowlisted fixtureCase.</en></lang>
+ * @param {unknown} solutionProfile <lang><zh-CN>待完整校验的版本化 solution profile。</zh-CN><en>Versioned solution profile to validate completely.</en></lang>
  * @returns {object} <lang><zh-CN>失败时只有 diagnostics；成功时包含只读 source、snapshot helpers 与 app shell。</zh-CN><en>On failure only diagnostics; on success read-only source, snapshot helpers, and app shell.</en></lang>
- * @lang zh-CN factory 先校验 app profile/options，再创建完整模板候选，最后通过 integration runtime 原子采用并建立 shell；任一步失败都不返回 partial runtime。
- * @lang en The factory validates the app profile and options, creates a complete template candidate, and finally adopts it atomically through the integration runtime before establishing the shell; failure at any step returns no partial runtime.
+ * @lang zh-CN factory 先校验 app profile 与 solution availability，再校验 options、创建完整模板候选，并通过 integration runtime 原子采用和建立 shell；任一步失败都不返回 partial runtime。
+ * @lang en The factory validates app profile and solution availability before options, creates a complete template candidate, and adopts it atomically through integration runtime before establishing shell; failure at any step returns no partial runtime.
  */
-export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOptions = {}) {
+export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOptions = {}, solutionProfile) {
   // <lang><zh-CN>profile 校验是第一道门禁；失败不会进入 options/source/core/lifecycle。</zh-CN><en>Profile validation is the first gate; failure reaches neither options, source, core, nor lifecycle.</en></lang>
   const profileValidation = validateRepresentativeProfile(candidateProfile);
 
@@ -542,6 +549,17 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
 
   // <lang><zh-CN>后续全部使用 runtime 自有 profile 副本，调用方修改原对象不再生效。</zh-CN><en>All later work uses the runtime-owned profile copy, so mutation of the caller's original object no longer has an effect.</en></lang>
   const profile = profileValidation.profile;
+
+  // <lang><zh-CN>solution resolver 必须在 options/provider/template 之前完成，失败时不形成任何可调用业务纵切表面。</zh-CN><en>The solution resolver must complete before options, provider, or template; failure forms no invokable business-slice surface.</en></lang>
+  const solutionResolution = createRepresentativeSolutionProfileRuntime().resolve(
+    solutionProfile,
+    createAnonymousMockSession()
+  );
+
+  // <lang><zh-CN>仅投影下层已脱敏 diagnostics；不回显 solution、session grant、registry 或 package 描述符。</zh-CN><en>Project only lower-layer redacted diagnostics; echo no solution, session grant, registry, or package descriptor.</en></lang>
+  if (!solutionResolution.ok) {
+    return createFailure(copyDiagnostics(solutionResolution.diagnostics));
+  }
 
   // <lang><zh-CN>fixture options 在 source 构造前校验，拒绝任意 callback 或连接字段。</zh-CN><en>Validate fixture options before source construction, rejecting an arbitrary callback or connection field.</en></lang>
   const fixtureValidation = validateFixtureOptions(profile.sourceMode, fixtureOptions);
@@ -607,6 +625,24 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
    * @lang en The lower-layer snapshot already copies relationship arrays and contains no provider, manifest, or composition.
    */
   const getLifecycleSnapshot = () => integration.getAdoptionSnapshot();
+
+  /**
+   * <lang><zh-CN>返回已验证 solution 的受限稳定快照。</zh-CN><en>Returns the bounded stable snapshot of the validated solution.</en></lang>
+   *
+   * @returns {object} <lang><zh-CN>不含 session grant、registry 或原始 profile 的 solution metadata。</zh-CN><en>Solution metadata containing no session grant, registry, or raw profile.</en></lang>
+   * @lang zh-CN snapshot 由 solution runtime 新建；调用方修改不会改变 package availability 或 app shell。
+   * @lang en The solution runtime creates a fresh snapshot; caller changes cannot alter package availability or app shell.
+   */
+  const getSolutionSnapshot = () => solutionResolution.getSolutionSnapshot();
+
+  /**
+   * <lang><zh-CN>返回本 solution 已解析 capability package 的受限 availability 快照。</zh-CN><en>Returns the bounded availability snapshot of capability packages resolved by this solution.</en></lang>
+   *
+   * @returns {object[]} <lang><zh-CN>只含 package ID 与 availability state 的新数组。</zh-CN><en>New array containing only package IDs and availability states.</en></lang>
+   * @lang zh-CN snapshot 不泄露 dependency descriptor、grant 集合、module 实现、provider 或注册表。
+   * @lang en Snapshot leaks no dependency descriptor, grant set, module implementation, provider, or registry.
+   */
+  const getCapabilityAvailabilitySnapshot = () => solutionResolution.getCapabilitySnapshot();
 
   /**
    * <lang><zh-CN>返回所选 source 的受限 observation。</zh-CN><en>Returns the bounded observation for the selected source.</en></lang>
@@ -690,6 +726,8 @@ export function createRepresentativeFixtureRuntime(candidateProfile, fixtureOpti
     getProfileSnapshot,
     getPresentationSnapshot,
     getLifecycleSnapshot,
+    getSolutionSnapshot,
+    getCapabilityAvailabilitySnapshot,
     getObservation,
     isBlockEnabled
   });

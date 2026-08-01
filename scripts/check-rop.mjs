@@ -15,6 +15,8 @@ import { resolve } from 'node:path';
 const documentedSourceFiles = [
   { relativePath: 'scripts/verify-workspace.mjs', requiresNodeMarkers: true },
   { relativePath: 'scripts/check-rop.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>Biz doctor 是新增自研只读诊断源码，必须进入严格双语 ROP 最低门禁。</zh-CN><en>Biz doctor is new independently written read-only diagnostic source and must enter the strict bilingual ROP minimum gate.</en></lang>
+  { relativePath: 'scripts/doctor.mjs', requiresNodeMarkers: true },
   { relativePath: 'scripts/resolve-hia-uview-ui-source.mjs', requiresNodeMarkers: true },
   { relativePath: 'scripts/build-mp-weixin-fixture.mjs', requiresNodeMarkers: true },
   { relativePath: 'scripts/verify-mp-weixin-fixture.mjs', requiresNodeMarkers: true },
@@ -56,7 +58,9 @@ const documentedSourceFiles = [
   // <lang><zh-CN>代表性纵切测试也必须保留严格双语节点与流程说明。</zh-CN><en>The representative-slice test must also retain strict bilingual node and flow explanations.</en></lang>
   { relativePath: 'test/representative-mp-weixin-slice.test.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>候选质量门禁测试通过独立 Node 进程验证入口，必须保留严格双语节点与流程说明。</zh-CN><en>The candidate quality-gate test verifies the entry through an independent Node process and must retain strict bilingual node and flow explanations.</en></lang>
-  { relativePath: 'test/release-quality.test.mjs', requiresNodeMarkers: true }
+  { relativePath: 'test/release-quality.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>doctor acceptance 固定受限 JSON report，必须保留严格双语节点与流程说明。</zh-CN><en>Doctor acceptance fixes bounded JSON report and must retain strict bilingual node and flow explanations.</en></lang>
+  { relativePath: 'test/doctor.test.mjs', requiresNodeMarkers: true }
 ];
 
 /**

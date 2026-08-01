@@ -59,6 +59,8 @@ const requiredFiles = [
   'scripts/resolve-hia-uview-ui-source.mjs',
   'scripts/build-mp-weixin-fixture.mjs',
   'scripts/verify-mp-weixin-fixture.mjs',
+  // <lang><zh-CN>Biz doctor 是采用 readiness 的受限只读入口，源码与验收必须同时存在。</zh-CN><en>Biz doctor is the bounded read-only entry for adoption readiness, and its source and acceptance must exist together.</en></lang>
+  'scripts/doctor.mjs',
   'scripts/verify-documentation-output.mjs',
   // <lang><zh-CN>离线发布质量候选门禁与其直接 Node 验收必须同步存在，避免文档化 policy 漂移为无实现承诺。</zh-CN><en>The offline release-quality candidate gate and its direct Node acceptance must exist together, preventing documented policy from drifting into an unimplemented promise.</en></lang>
   'scripts/verify-release-quality.mjs',
@@ -69,6 +71,10 @@ const requiredFiles = [
   'modules/example-reference-data/src/index.mjs',
   'modules/example-reference-data/README.md',
   'docs/development.md',
+  'docs/adoption.md',
+  'docs/migration.md',
+  'docs/doctor.md',
+  'docs/support.md',
   'docs/quality.md',
   'docs/architecture.md',
   'docs/api/app-shell.md',
@@ -85,6 +91,7 @@ const requiredFiles = [
   // <lang><zh-CN>应用模板、显式 adapter 集成与非生成边界必须由独立公开 ADR/contract 固定。</zh-CN><en>Application templates, explicit adapter integration, and the non-generation boundary must be fixed by a separate public ADR and contract.</en></lang>
   'docs/adr/ADR-0006-application-template-and-explicit-adapter-integration.md',
   'docs/adr/ADR-0007-release-quality-candidate-boundary.md',
+  'docs/adr/ADR-0008-adoption-diagnostics-and-feedback-boundary.md',
   'docs/jsdoc.config.json',
   'docs/contracts/adapter-boundary.md',
   'docs/contracts/capability-lifecycle.md',
@@ -112,7 +119,12 @@ const requiredFiles = [
   // <lang><zh-CN>端到端纯 Node 测试固定 profile、显式 source、lifecycle、shell 与脱敏 observation。</zh-CN><en>The end-to-end pure-Node test fixes profile, explicit source, lifecycle, shell, and redacted observation.</en></lang>
   'test/representative-mp-weixin-slice.test.mjs',
   // <lang><zh-CN>候选质量门禁是独立契约，测试文件必须可被基线 Node suite 直接执行。</zh-CN><en>The candidate quality gate is an independent contract and its test file must be directly executable by the baseline Node suite.</en></lang>
-  'test/release-quality.test.mjs'
+  'test/release-quality.test.mjs',
+  // <lang><zh-CN>doctor JSON report 是支持 intake 的可复现边界，测试文件必须成为基线 Node suite 的显式入口。</zh-CN><en>The doctor JSON report is reproducible boundary for support intake and its test must be an explicit entry of baseline Node suite.</en></lang>
+  'test/doctor.test.mjs',
+  // <lang><zh-CN>两份静态 issue template 固定最小复现和脱敏 intake，不依赖外部 issue 设置。</zh-CN><en>Two static issue templates fix minimal-reproduction and sanitized intake without depending on external issue settings.</en></lang>
+  '.github/ISSUE_TEMPLATE/bug-report.md',
+  '.github/ISSUE_TEMPLATE/adoption-feedback.md'
 ];
 
 /**

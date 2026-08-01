@@ -60,6 +60,8 @@ const requiredFiles = [
   'scripts/build-mp-weixin-fixture.mjs',
   'scripts/verify-mp-weixin-fixture.mjs',
   'scripts/verify-documentation-output.mjs',
+  // <lang><zh-CN>离线发布质量候选门禁与其直接 Node 验收必须同步存在，避免文档化 policy 漂移为无实现承诺。</zh-CN><en>The offline release-quality candidate gate and its direct Node acceptance must exist together, preventing documented policy from drifting into an unimplemented promise.</en></lang>
+  'scripts/verify-release-quality.mjs',
   'modules/example-catalog-query-detail/package.json',
   'modules/example-catalog-query-detail/src/index.mjs',
   // <lang><zh-CN>首批组合必须包含中性 reference-data capability package 与源码说明。</zh-CN><en>The initial composition must contain the neutral reference-data capability package and source guide.</en></lang>
@@ -67,6 +69,7 @@ const requiredFiles = [
   'modules/example-reference-data/src/index.mjs',
   'modules/example-reference-data/README.md',
   'docs/development.md',
+  'docs/quality.md',
   'docs/architecture.md',
   'docs/api/app-shell.md',
   'docs/api/adapter-runtime.md',
@@ -81,6 +84,7 @@ const requiredFiles = [
   'docs/adr/ADR-0005-explicit-capability-adoption-and-replacement.md',
   // <lang><zh-CN>应用模板、显式 adapter 集成与非生成边界必须由独立公开 ADR/contract 固定。</zh-CN><en>Application templates, explicit adapter integration, and the non-generation boundary must be fixed by a separate public ADR and contract.</en></lang>
   'docs/adr/ADR-0006-application-template-and-explicit-adapter-integration.md',
+  'docs/adr/ADR-0007-release-quality-candidate-boundary.md',
   'docs/jsdoc.config.json',
   'docs/contracts/adapter-boundary.md',
   'docs/contracts/capability-lifecycle.md',
@@ -106,7 +110,9 @@ const requiredFiles = [
   // <lang><zh-CN>应用模板测试固定公开 manifest、完整 slots、mock/wire 集成与原子替换。</zh-CN><en>The application-template test fixes the public manifest, complete slots, mock or wire integration, and atomic replacement.</en></lang>
   'test/application-template.test.mjs',
   // <lang><zh-CN>端到端纯 Node 测试固定 profile、显式 source、lifecycle、shell 与脱敏 observation。</zh-CN><en>The end-to-end pure-Node test fixes profile, explicit source, lifecycle, shell, and redacted observation.</en></lang>
-  'test/representative-mp-weixin-slice.test.mjs'
+  'test/representative-mp-weixin-slice.test.mjs',
+  // <lang><zh-CN>候选质量门禁是独立契约，测试文件必须可被基线 Node suite 直接执行。</zh-CN><en>The candidate quality gate is an independent contract and its test file must be directly executable by the baseline Node suite.</en></lang>
+  'test/release-quality.test.mjs'
 ];
 
 /**

@@ -19,6 +19,8 @@ const documentedSourceFiles = [
   { relativePath: 'scripts/build-mp-weixin-fixture.mjs', requiresNodeMarkers: true },
   { relativePath: 'scripts/verify-mp-weixin-fixture.mjs', requiresNodeMarkers: true },
   { relativePath: 'scripts/verify-documentation-output.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>离线发布质量候选门禁只读检查多种公开边界，必须进入严格双语 ROP 最低门禁。</zh-CN><en>The offline release-quality candidate gate read-checks multiple public boundaries and must enter the strict bilingual ROP minimum gate.</en></lang>
+  { relativePath: 'scripts/verify-release-quality.mjs', requiresNodeMarkers: true },
   { relativePath: 'packages/core/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'packages/app-shell/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'packages/adapter-runtime/src/index.mjs', requiresNodeMarkers: true },
@@ -52,7 +54,9 @@ const documentedSourceFiles = [
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/pages/index/index.vue', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/uni.scss', requiresNodeMarkers: false },
   // <lang><zh-CN>代表性纵切测试也必须保留严格双语节点与流程说明。</zh-CN><en>The representative-slice test must also retain strict bilingual node and flow explanations.</en></lang>
-  { relativePath: 'test/representative-mp-weixin-slice.test.mjs', requiresNodeMarkers: true }
+  { relativePath: 'test/representative-mp-weixin-slice.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>候选质量门禁测试通过独立 Node 进程验证入口，必须保留严格双语节点与流程说明。</zh-CN><en>The candidate quality-gate test verifies the entry through an independent Node process and must retain strict bilingual node and flow explanations.</en></lang>
+  { relativePath: 'test/release-quality.test.mjs', requiresNodeMarkers: true }
 ];
 
 /**

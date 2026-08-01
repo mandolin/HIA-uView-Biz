@@ -31,9 +31,9 @@ The current gate verifies declared package metadata and dependency shape, contro
 
 ## Current limitations / 当前限制
 
-This repository has not yet performed publication, WeChat upload, device/simulator validation, browser acceptance, external CI execution, runtime penetration testing, formal accessibility audit, SBOM publication, or release-provenance verification. Do not imply any of those results from a passing local gate.
+The offline gate itself performs no publication, WeChat upload, device or simulator validation, browser acceptance, external CI execution, runtime penetration testing, formal accessibility audit, SBOM publication, or release-provenance verification. A separately recorded local simulator observation, if any, does not expand the gate's scope. Do not imply any of those results from a passing local gate.
 
-本仓尚未执行 publication、微信上传、设备/模拟器验证、浏览器验收、外部 CI 执行、runtime 渗透测试、正式无障碍审计、SBOM 发布或 release-provenance 验证。不得从本地门禁通过推断出任何上述结果。
+offline gate 本身不执行 publication、微信上传、设备或模拟器验证、浏览器验收、外部 CI 执行、runtime 渗透测试、正式无障碍审计、SBOM 发布或 release-provenance 验证。即使另有单独记录的 local simulator observation，也不会扩展该 gate 的范围。不得从本地门禁通过推断出任何上述结果。
 
 The committed development dependency graph has accepted development-only advisories for trusted local, compile-only work. It must not process untrusted input, and any compiler, lockfile, package metadata, vulnerability, license, or UI-source change requires renewed review. Do not use unreviewed `npm audit fix` commands as a repair mechanism.
 

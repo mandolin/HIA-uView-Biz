@@ -75,6 +75,8 @@ const requiredFiles = [
   'docs/migration.md',
   'docs/doctor.md',
   'docs/support.md',
+  // <lang><zh-CN>local source-trial 公开指南固定 commit-bound 评估、显式 compiler/simulator 和 source-control rollback 边界。</zh-CN><en>The local source-trial public guide fixes commit-bound evaluation and explicit compiler, simulator, and source-control rollback boundaries.</en></lang>
+  'docs/source-trial.md',
   'docs/quality.md',
   'docs/architecture.md',
   'docs/api/app-shell.md',
@@ -92,6 +94,8 @@ const requiredFiles = [
   'docs/adr/ADR-0006-application-template-and-explicit-adapter-integration.md',
   'docs/adr/ADR-0007-release-quality-candidate-boundary.md',
   'docs/adr/ADR-0008-adoption-diagnostics-and-feedback-boundary.md',
+  // <lang><zh-CN>source-trial/release boundary ADR 必须与指南共同存在，避免 private `0.0.0` workspace 被误表述为已发布 package。</zh-CN><en>The source-trial/release-boundary ADR must exist alongside the guide, avoiding a private `0.0.0` workspace being presented as a published package.</en></lang>
+  'docs/adr/ADR-0009-local-source-trial-and-release-boundary.md',
   'docs/jsdoc.config.json',
   'docs/contracts/adapter-boundary.md',
   'docs/contracts/capability-lifecycle.md',
@@ -122,6 +126,8 @@ const requiredFiles = [
   'test/release-quality.test.mjs',
   // <lang><zh-CN>doctor JSON report 是支持 intake 的可复现边界，测试文件必须成为基线 Node suite 的显式入口。</zh-CN><en>The doctor JSON report is reproducible boundary for support intake and its test must be an explicit entry of baseline Node suite.</en></lang>
   'test/doctor.test.mjs',
+  // <lang><zh-CN>source-trial command 必须有独立验收，固定它只编排本地 gate 而不隐式选择 UI source、调用工具或发布。</zh-CN><en>The source-trial command must have independent acceptance, fixing that it only orchestrates local gates and does not implicitly select UI source, invoke tools, or publish.</en></lang>
+  'test/source-trial.test.mjs',
   // <lang><zh-CN>两份静态 issue template 固定最小复现和脱敏 intake，不依赖外部 issue 设置。</zh-CN><en>Two static issue templates fix minimal-reproduction and sanitized intake without depending on external issue settings.</en></lang>
   '.github/ISSUE_TEMPLATE/bug-report.md',
   '.github/ISSUE_TEMPLATE/adoption-feedback.md'

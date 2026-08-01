@@ -60,7 +60,9 @@ const documentedSourceFiles = [
   // <lang><zh-CN>候选质量门禁测试通过独立 Node 进程验证入口，必须保留严格双语节点与流程说明。</zh-CN><en>The candidate quality-gate test verifies the entry through an independent Node process and must retain strict bilingual node and flow explanations.</en></lang>
   { relativePath: 'test/release-quality.test.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>doctor acceptance 固定受限 JSON report，必须保留严格双语节点与流程说明。</zh-CN><en>Doctor acceptance fixes bounded JSON report and must retain strict bilingual node and flow explanations.</en></lang>
-  { relativePath: 'test/doctor.test.mjs', requiresNodeMarkers: true }
+  { relativePath: 'test/doctor.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>source-trial acceptance 固定本地 command 的无外部状态编排边界，必须保留严格双语节点与流程说明。</zh-CN><en>Source-trial acceptance fixes no-external-state orchestration boundary of the local command and must retain strict bilingual node and flow explanations.</en></lang>
+  { relativePath: 'test/source-trial.test.mjs', requiresNodeMarkers: true }
 ];
 
 /**

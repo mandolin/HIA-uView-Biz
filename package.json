@@ -22,7 +22,8 @@
     "docs:api": "jsdoc -c docs/jsdoc.config.json",
     "docs:check": "npm run docs:api && node scripts/verify-documentation-output.mjs",
     "quality:release-candidate": "node scripts/verify-release-quality.mjs",
-    "test": "npm run check && node --test test/core-and-example.test.mjs test/app-shell.test.mjs test/adapter-runtime.test.mjs test/capability-runtime.test.mjs test/capability-adoption.test.mjs test/application-template.test.mjs test/representative-mp-weixin-slice.test.mjs test/release-quality.test.mjs test/doctor.test.mjs"
+    "trial:source": "npm run doctor && npm test && npm run quality:release-candidate",
+    "test": "npm run check && node --test test/core-and-example.test.mjs test/app-shell.test.mjs test/adapter-runtime.test.mjs test/capability-runtime.test.mjs test/capability-adoption.test.mjs test/application-template.test.mjs test/representative-mp-weixin-slice.test.mjs test/release-quality.test.mjs test/doctor.test.mjs test/source-trial.test.mjs"
   },
   "devDependencies": {
     "@dcloudio/types": "3.4.31",

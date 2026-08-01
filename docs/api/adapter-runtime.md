@@ -68,13 +68,13 @@ cache lookup 只在 request validation 后发生。仅当 conversion 产生 cano
 
 ## Neutral fixture / 中性 fixture
 
-`@hia-uview/biz-example-catalog-query-detail-adapter-fixture` supplies independently written local query/detail wire values, exact existing port contracts, a no-account mock session, optional query memory cache, and count-only observations. It can replace the existing mock implementation only when a caller explicitly selects its implementation-package ID and providers in a composition.
+`@hia-uview/biz-example-catalog-query-detail-adapter-fixture` supplies independently written local query/detail wire values, exact existing port contracts, one static local-synchronous read-operation descriptor with a complete checked-in handler map, a no-account mock session, optional query memory cache, and count-only observations. It can replace the existing mock implementation only when a caller explicitly selects its implementation-package ID and providers in a composition.
 
-`@hia-uview/biz-example-catalog-query-detail-adapter-fixture` 提供独立编写的本地 query/detail wire 值、精确的现有 port contract、无账户 mock session、可选 query 内存缓存和仅计数 observation。只有调用方在 composition 中显式选择其 implementation-package ID 与 provider 时，它才可替换现有 mock implementation。
+`@hia-uview/biz-example-catalog-query-detail-adapter-fixture` 提供独立编写的本地 query/detail wire 值、精确的现有 port contract、一个带完整 checked-in handler map 的静态 local-synchronous read-operation descriptor、无账户 mock session、可选 query 内存缓存和仅计数 observation。只有调用方在 composition 中显式选择其 implementation-package ID 与 provider 时，它才可替换现有 mock implementation。
 
-The fixture cases cover success, exchange failure, malformed wire, and supplementary detail-section failure. None performs a real transport or discovers a backend.
+The fixture cases cover success, exchange failure, malformed wire, and supplementary detail-section failure. Its local static operation dispatch performs no real transport or backend discovery; P38 command remains a separate instance-local mock transaction.
 
-fixture case 覆盖 success、exchange failure、malformed wire 与附属 detail-section failure。它们都不执行真实 transport，也不发现 backend。
+fixture case 覆盖 success、exchange failure、malformed wire 与附属 detail-section failure。其本地静态 operation dispatch 不执行真实 transport，也不发现 backend；P38 command 仍是独立 instance-local mock transaction。
 
 ## Deliberate limits / 刻意限制
 

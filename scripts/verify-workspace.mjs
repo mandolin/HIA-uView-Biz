@@ -24,6 +24,10 @@ const requiredFiles = [
   'packages/adapter-runtime/package.json',
   'packages/adapter-runtime/src/index.mjs',
   'packages/adapter-runtime/README.md',
+  // <lang><zh-CN>静态 local transport-operation runtime 必须作为独立 package、源码和公开说明存在，避免把 handler mapping 混入 read-adapter 或动态配置。</zh-CN><en>The static local transport-operation runtime must exist as an independent package, source file, and public guide, preventing handler mapping from being mixed into read adapter or dynamic configuration.</en></lang>
+  'packages/transport-operation-runtime/package.json',
+  'packages/transport-operation-runtime/src/index.mjs',
+  'packages/transport-operation-runtime/README.md',
   // <lang><zh-CN>能力生命周期 runtime 必须以独立 package、源码和公开说明存在。</zh-CN><en>The capability-lifecycle runtime must exist as an independent package, source file, and public guide.</en></lang>
   'packages/capability-runtime/package.json',
   'packages/capability-runtime/src/index.mjs',
@@ -87,6 +91,7 @@ const requiredFiles = [
   'docs/architecture.md',
   'docs/api/app-shell.md',
   'docs/api/adapter-runtime.md',
+  'docs/api/transport-operation-runtime.md',
   // <lang><zh-CN>能力生命周期公开 API 文档必须与 runtime package 同步存在。</zh-CN><en>The public capability-lifecycle API guide must exist alongside the runtime package.</en></lang>
   'docs/api/capability-runtime.md',
   'docs/api/adoption-runtime.md',
@@ -104,6 +109,8 @@ const requiredFiles = [
   'docs/adr/ADR-0009-local-source-trial-and-release-boundary.md',
   'docs/jsdoc.config.json',
   'docs/contracts/adapter-boundary.md',
+  // <lang><zh-CN>静态 local operation dispatch 必须有独立 contract、schema/example 和 runtime API，明确它不是 HTTP/client 或 command transport。</zh-CN><en>Static local operation dispatch must have independent contract, schema/example, and runtime API, making clear it is not HTTP/client or command transport.</en></lang>
+  'docs/contracts/transport-operation.md',
   'docs/contracts/capability-lifecycle.md',
   'docs/contracts/capability-adoption.md',
   'docs/contracts/application-template.md',
@@ -113,10 +120,12 @@ const requiredFiles = [
   'docs/contracts/schemas/application-template.manifest.v1.schema.json',
   'docs/contracts/schemas/solution-profile.v1.schema.json',
   'docs/contracts/schemas/entry-acknowledgement.command.v1.schema.json',
+  'docs/contracts/schemas/transport-operation.descriptor.v1.schema.json',
   'docs/contracts/examples/example.catalog-query-detail.mp-weixin.template.manifest.json',
   'docs/contracts/examples/example.catalog-query-detail.neutral.solution.profile.json',
   'docs/contracts/examples/example.catalog-query-detail.acknowledge-entry.command.json',
   'docs/contracts/examples/example.catalog-query-detail.acknowledge-entry.receipt.json',
+  'docs/contracts/examples/example.catalog-query-detail.local-transport.descriptor.json',
   'docs/contracts/schemas/capability-adoption.profile.v1.schema.json',
   'docs/contracts/examples/example.catalog-composed.adoption.profile.json',
   'docs/contracts/examples/example.catalog-composed.replacement.profile.json',
@@ -128,6 +137,8 @@ const requiredFiles = [
   'test/core-and-example.test.mjs',
   'test/app-shell.test.mjs',
   'test/adapter-runtime.test.mjs',
+  // <lang><zh-CN>transport-operation 测试固定 descriptor、handler map、隔离 dispatch 与 local failure，不引入异步或真实 transport。</zh-CN><en>The transport-operation test fixes descriptor, handler map, isolated dispatch, and local failure without introducing asynchronous or real transport.</en></lang>
+  'test/transport-operation-runtime.test.mjs',
   // <lang><zh-CN>能力生命周期测试固定多单元组合、依赖/冲突与无 hook 边界。</zh-CN><en>The capability-lifecycle test fixes multi-unit composition, dependency/conflict, and no-hook boundaries.</en></lang>
   'test/capability-runtime.test.mjs',
   // <lang><zh-CN>采用测试固定完整集合、dependency order、状态、替换、回退、配置与冲突。</zh-CN><en>The adoption test fixes complete sets, dependency order, state, replacement, rollback, configuration, and conflicts.</en></lang>

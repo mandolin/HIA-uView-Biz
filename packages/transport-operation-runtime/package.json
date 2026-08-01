@@ -1,0 +1,18 @@
+{
+  "name": "@hia-uview/biz-transport-operation-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pure static local operation-dispatch boundary for HIA-uView-Biz adapters.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

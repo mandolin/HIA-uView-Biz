@@ -391,10 +391,27 @@ function testMapsCatalogWireFixture() {
   assert.equal(fixture.adapterDeclarations.query.credential.mode, 'none');
   assert.equal(fixture.adapterDeclarations.detail.cache.mode, 'none');
 
-  // <lang><zh-CN>observation 不公开 wire value；只报告 query/detail runtime 的受限计数。</zh-CN><en>The observation exposes no wire value and reports only bounded counts from query/detail runtimes.</en></lang>
-  const observationText = JSON.stringify(fixture.getObservation());
+  // <lang><zh-CN>fixture 的两个 read port 通过一个静态 local-synchronous operation descriptor 进入 handler；P38 command 不在 transport operation 集合内。</zh-CN><en>The fixture's two read ports enter handlers through one static local-synchronous operation descriptor; P38 command is not in transport operation set.</en></lang>
+  assert.equal(fixture.transportDescriptor.execution, 'local-synchronous');
+  assert.equal(fixture.transportDescriptor.credential.mode, 'none');
+  assert.deepEqual(fixture.transportDescriptor.operations.map((operation) => operation.port), ['catalog-query', 'entry-detail']);
+  assert.equal(fixture.transportDescriptor.operations.some((operation) => operation.kind !== 'read'), false);
+
+  // <lang><zh-CN>transport observation 只报告成功 invocation count；不公开 wire value、operation ID 或 handler。</zh-CN><en>Transport observation reports only successful invocation count and exposes no wire value, operation ID, or handler.</en></lang>
+  const observation = fixture.getObservation();
+  assert.deepEqual(observation.transport, {
+    invocations: 2,
+    successes: 2,
+    failures: {
+      operation: 0,
+      input: 0,
+      handler: 0
+    }
+  });
+  const observationText = JSON.stringify(observation);
   assert.equal(observationText.includes('raw'), false);
   assert.equal(observationText.includes('token'), false);
+  assert.equal(observationText.includes('catalog-query-detail.catalog-query.read'), false);
 
   // <lang><zh-CN>独立 fixture 验证 supplementary section failure 不覆盖主 entry。</zh-CN><en>A separate fixture verifies a supplementary-section failure does not overwrite the primary entry.</en></lang>
   const partialFailureFixture = createCatalogQueryDetailAdapterFixture({ fixtureCase: 'detail-section-failure' });

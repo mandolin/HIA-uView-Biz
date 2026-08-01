@@ -12,6 +12,7 @@ This contract defines the first backend-agnostic adapter boundary for Biz read p
 | Port selection and implementation correspondence | Composition core / 组合核心 | URL, credential, transport singleton / URL、凭据、transport singleton |
 | Screen state and visible UX policy | Application shell and channel application / 应用 shell 与渠道应用 | Raw response, endpoint, cache internals / 原始响应、endpoint、缓存内部信息 |
 | Wire request/response, envelope, pagination conversion, retry policy, bounded diagnostics | Selected adapter / 选定 adapter | Core, module, shell, UI / core、module、shell、UI |
+| Static local read-operation mapping and complete handler map | Selected adapter plus transport-operation runtime / 选定 adapter 加 transport-operation runtime | URL, HTTP method/status, endpoint, credential, command transport / URL、HTTP method/status、endpoint、credential、command transport |
 | Account acquisition and credential lifecycle | Future separately reviewed identity provider / 将来独立复审的 identity provider | Canonical request, route, manifest, cache key / 规范化 request、route、manifest、cache key |
 | In-memory read cache | Selected adapter only / 仅选定 adapter | Other adapter, global store, persistent storage / 其他 adapter、global store、持久 storage |
 
@@ -42,13 +43,13 @@ Every adapter implementation records these facts beside its implementation packa
 
 1. Module validation accepts or rejects a canonical request before an adapter exchange begins.
 2. The selected adapter maps an accepted canonical request to its own local wire request.
-3. Its declared exchange obtains a local wire outcome. The deterministic fixture injects that exchange; generic runtime code does not call a network API.
+3. Its declared exchange invokes one literal static local read operation and obtains a local wire outcome. The deterministic fixture supplies the complete reviewed handler map; generic runtime code does not call a network API.
 4. The adapter converts only a declared, recognized outcome to the current canonical page, detail, or failure shape.
 5. The adapter returns a redacted canonical failure when conversion or exchange cannot serve the port. No raw object crosses the port.
 
 1. module validation 在 adapter exchange 开始前接受或拒绝规范化 request。
 2. 选定 adapter 将已接受的规范化 request 映射为自己的本地 wire request。
-3. 其已声明 exchange 获得本地 wire outcome。确定性 fixture 注入该 exchange；通用 runtime 代码不调用网络 API。
+3. 其已声明 exchange 调用一个字面静态本地 read operation 并获得本地 wire outcome。确定性 fixture 提供完整已审阅 handler map；通用 runtime 代码不调用网络 API。
 4. adapter 只将已声明、已识别的 outcome 转换为当前规范化 page、detail 或 failure 形状。
 5. 当转换或 exchange 无法服务该 port 时，adapter 返回脱敏的规范化 failure。没有原始对象跨越 port。
 
@@ -89,6 +90,6 @@ The initial cache is process-local. It has no storage, hydration, synchronizatio
 
 ## Non-goals / 非目标
 
-This contract does not authorize or implement `fetch`, `uni.request`, a Directus SDK, REST/GraphQL endpoint, environment configuration, real account lookup, credential injection, storage, write command, dynamic import, remote configuration, industry schema, or package discovery.
+This contract does not authorize or implement `fetch`, `uni.request`, a Directus SDK, REST/GraphQL endpoint, URL/HTTP method/status configuration, environment configuration, real account lookup, credential injection, storage, write command or command transport, async/retry/timeout/cancellation, dynamic import, remote configuration, industry schema, or package discovery.
 
-本契约不授权或实现 `fetch`、`uni.request`、Directus SDK、REST/GraphQL endpoint、环境配置、真实账户查询、credential injection、storage、写 command、动态 import、远端配置、行业 schema 或 package discovery。
+本契约不授权或实现 `fetch`、`uni.request`、Directus SDK、REST/GraphQL endpoint、URL/HTTP method/status 配置、环境配置、真实账户查询、credential injection、storage、写 command 或 command transport、async/retry/timeout/cancellation、动态 import、远端配置、行业 schema 或 package discovery。

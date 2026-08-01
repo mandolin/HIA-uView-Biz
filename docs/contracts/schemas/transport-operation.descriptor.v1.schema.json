@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/mandolin/HIA-uView-Biz/docs/contracts/schemas/transport-operation.descriptor.v1.schema.json",
+  "title": "Static local transport operation descriptor v1 / 静态本地 transport operation descriptor v1",
+  "description": "Defines a bounded static local-synchronous read-operation mapping for one selected adapter. / 为一个选定 adapter 定义受限的静态本地同步 read-operation mapping。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "transportOperationContractVersion",
+    "kind",
+    "id",
+    "execution",
+    "credential",
+    "operations"
+  ],
+  "properties": {
+    "transportOperationContractVersion": {
+      "const": "1.0",
+      "description": "Fixed descriptor contract version. / 固定 descriptor 契约版本。"
+    },
+    "kind": {
+      "const": "transport-operation-descriptor",
+      "description": "Fixed static-descriptor kind. / 固定静态 descriptor kind。"
+    },
+    "id": {
+      "$ref": "#/$defs/stableIdentifier",
+      "description": "Stable local transport descriptor identifier; not an endpoint or account. / 稳定本地 transport descriptor 标识；不是 endpoint 或账户。"
+    },
+    "execution": {
+      "const": "local-synchronous",
+      "description": "Only execution class accepted by v1. / v1 唯一接受的 execution class。"
+    },
+    "credential": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {
+          "const": "none",
+          "description": "No credential is accepted or read. / 不接受或读取任何 credential。"
+        }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "port", "contract"],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/stableIdentifier",
+            "description": "Literal operation identifier used only by reviewed adapter source. / 仅由已审阅 adapter 源码使用的字面 operation 标识。"
+          },
+          "kind": {
+            "const": "read",
+            "description": "v1 supports read operations only. / v1 只支持 read operation。"
+          },
+          "port": {
+            "$ref": "#/$defs/stableIdentifier",
+            "description": "Existing business-module read port identifier. / 既有 business-module read port 标识。"
+          },
+          "contract": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "version"],
+            "properties": {
+              "id": {
+                "$ref": "#/$defs/stableIdentifier",
+                "description": "Existing module-port contract identifier. / 既有 module-port 契约标识。"
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Existing module-port contract version. / 既有 module-port 契约版本。"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "stableIdentifier": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*(\\.[a-z][a-z0-9-]*)*$",
+      "description": "Stable lowercase dotted or hyphen identifier. / 稳定的小写点分或连字符标识。"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "transportOperationContractVersion": "1.0",
+  "kind": "transport-operation-descriptor",
+  "id": "example.catalog-query-detail.local-transport",
+  "execution": "local-synchronous",
+  "credential": {
+    "mode": "none"
+  },
+  "operations": [
+    {
+      "id": "example.catalog-query-detail.catalog-query.read",
+      "kind": "read",
+      "port": "catalog-query",
+      "contract": {
+        "id": "catalog-query-detail.query",
+        "version": "1.0"
+      }
+    },
+    {
+      "id": "example.catalog-query-detail.entry-detail.read",
+      "kind": "read",
+      "port": "entry-detail",
+      "contract": {
+        "id": "catalog-query-detail.detail",
+        "version": "1.0"
+      }
+    }
+  ]
+}

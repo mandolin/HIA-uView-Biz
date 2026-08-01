@@ -10,6 +10,11 @@ import {
   createReadAdapter
 } from '@hia-uview/biz-adapter-runtime';
 
+// <lang><zh-CN>静态 local operation runtime 只分发本 extension 明确登记的 read wire handler，不引入 HTTP/client 语义。</zh-CN><en>Static local operation runtime dispatches only read-wire handlers explicitly registered by this extension and introduces no HTTP/client semantics.</en></lang>
+import {
+  createStaticOperationTransport
+} from '@hia-uview/biz-transport-operation-runtime';
+
 // <lang><zh-CN>command 使用 module-owned 的纯 in-memory transaction；它不是 wire request、HTTP write 或 adapter runtime 的扩张。</zh-CN><en>Command uses module-owned pure in-memory transaction; it is neither wire request, HTTP write, nor an expansion of adapter runtime.</en></lang>
 import {
   createEntryAcknowledgementMockTransaction
@@ -49,6 +54,27 @@ const QUERY_ADAPTER_ID = `${MODULE_ID}.query-wire-fixture`;
  * @lang en Detail and query own separate runtimes/controllers, preventing implicit cache or retry sharing.
  */
 const DETAIL_ADAPTER_ID = `${MODULE_ID}.detail-wire-fixture`;
+
+/**
+ * <lang><zh-CN>当前 extension 的 static local transport descriptor 稳定 ID。</zh-CN><en>Stable ID of current extension's static local transport descriptor.</en></lang>
+ * @lang zh-CN 该 ID 仅标识 checked-in local operation set，不是 endpoint、connection、account 或发现键。
+ * @lang en This ID identifies only checked-in local operation set and is not endpoint, connection, account, or discovery key.
+ */
+const TRANSPORT_OPERATION_ID = `${MODULE_ID}.local-transport`;
+
+/**
+ * <lang><zh-CN>catalog query read 的字面 static operation ID。</zh-CN><en>Literal static operation ID for catalog-query read.</en></lang>
+ * @lang zh-CN adapter source 使用此固定 ID 调度本地 handler；它不来自 profile、request 或用户输入。
+ * @lang en Adapter source uses this fixed ID to dispatch local handler; it does not come from profile, request, or user input.
+ */
+const QUERY_TRANSPORT_OPERATION_ID = `${MODULE_ID}.catalog-query.read`;
+
+/**
+ * <lang><zh-CN>entry detail read 的字面 static operation ID。</zh-CN><en>Literal static operation ID for entry-detail read.</en></lang>
+ * @lang zh-CN command 不在该 descriptor 内；P38 transaction 继续是独立的 instance-local mock。
+ * @lang en Command is not in this descriptor; P38 transaction remains independent instance-local mock.
+ */
+const DETAIL_TRANSPORT_OPERATION_ID = `${MODULE_ID}.entry-detail.read`;
 
 /**
  * <lang><zh-CN>创建稳定的双语 canonical 文本。</zh-CN><en>Creates stable bilingual canonical text.</en></lang>
@@ -218,6 +244,46 @@ function createDetailDeclaration() {
 }
 
 /**
+ * <lang><zh-CN>构造 query/detail 专属的 static local transport-operation descriptor。</zh-CN><en>Constructs static local transport-operation descriptor owned by query/detail fixture.</en></lang>
+ *
+ * @returns {object} <lang><zh-CN>仅含两个 read operation、credential none 与 local-synchronous execution 的新 descriptor。</zh-CN><en>New descriptor containing only two read operations, credential none, and local-synchronous execution.</en></lang>
+ * @lang zh-CN descriptor 没有 URL、HTTP method、header、token、endpoint、connection、retry 或 command mapping。
+ * @lang en Descriptor has no URL, HTTP method, header, token, endpoint, connection, retry, or command mapping.
+ */
+function createTransportOperationDescriptor() {
+  // <lang><zh-CN>每个 operation 精确对应当前 implementation 已提供的一个 read port 和既有 module contract。</zh-CN><en>Every operation corresponds exactly to one read port already provided by current implementation and existing module contract.</en></lang>
+  return {
+    transportOperationContractVersion: '1.0',
+    kind: 'transport-operation-descriptor',
+    id: TRANSPORT_OPERATION_ID,
+    execution: 'local-synchronous',
+    credential: {
+      mode: 'none'
+    },
+    operations: [
+      {
+        id: QUERY_TRANSPORT_OPERATION_ID,
+        kind: 'read',
+        port: 'catalog-query',
+        contract: {
+          id: 'catalog-query-detail.query',
+          version: CONTRACT_VERSION
+        }
+      },
+      {
+        id: DETAIL_TRANSPORT_OPERATION_ID,
+        kind: 'read',
+        port: 'entry-detail',
+        contract: {
+          id: 'catalog-query-detail.detail',
+          version: CONTRACT_VERSION
+        }
+      }
+    ]
+  };
+}
+
+/**
  * <lang><zh-CN>构造 wire fixture implementation-package manifest。</zh-CN><en>Constructs the wire-fixture implementation-package manifest.</en></lang>
  *
  * @returns {object} <lang><zh-CN>与现有 business module port contract 对应的实现声明。</zh-CN><en>An implementation declaration corresponding to the existing business-module port contracts.</en></lang>
@@ -378,6 +444,44 @@ export function createCatalogQueryDetailAdapterFixture(options = {}) {
     };
   };
 
+  // <lang><zh-CN>创建一个完整、静态且只读的 local transport；detail handler 通过闭包在其后声明前引用，但 transport 初始化不调用 handler。</zh-CN><en>Create one complete static read-only local transport; detail handler is referenced by closure before later declaration, but transport initialization invokes no handler.</en></lang>
+  const transportDescriptor = createTransportOperationDescriptor();
+  const transportInitialization = createStaticOperationTransport({
+    descriptor: transportDescriptor,
+    handlers: {
+      [QUERY_TRANSPORT_OPERATION_ID]: (wireRequest) => exchangeQuery(wireRequest),
+      [DETAIL_TRANSPORT_OPERATION_ID]: (wireRequest) => exchangeDetail(wireRequest)
+    }
+  });
+
+  // <lang><zh-CN>descriptor 与 checked-in handler map 不匹配属于 extension 开发配置错误；不暴露内部 diagnostics 或形成 fallback transport。</zh-CN><en>A descriptor/checked-in-handler-map mismatch is extension development configuration error; expose no internal diagnostics and form no fallback transport.</en></lang>
+  if (!transportInitialization.ok) {
+    throw new Error('Catalog transport operation fixture failed to initialize.');
+  }
+
+  /**
+   * <lang><zh-CN>通过一个字面已声明 operation 分发 adapter-private wire request。</zh-CN><en>Dispatches an adapter-private wire request through one literal declared operation.</en></lang>
+   *
+   * @param {string} operationId <lang><zh-CN>本 extension 源码固定的 read operation ID。</zh-CN><en>Read operation ID fixed in this extension source.</en></lang>
+   * @param {object} wireRequest <lang><zh-CN>当前 adapter mapper 产生的 private wire request。</zh-CN><en>Private wire request produced by current adapter mapper.</en></lang>
+   * @returns {object} <lang><zh-CN>handler 返回的 isolated private wire outcome。</zh-CN><en>Isolated private wire outcome returned by handler.</en></lang>
+   * @lang zh-CN local transport failure 不跨 adapter exchange；统一抛给既有 read adapter runtime 脱敏为 canonical adapter failure。
+   * @lang en Local transport failure does not cross adapter exchange; throw uniformly to existing read-adapter runtime for redaction as canonical adapter failure.
+   */
+  const dispatchLocalReadOperation = (operationId, wireRequest) => {
+    // <lang><zh-CN>transport 只接收 selected adapter 显式传入的 literal operation ID 和 private plain data。</zh-CN><en>Transport receives only literal operation ID and private plain data explicitly supplied by selected adapter.</en></lang>
+    const result = transportInitialization.transport.invoke(operationId, wireRequest);
+    if (!result.ok) {
+      // <lang><zh-CN>错误文本不包含 operation/input/failure 原文；generic adapter runtime 只记录 exchange count 并返回脱敏 canonical failure。</zh-CN><en>Error text contains no operation/input/failure body; generic adapter runtime records exchange count only and returns redacted canonical failure.</en></lang>
+      throw new Error('Local read transport operation is unavailable.');
+    }
+    return result.outcome;
+  };
+
+  // <lang><zh-CN>两个 exchange wrapper 只选择 fixed read operation，不创建通用 transport API、endpoint 或 command route。</zh-CN><en>The two exchange wrappers select only fixed read operations and create no general transport API, endpoint, or command route.</en></lang>
+  const exchangeQueryThroughTransport = (wireRequest) => dispatchLocalReadOperation(QUERY_TRANSPORT_OPERATION_ID, wireRequest);
+  const exchangeDetailThroughTransport = (wireRequest) => dispatchLocalReadOperation(DETAIL_TRANSPORT_OPERATION_ID, wireRequest);
+
   /**
    * <lang><zh-CN>将受控 query wire outcome 转换为 canonical page。</zh-CN><en>Converts a controlled query-wire outcome to a canonical page.</en></lang>
    *
@@ -451,7 +555,7 @@ export function createCatalogQueryDetailAdapterFixture(options = {}) {
     validateRequest: validateQueryRequest,
     createCacheKey: createQueryCacheKey,
     createWireRequest: createQueryWireRequest,
-    exchange: exchangeQuery,
+    exchange: exchangeQueryThroughTransport,
     convertWireOutcome: convertQueryWireOutcome,
     now: options.now
   });
@@ -573,7 +677,7 @@ export function createCatalogQueryDetailAdapterFixture(options = {}) {
     declaration: detailDeclaration,
     validateRequest: validateDetailRequest,
     createWireRequest: createDetailWireRequest,
-    exchange: exchangeDetail,
+    exchange: exchangeDetailThroughTransport,
     convertWireOutcome: convertDetailWireOutcome,
     now: options.now
   });
@@ -609,15 +713,16 @@ export function createCatalogQueryDetailAdapterFixture(options = {}) {
   /**
    * <lang><zh-CN>合并 query/detail runtime 的计数 observation。</zh-CN><en>Combines count-only observations from query/detail runtimes.</en></lang>
    *
-   * @returns {object} <lang><zh-CN>按 port 分组的受限 observation。</zh-CN><en>A bounded observation grouped by port.</en></lang>
-   * @lang zh-CN 结果不含 request、wire、cache value、异常或 session data。
-   * @lang en The result contains no request, wire value, cache value, exception, or session data.
+   * @returns {object} <lang><zh-CN>按 port 与 local transport 分组的受限 observation。</zh-CN><en>A bounded observation grouped by port and local transport.</en></lang>
+   * @lang zh-CN 结果不含 request、wire、cache value、operation ID、异常或 session data。
+   * @lang en The result contains no request, wire value, cache value, operation ID, exception, or session data.
    */
   const getObservation = () => {
     // <lang><zh-CN>controller 分别返回新对象，组合后仍不共享内部计数容器。</zh-CN><en>Each controller returns a new object, so their composition shares no internal count container.</en></lang>
     return {
       query: queryInitialization.controller.getObservation(),
-      detail: detailInitialization.controller.getObservation()
+      detail: detailInitialization.controller.getObservation(),
+      transport: transportInitialization.transport.getObservation()
     };
   };
 
@@ -659,6 +764,14 @@ export function createCatalogQueryDetailAdapterFixture(options = {}) {
     adapterDeclarations: {
       query: { ...queryDeclaration, contract: { ...queryDeclaration.contract }, pagination: { ...queryDeclaration.pagination, modes: [...queryDeclaration.pagination.modes] }, cache: { ...queryDeclaration.cache }, credential: { ...queryDeclaration.credential } },
       detail: { ...detailDeclaration, contract: { ...detailDeclaration.contract }, pagination: { ...detailDeclaration.pagination, modes: [...detailDeclaration.pagination.modes] }, cache: { ...detailDeclaration.cache }, credential: { ...detailDeclaration.credential } }
+    },
+    transportDescriptor: {
+      ...transportDescriptor,
+      credential: { ...transportDescriptor.credential },
+      operations: transportDescriptor.operations.map((operation) => ({
+        ...operation,
+        contract: { ...operation.contract }
+      }))
     },
     getObservation,
     clearCaches

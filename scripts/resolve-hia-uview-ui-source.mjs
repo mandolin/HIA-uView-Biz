@@ -34,7 +34,7 @@ const EXPECTED_UI_PACKAGE_LICENSE = 'MIT';
  * @lang zh-CN 仅接受此精确提交，避免相同 package metadata 下的未审阅源码漂移。
  * @lang en Only this exact commit is accepted, preventing unreviewed source drift under identical package metadata.
  */
-const EXPECTED_UI_COMMIT = '48354f10506d17744398f8fc159a49d0c1f9f6ea';
+const EXPECTED_UI_COMMIT = 'c81b4427ef4a0bec8de546321cbb9277431afaaf';
 
 /**
  * <lang><zh-CN>以不暴露操作者路径的受控错误停止本地 compiler fixture。</zh-CN><en>Stops the local compiler fixture with a controlled error that exposes no operator path.</en></lang>

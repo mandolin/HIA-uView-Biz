@@ -283,7 +283,22 @@ async function runDoctor() {
 }
 
 // <lang><zh-CN>执行只读 doctor；非 ready 以非零状态提示调用方手工处理前置条件，不执行自动修复。</zh-CN><en>Execute read-only doctor; use nonzero status for non-ready state so caller handles prerequisite manually and no automatic repair executes.</en></lang>
-const isReady = await runDoctor();
-if (!isReady) {
-  process.exitCode = 1;
+try {
+  // <lang><zh-CN>仅在正常解析与固定 metadata 读取成功后取得 readiness；不把异常 stack、绝对路径或输入值输出给调用方。</zh-CN><en>Obtain readiness only after normal parsing and fixed-metadata read succeed; do not output exception stack, absolute path, or input value to caller.</en></lang>
+  const isReady = await runDoctor();
+
+  // <lang><zh-CN>非 ready 仅使用 exit code 表示本地 prerequisite 未满足，调用方仍需手工修正。</zh-CN><en>Use exit code only for non-ready local prerequisite; caller must still correct it manually.</en></lang>
+  if (!isReady) {
+    process.exitCode = 1;
+  }
+} catch (error) {
+  // <lang><zh-CN>唯一可预期的输入错误使用固定文本；它不回显调用方传入的未知 argument。</zh-CN><en>The only expected input error uses fixed text and does not echo an unknown argument supplied by caller.</en></lang>
+  if (error instanceof Error && error.message === 'doctor accepts no argument or --json only.') {
+    console.error(error.message);
+  } else {
+    // <lang><zh-CN>其余 metadata/read 错误归并为受限诊断，避免 terminal 或 issue copy-paste 泄露 host path 或内部异常细节。</zh-CN><en>Collapse remaining metadata/read errors into bounded diagnostic, avoiding host path or internal exception detail leaked through terminal or issue copy-paste.</en></lang>
+    console.error('doctor could not evaluate local prerequisites. / doctor 无法评估本地前置条件。');
+  }
+
+  process.exitCode = 2;
 }

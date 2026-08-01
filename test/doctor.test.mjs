@@ -63,5 +63,35 @@ function assertDoctorJsonReport() {
   }
 }
 
+/**
+ * <lang><zh-CN>验证 doctor 拒绝未知 argument 且不回显调用方输入或 host path。</zh-CN><en>Verifies that doctor rejects an unknown argument without echoing caller input or a host path.</en></lang>
+ *
+ * @returns {void} <lang><zh-CN>子进程拒绝状态和受限 stderr 断言完成信号。</zh-CN><en>Completion signal for child-process rejection status and bounded stderr assertions.</en></lang>
+ * @lang zh-CN 负向测试使用无意义固定 token；它不传递真实路径、credential、source 或业务数据。
+ * @lang en Negative test uses a fixed meaningless token and passes no real path, credential, source, or business data.
+ */
+function assertDoctorRejectsUnknownArgumentSafely() {
+  // <lang><zh-CN>以当前 Node executable 传入不支持 token，验证解析器不会将它解释为路径或修复命令。</zh-CN><en>Pass unsupported token with current Node executable, verifying parser does not interpret it as a path or repair command.</en></lang>
+  const result = spawnSync(
+    process.execPath,
+    ['scripts/doctor.mjs', 'unrecognized-input'],
+    {
+      cwd: process.cwd(),
+      encoding: 'utf8'
+    }
+  );
+
+  // <lang><zh-CN>输入错误使用独立非零状态，且 stdout 保持为空，避免误把失败写成 machine-readable readiness report。</zh-CN><en>Input error uses separate nonzero status and keeps stdout empty, avoiding writing failure as machine-readable readiness report.</en></lang>
+  assert.equal(result.status, 2);
+  assert.equal(result.stdout, '');
+
+  // <lang><zh-CN>stderr 只含固定使用说明，既不回显 token，也不泄露 Windows/UNC/file 路径。</zh-CN><en>stderr contains fixed usage guidance only and leaks neither token nor Windows/UNC/file path.</en></lang>
+  assert.match(result.stderr, /doctor accepts no argument or --json only/);
+  assert.doesNotMatch(result.stderr, /unrecognized-input|[A-Za-z]:[\\/]|file:\/\//);
+}
+
 // <lang><zh-CN>doctor 的 JSON report 是采用反馈可复现性的直接契约，必须独立验收。</zh-CN><en>The doctor JSON report is a direct contract for reproducible adoption feedback and must be accepted independently.</en></lang>
 test('doctor emits a bounded ready JSON report', assertDoctorJsonReport);
+
+// <lang><zh-CN>未知 argument 必须安全拒绝，不能扩大 doctor 的读取或修复表面。</zh-CN><en>An unknown argument must be rejected safely and cannot expand doctor read or repair surface.</en></lang>
+test('doctor rejects an unknown argument without echoing it', assertDoctorRejectsUnknownArgumentSafely);

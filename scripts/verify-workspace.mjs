@@ -32,6 +32,10 @@ const requiredFiles = [
   'packages/provider-port-runtime/package.json',
   'packages/provider-port-runtime/src/index.mjs',
   'packages/provider-port-runtime/README.md',
+  // <lang><zh-CN>异步 project-provider runtime 必须独立保留 package、源码与公开说明，避免改变同步 provider v1 或把 source policy 混入 adapter。</zh-CN><en>The asynchronous project-provider runtime must retain separate package, source, and public guide, avoiding changes to sync provider v1 or mixing source policy into adapter.</en></lang>
+  'packages/async-provider-runtime/package.json',
+  'packages/async-provider-runtime/src/index.mjs',
+  'packages/async-provider-runtime/README.md',
   // <lang><zh-CN>能力生命周期 runtime 必须以独立 package、源码和公开说明存在。</zh-CN><en>The capability-lifecycle runtime must exist as an independent package, source file, and public guide.</en></lang>
   'packages/capability-runtime/package.json',
   'packages/capability-runtime/src/index.mjs',
@@ -50,6 +54,7 @@ const requiredFiles = [
   'packages/solution-profile-runtime/README.md',
   'extensions/example-catalog-query-detail-adapter-fixture/package.json',
   'extensions/example-catalog-query-detail-adapter-fixture/src/index.mjs',
+  'extensions/example-catalog-query-detail-adapter-fixture/src/async-query-fixture.mjs',
   'extensions/example-catalog-query-detail-adapter-fixture/README.md',
   // <lang><zh-CN>中性小程序应用模板必须以独立私有 workspace package 存在，不混入 app 或 module manifest。</zh-CN><en>The neutral mini-program application template must exist as a separate private workspace package rather than being mixed into an app or module manifest.</en></lang>
   'templates/example-catalog-query-detail-mp-weixin/package.json',
@@ -106,6 +111,7 @@ const requiredFiles = [
   'docs/api/adapter-runtime.md',
   'docs/api/transport-operation-runtime.md',
   'docs/api/provider-port-runtime.md',
+  'docs/api/async-provider-runtime.md',
   // <lang><zh-CN>能力生命周期公开 API 文档必须与 runtime package 同步存在。</zh-CN><en>The public capability-lifecycle API guide must exist alongside the runtime package.</en></lang>
   'docs/api/capability-runtime.md',
   'docs/api/adoption-runtime.md',
@@ -121,11 +127,14 @@ const requiredFiles = [
   'docs/adr/ADR-0008-adoption-diagnostics-and-feedback-boundary.md',
   // <lang><zh-CN>source-trial/release boundary ADR 必须与指南共同存在，避免 private `0.0.0` workspace 被误表述为已发布 package。</zh-CN><en>The source-trial/release-boundary ADR must exist alongside the guide, avoiding a private `0.0.0` workspace being presented as a published package.</en></lang>
   'docs/adr/ADR-0009-local-source-trial-and-release-boundary.md',
+  // <lang><zh-CN>异步 project-provider 的独立 contract/ADR 必须同时存在，防止 timeout/cancel/write authority 被隐为实现细节。</zh-CN><en>The async project-provider independent contract/ADR must coexist, preventing timeout/cancel/write authority from being hidden as implementation detail.</en></lang>
+  'docs/adr/ADR-0010-async-project-provider-boundary.md',
   'docs/jsdoc.config.json',
   'docs/contracts/adapter-boundary.md',
   // <lang><zh-CN>静态 local operation dispatch 必须有独立 contract、schema/example 和 runtime API，明确它不是 HTTP/client 或 command transport。</zh-CN><en>Static local operation dispatch must have independent contract, schema/example, and runtime API, making clear it is not HTTP/client or command transport.</en></lang>
   'docs/contracts/transport-operation.md',
   'docs/contracts/provider-port.md',
+  'docs/contracts/async-provider.md',
   'docs/contracts/schemas/provider-port.declaration.v1.schema.json',
   'docs/contracts/examples/example.consumer.provider-port.declaration.json',
   'docs/contracts/capability-lifecycle.md',
@@ -161,6 +170,10 @@ const requiredFiles = [
   'test/transport-operation-runtime.test.mjs',
   // <lang><zh-CN>provider-port 测试固定显式 ownership、plain-data isolation、failure redaction 与 rollback boundary。</zh-CN><en>The provider-port test fixes explicit ownership, plain-data isolation, failure redaction, and rollback boundaries.</en></lang>
   'test/provider-port-runtime.test.mjs',
+  // <lang><zh-CN>async-provider 测试固定 Promise、source policy、降级、write 不确定性与脱敏边界。</zh-CN><en>The async-provider test fixes Promise, source policy, degradation, write uncertainty, and redaction boundaries.</en></lang>
+  'test/async-provider-runtime.test.mjs',
+  // <lang><zh-CN>异步 adapter fixture 测试固定 envelope 到 canonical outcome 的投影，必须成为 workspace 显式证据。</zh-CN><en>The async-adapter-fixture test fixes projection from envelope to canonical outcome and must be explicit workspace evidence.</en></lang>
+  'test/async-adapter-fixture.test.mjs',
   // <lang><zh-CN>能力生命周期测试固定多单元组合、依赖/冲突与无 hook 边界。</zh-CN><en>The capability-lifecycle test fixes multi-unit composition, dependency/conflict, and no-hook boundaries.</en></lang>
   'test/capability-runtime.test.mjs',
   // <lang><zh-CN>采用测试固定完整集合、dependency order、状态、替换、回退、配置与冲突。</zh-CN><en>The adoption test fixes complete sets, dependency order, state, replacement, rollback, configuration, and conflicts.</en></lang>

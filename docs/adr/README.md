@@ -12,3 +12,5 @@ Architecture Decision Records (ADRs) capture public decisions that shape package
 - [ADR-0006: Application template and explicit adapter integration / 应用模板与显式 Adapter 集成](ADR-0006-application-template-and-explicit-adapter-integration.md)
 - [ADR-0007: Offline release-quality candidate boundary / 离线发布质量候选边界](ADR-0007-release-quality-candidate-boundary.md)
 - [ADR-0008: Adoption, diagnostics, and feedback boundary / 采用、诊断与反馈边界](ADR-0008-adoption-diagnostics-and-feedback-boundary.md)
+- [ADR-0009: Local source trial and release boundary / 本地 source trial 与发布边界](ADR-0009-local-source-trial-and-release-boundary.md)
+- [ADR-0010: Async project-provider boundary / 异步项目 provider 边界](ADR-0010-async-project-provider-boundary.md)

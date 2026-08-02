@@ -28,6 +28,8 @@ const documentedSourceFiles = [
   { relativePath: 'packages/adapter-runtime/src/index.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>provider-port runtime 承担 consumer-owned provider host 与 failure/rollback boundary，必须进入严格 ROP 门禁。</zh-CN><en>The provider-port runtime owns the consumer-owned provider host and failure/rollback boundary and must enter the strict ROP gate.</en></lang>
   { relativePath: 'packages/provider-port-runtime/src/index.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>异步 project-provider runtime 承担 Promise/timeout/cancel/write 不确定性边界，必须进入严格双语 ROP 门禁。</zh-CN><en>The async project-provider runtime owns Promise/timeout/cancel/write-uncertainty boundary and must enter the strict bilingual ROP gate.</en></lang>
+  { relativePath: 'packages/async-provider-runtime/src/index.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>能力生命周期 runtime 是新自研源码，必须进入严格双语 ROP 最低门禁。</zh-CN><en>The capability-lifecycle runtime is new independently written source and must enter the strict bilingual ROP minimum gate.</en></lang>
   { relativePath: 'packages/capability-runtime/src/index.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>采用 runtime 承担 profile validation、候选预检、原子切换与 receipt，必须进入严格 ROP 门禁。</zh-CN><en>The adoption runtime owns profile validation, candidate preflight, atomic switching, and receipts and must enter the strict ROP gate.</en></lang>
@@ -38,6 +40,8 @@ const documentedSourceFiles = [
   // <lang><zh-CN>中性 reference-data capability 是自研业务源码，必须保留节点/流程双语注释。</zh-CN><en>The neutral reference-data capability is independently written business source and must retain bilingual node/flow comments.</en></lang>
   { relativePath: 'modules/example-reference-data/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'extensions/example-catalog-query-detail-adapter-fixture/src/index.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>异步目录 adapter seam 映射 runtime envelope 到 canonical outcome，必须进入严格双语 ROP 门禁。</zh-CN><en>The asynchronous catalog-adapter seam maps runtime envelopes to canonical outcomes and must enter the strict bilingual ROP gate.</en></lang>
+  { relativePath: 'extensions/example-catalog-query-detail-adapter-fixture/src/async-query-fixture.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>应用模板工厂承担完整显式候选装配，必须保留节点与流程双语注释。</zh-CN><en>The application-template factory owns complete explicit candidate assembly and must retain bilingual node and flow comments.</en></lang>
   { relativePath: 'templates/example-catalog-query-detail-mp-weixin/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'test/core-and-example.test.mjs', requiresNodeMarkers: true },
@@ -45,6 +49,10 @@ const documentedSourceFiles = [
   { relativePath: 'test/adapter-runtime.test.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>provider-port acceptance 固定 provider injection、session/storage/read/write 与隐私隔离，必须进入严格 ROP 门禁。</zh-CN><en>The provider-port acceptance fixes provider injection, session/storage/read/write, and privacy isolation and must enter the strict ROP gate.</en></lang>
   { relativePath: 'test/provider-port-runtime.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>async-provider acceptance 固定 source policy、有限 retry、降级和 terminal race，必须进入严格 ROP 门禁。</zh-CN><en>The async-provider acceptance fixes source policy, finite retry, degradation, and terminal race and must enter the strict ROP gate.</en></lang>
+  { relativePath: 'test/async-provider-runtime.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>异步 adapter fixture acceptance 固定 canonical mapping、source 可见性与 wire 脱敏，必须进入严格 ROP 门禁。</zh-CN><en>The async-adapter-fixture acceptance fixes canonical mapping, source visibility, and wire redaction and must enter the strict ROP gate.</en></lang>
+  { relativePath: 'test/async-adapter-fixture.test.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>新能力生命周期测试也必须维持节点级和流程级双语 ROP 标记。</zh-CN><en>The new capability-lifecycle test must also retain node-level and flow-level bilingual ROP markers.</en></lang>
   { relativePath: 'test/capability-runtime.test.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>完整采用/替换 acceptance 同样适用严格双语 ROP。</zh-CN><en>The complete adoption/replacement acceptance is also subject to strict bilingual ROP.</en></lang>

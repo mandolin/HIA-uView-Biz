@@ -6,7 +6,8 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./src/index.mjs"
+    ".": "./src/index.mjs",
+    "./async-query-fixture": "./src/async-query-fixture.mjs"
   },
   "files": [
     "src"
@@ -14,6 +15,7 @@
   "sideEffects": false,
   "dependencies": {
     "@hia-uview/biz-adapter-runtime": "0.0.0",
+    "@hia-uview/biz-async-provider-runtime": "0.0.0",
     "@hia-uview/biz-example-catalog-query-detail": "0.0.0",
     "@hia-uview/biz-transport-operation-runtime": "0.0.0"
   },

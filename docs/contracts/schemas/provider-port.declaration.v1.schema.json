@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.invalid/hia-uview-biz/provider-port.declaration.v1.schema.json",
+  "title": "HIA-uView-Biz provider-port declaration v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "providerContractVersion",
+    "providerId",
+    "portId",
+    "owner",
+    "kind",
+    "contract",
+    "execution",
+    "credential",
+    "optional",
+    "rollback"
+  ],
+  "properties": {
+    "providerContractVersion": { "const": "1.0" },
+    "providerId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$" },
+    "portId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$" },
+    "owner": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$" },
+    "kind": { "enum": ["session", "storage", "read", "write"] },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,95}$" },
+        "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" }
+      }
+    },
+    "execution": { "const": "injected-sync" },
+    "credential": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": { "mode": { "const": "none" } }
+    },
+    "optional": { "type": "boolean" },
+    "rollback": { "enum": ["not-applicable", "local-no-partial-mutation"] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "write" } } },
+      "then": { "properties": { "rollback": { "const": "local-no-partial-mutation" } } }
+    },
+    {
+      "if": { "properties": { "kind": { "enum": ["session", "storage", "read"] } } },
+      "then": { "properties": { "rollback": { "const": "not-applicable" } } }
+    }
+  ]
+}

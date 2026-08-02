@@ -1,0 +1,17 @@
+{
+  "providerContractVersion": "1.0",
+  "providerId": "example.consumer.mock-session",
+  "portId": "session-state",
+  "owner": "example-consumer",
+  "kind": "session",
+  "contract": {
+    "id": "catalog-query-detail.session",
+    "version": "1.0"
+  },
+  "execution": "injected-sync",
+  "credential": {
+    "mode": "none"
+  },
+  "optional": false,
+  "rollback": "not-applicable"
+}

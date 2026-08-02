@@ -26,6 +26,8 @@ const documentedSourceFiles = [
   { relativePath: 'packages/core/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'packages/app-shell/src/index.mjs', requiresNodeMarkers: true },
   { relativePath: 'packages/adapter-runtime/src/index.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>provider-port runtime 承担 consumer-owned provider host 与 failure/rollback boundary，必须进入严格 ROP 门禁。</zh-CN><en>The provider-port runtime owns the consumer-owned provider host and failure/rollback boundary and must enter the strict ROP gate.</en></lang>
+  { relativePath: 'packages/provider-port-runtime/src/index.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>能力生命周期 runtime 是新自研源码，必须进入严格双语 ROP 最低门禁。</zh-CN><en>The capability-lifecycle runtime is new independently written source and must enter the strict bilingual ROP minimum gate.</en></lang>
   { relativePath: 'packages/capability-runtime/src/index.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>采用 runtime 承担 profile validation、候选预检、原子切换与 receipt，必须进入严格 ROP 门禁。</zh-CN><en>The adoption runtime owns profile validation, candidate preflight, atomic switching, and receipts and must enter the strict ROP gate.</en></lang>
@@ -41,6 +43,8 @@ const documentedSourceFiles = [
   { relativePath: 'test/core-and-example.test.mjs', requiresNodeMarkers: true },
   { relativePath: 'test/app-shell.test.mjs', requiresNodeMarkers: true },
   { relativePath: 'test/adapter-runtime.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>provider-port acceptance 固定 provider injection、session/storage/read/write 与隐私隔离，必须进入严格 ROP 门禁。</zh-CN><en>The provider-port acceptance fixes provider injection, session/storage/read/write, and privacy isolation and must enter the strict ROP gate.</en></lang>
+  { relativePath: 'test/provider-port-runtime.test.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>新能力生命周期测试也必须维持节点级和流程级双语 ROP 标记。</zh-CN><en>The new capability-lifecycle test must also retain node-level and flow-level bilingual ROP markers.</en></lang>
   { relativePath: 'test/capability-runtime.test.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>完整采用/替换 acceptance 同样适用严格双语 ROP。</zh-CN><en>The complete adoption/replacement acceptance is also subject to strict bilingual ROP.</en></lang>

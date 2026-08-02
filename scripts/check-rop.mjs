@@ -59,8 +59,14 @@ const documentedSourceFiles = [
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/fixture-runtime.mjs', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/pages/index/index.vue', requiresNodeMarkers: true },
   { relativePath: 'apps/example-catalog-query-detail-mp-weixin/src/uni.scss', requiresNodeMarkers: false },
+  // <lang><zh-CN>隔离 consumer runtime 承担 manifest/profile、template 与 provider-host 边界，必须进入严格 ROP 门禁。</zh-CN><en>The isolated consumer runtime owns manifest/profile, template, and provider-host boundaries and must enter the strict ROP gate.</en></lang>
+  { relativePath: 'apps/example-catalog-query-detail-consumer/src/index.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>代表性纵切测试也必须保留严格双语节点与流程说明。</zh-CN><en>The representative-slice test must also retain strict bilingual node and flow explanations.</en></lang>
   { relativePath: 'test/representative-mp-weixin-slice.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>checkout-first consumer acceptance 固定显式输入、shell/provider flow 与脱敏失败，必须进入严格 ROP 门禁。</zh-CN><en>The checkout-first consumer acceptance fixes explicit inputs, shell/provider flow, and redacted failure and must enter the strict ROP gate.</en></lang>
+  { relativePath: 'test/checkout-first-consumer.test.mjs', requiresNodeMarkers: true },
+  // <lang><zh-CN>consumer verifier 固定 CLI 输出与本地 mock 边界，必须进入严格 ROP 门禁。</zh-CN><en>The consumer verifier fixes CLI output and local-mock boundaries and must enter the strict ROP gate.</en></lang>
+  { relativePath: 'scripts/verify-checkout-consumer.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>候选质量门禁测试通过独立 Node 进程验证入口，必须保留严格双语节点与流程说明。</zh-CN><en>The candidate quality-gate test verifies the entry through an independent Node process and must retain strict bilingual node and flow explanations.</en></lang>
   { relativePath: 'test/release-quality.test.mjs', requiresNodeMarkers: true },
   // <lang><zh-CN>doctor acceptance 固定受限 JSON report，必须保留严格双语节点与流程说明。</zh-CN><en>Doctor acceptance fixes bounded JSON report and must retain strict bilingual node and flow explanations.</en></lang>

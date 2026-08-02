@@ -1,0 +1,23 @@
+{
+  "profileVersion": "1.0",
+  "id": "example.catalog-query-detail.consumer",
+  "sourceMode": "mock",
+  "query": {
+    "page": 1,
+    "pageSize": 1
+  },
+  "presentation": {
+    "enabledBlocks": [
+      "runtime-status",
+      "query-context",
+      "catalog-list",
+      "entry-detail"
+    ],
+    "blockOrder": [
+      "query-context",
+      "runtime-status",
+      "catalog-list",
+      "entry-detail"
+    ]
+  }
+}

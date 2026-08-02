@@ -10,6 +10,10 @@ All current workspace packages are private development packages at `0.0.0`. The 
 
 所有当前 workspace package 都是版本 `0.0.0` 的 private 开发 package。代表性 application 和 application template 是工程 fixture，不是生成的 application 或已发布的行业 package。
 
+The isolated `apps/example-catalog-query-detail-consumer/` fixture demonstrates the checkout-first consumer boundary. It owns a versioned manifest/profile and injects local session, optional memory storage, read, and write providers explicitly. Run `npm run verify:consumer` to exercise its query/detail and provider evidence. This remains a local mock contract: it does not install packages from a registry, discover dependencies, connect a backend, acquire identity, or create a production starter.
+
+隔离的 `apps/example-catalog-query-detail-consumer/` fixture 用于演示 checkout-first consumer 边界。它自有版本化 manifest/profile，并显式注入本地 session、可选内存 storage、read 和 write provider。运行 `npm run verify:consumer` 可执行其 query/detail 与 provider 证据。这仍是本地 mock contract：它不从 registry 安装 package、不发现依赖、不连接后端、不获取身份，也不创建生产 starter。
+
 ## Start with the baseline / 从基线开始
 
 Use Node.js 22 or later and npm 10 or later. From a checkout of this repository, install the committed dependency graph without lifecycle scripts and run the deterministic evidence:

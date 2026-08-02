@@ -50,7 +50,7 @@ function assertDoctorJsonReport() {
   assert.ok(Array.isArray(report.checks));
   assert.deepEqual(
     report.checks.map((check) => check.id),
-    ['node-version', 'npm-version', 'root-lockfile', 'installed-dependencies']
+    ['node-version', 'npm-version', 'root-lockfile', 'installed-dependencies', 'consumer-manifest', 'consumer-profile']
   );
 
   // <lang><zh-CN>每项检查只公开 ID、level 和文本建议，不公开 path、环境对象、dependency tree 或外部 source identity。</zh-CN><en>Each check exposes only ID, level, and textual guidance, not a path, environment object, dependency tree, or external source identity.</en></lang>

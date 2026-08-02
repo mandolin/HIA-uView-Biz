@@ -70,9 +70,16 @@ const requiredFiles = [
   'apps/example-catalog-query-detail-mp-weixin/src/solution-context.mjs',
   'apps/example-catalog-query-detail-mp-weixin/src/fixture-runtime.mjs',
   'apps/example-catalog-query-detail-mp-weixin/src/pages/index/index.vue',
+  // <lang><zh-CN>隔离 checkout-first consumer 必须拥有自己的 manifest/profile、runtime 与公开说明。</zh-CN><en>The isolated checkout-first consumer must own its manifest/profile, runtime, and public guide.</en></lang>
+  'apps/example-catalog-query-detail-consumer/package.json',
+  'apps/example-catalog-query-detail-consumer/README.md',
+  'apps/example-catalog-query-detail-consumer/src/index.mjs',
+  'apps/example-catalog-query-detail-consumer/src/consumer.manifest.json',
+  'apps/example-catalog-query-detail-consumer/src/consumer.profile.json',
   'scripts/resolve-hia-uview-ui-source.mjs',
   'scripts/build-mp-weixin-fixture.mjs',
   'scripts/verify-mp-weixin-fixture.mjs',
+  'scripts/verify-checkout-consumer.mjs',
   // <lang><zh-CN>Biz doctor 是采用 readiness 的受限只读入口，源码与验收必须同时存在。</zh-CN><en>Biz doctor is the bounded read-only entry for adoption readiness, and its source and acceptance must exist together.</en></lang>
   'scripts/doctor.mjs',
   'scripts/verify-documentation-output.mjs',
@@ -125,6 +132,7 @@ const requiredFiles = [
   'docs/contracts/capability-adoption.md',
   'docs/contracts/application-template.md',
   'docs/contracts/solution-profile.md',
+  'docs/contracts/checkout-first-consumer.md',
   // <lang><zh-CN>受限确认 command 必须同时具备公开契约、schema 与正反向 plain-data 示例，避免把本地 mock 行为隐为实现细节。</zh-CN><en>The bounded acknowledgement command must include a public contract, schema, and positive/negative plain-data examples, avoiding concealment of local mock behavior as an implementation detail.</en></lang>
   'docs/contracts/entry-acknowledgement.md',
   'docs/contracts/schemas/application-template.manifest.v1.schema.json',
@@ -144,6 +152,8 @@ const requiredFiles = [
   'docs/contracts/representative-mp-weixin-slice.md',
   'docs/contracts/schemas/representative-mp-weixin.profile.v1.schema.json',
   'docs/contracts/examples/example.catalog-query-detail.representative-mp-weixin.profile.json',
+  'docs/contracts/schemas/consumer.manifest.v1.schema.json',
+  'docs/contracts/examples/example.catalog-query-detail.consumer.manifest.json',
   'test/core-and-example.test.mjs',
   'test/app-shell.test.mjs',
   'test/adapter-runtime.test.mjs',
@@ -161,6 +171,8 @@ const requiredFiles = [
   'test/solution-profile-runtime.test.mjs',
   // <lang><zh-CN>端到端纯 Node 测试固定 profile、显式 source、lifecycle、shell 与脱敏 observation。</zh-CN><en>The end-to-end pure-Node test fixes profile, explicit source, lifecycle, shell, and redacted observation.</en></lang>
   'test/representative-mp-weixin-slice.test.mjs',
+  // <lang><zh-CN>checkout-first consumer 测试固定显式 manifest/profile、provider host、shell flow 与 failure redaction。</zh-CN><en>The checkout-first consumer test fixes explicit manifest/profile, provider host, shell flow, and failure redaction.</en></lang>
+  'test/checkout-first-consumer.test.mjs',
   // <lang><zh-CN>命令 transaction 测试固定 receipt、幂等、失败回退与 required port，不把命令接入页面。</zh-CN><en>The command-transaction test fixes receipt, idempotency, failure rollback, and required port without wiring the command into the page.</en></lang>
   'test/command-transaction.test.mjs',
   // <lang><zh-CN>候选质量门禁是独立契约，测试文件必须可被基线 Node suite 直接执行。</zh-CN><en>The candidate quality gate is an independent contract and its test file must be directly executable by the baseline Node suite.</en></lang>

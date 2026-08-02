@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/mandolin/HIA-uView-Biz/blob/main/docs/contracts/schemas/consumer.manifest.v1.schema.json",
+  "title": "Checkout-first consumer manifest / Checkout-first consumer manifest",
+  "description": "Declares a source-checkout consumer's exact template/profile/provider boundary without executable configuration. / 声明 source-checkout consumer 的精确 template/profile/provider 边界，不包含可执行配置。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "consumerManifestVersion",
+    "kind",
+    "id",
+    "owner",
+    "templateId",
+    "profileId",
+    "providerContractVersion",
+    "providerPortIds",
+    "execution"
+  ],
+  "properties": {
+    "consumerManifestVersion": {
+      "const": "1.0",
+      "description": "Consumer manifest contract version. / Consumer manifest 契约版本。"
+    },
+    "kind": {
+      "const": "checkout-first-consumer",
+      "description": "Identifies a source-checkout consumer fixture. / 标识 source-checkout consumer fixture。"
+    },
+    "id": {
+      "const": "example.catalog-query-detail.consumer",
+      "description": "Stable consumer identity. / 稳定 consumer 标识。"
+    },
+    "owner": {
+      "const": "example-consumer",
+      "description": "Consumer-owned boundary label. / Consumer-owned 边界标识。"
+    },
+    "templateId": {
+      "const": "example.catalog-query-detail",
+      "description": "Explicit template identity. / 显式 template 标识。"
+    },
+    "profileId": {
+      "const": "example.catalog-query-detail.consumer",
+      "description": "Profile identity consumed by this fixture. / 本 fixture 消费的 profile 标识。"
+    },
+    "providerContractVersion": {
+      "const": "1.0",
+      "description": "Provider-port contract version. / Provider-port 契约版本。"
+    },
+    "providerPortIds": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "session-state",
+          "local-preference",
+          "catalog-query",
+          "entry-update"
+        ]
+      },
+      "description": "Complete explicit provider-port selection. / 完整显式 provider-port 选择。"
+    },
+    "execution": {
+      "const": "explicit-injected-sync",
+      "description": "Only explicit synchronous injection is accepted. / 只接受显式同步注入。"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "consumerManifestVersion": "1.0",
+  "kind": "checkout-first-consumer",
+  "id": "example.catalog-query-detail.consumer",
+  "owner": "example-consumer",
+  "templateId": "example.catalog-query-detail",
+  "profileId": "example.catalog-query-detail.consumer",
+  "providerContractVersion": "1.0",
+  "providerPortIds": [
+    "session-state",
+    "local-preference",
+    "catalog-query",
+    "entry-update"
+  ],
+  "execution": "explicit-injected-sync"
+}

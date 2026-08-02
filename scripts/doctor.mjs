@@ -191,6 +191,9 @@ async function evaluateReadiness() {
   // <lang><zh-CN>固定检查两个当前仓 prerequisite 文件/目录；不枚举 node_modules 或读取 lock 内容。</zh-CN><en>Check two fixed current-repository prerequisite file/directories and enumerate no node_modules or read lock content.</en></lang>
   const hasLockfile = await hasRequiredPath('package-lock.json');
   const hasInstalledDependencies = await hasRequiredPath('node_modules');
+  // <lang><zh-CN>checkout-first consumer 的 manifest/profile 是当前采用验证的固定输入；doctor 只检查存在性，不执行其 runtime。</zh-CN><en>The checkout-first consumer manifest/profile are fixed inputs for adoption verification; doctor checks presence only and executes no consumer runtime.</en></lang>
+  const hasConsumerManifest = await hasRequiredPath('apps/example-catalog-query-detail-consumer/src/consumer.manifest.json');
+  const hasConsumerProfile = await hasRequiredPath('apps/example-catalog-query-detail-consumer/src/consumer.profile.json');
 
   const checks = [];
 
@@ -224,6 +227,20 @@ async function evaluateReadiness() {
     hasInstalledDependencies
       ? createCheck('installed-dependencies', 'ok', 'Local installed dependency directory is present. / 本地已安装 dependency directory 存在。')
       : createCheck('installed-dependencies', 'error', 'Run npm ci --ignore-scripts manually before continuing. / 请先手工运行 npm ci --ignore-scripts。')
+  );
+
+  // <lang><zh-CN>缺失 consumer manifest 时不能复现 checkout-first 输入；该检查不读取 JSON 内容或外部项目。</zh-CN><en>Without the consumer manifest, checkout-first input cannot be reproduced; this check reads neither JSON content nor an external project.</en></lang>
+  checks.push(
+    hasConsumerManifest
+      ? createCheck('consumer-manifest', 'ok', 'Checkout-first consumer manifest is present. / Checkout-first consumer manifest 已存在。')
+      : createCheck('consumer-manifest', 'error', 'Restore the checked-in consumer manifest before continuing. / 请先恢复已提交的 consumer manifest。')
+  );
+
+  // <lang><zh-CN>缺失 consumer profile 时不把 starter 表述为可复现；doctor 不尝试生成或修复 profile。</zh-CN><en>Without the consumer profile, do not describe the starter as reproducible; doctor neither generates nor repairs the profile.</en></lang>
+  checks.push(
+    hasConsumerProfile
+      ? createCheck('consumer-profile', 'ok', 'Checkout-first consumer profile is present. / Checkout-first consumer profile 已存在。')
+      : createCheck('consumer-profile', 'error', 'Restore the checked-in consumer profile before continuing. / 请先恢复已提交的 consumer profile。')
   );
 
   // <lang><zh-CN>只有全部固定 prerequisite 为 ok 才声明 ready；warn 预留给未来非阻断受限信息，当前不降低任何必要条件。</zh-CN><en>Declare ready only when every fixed prerequisite is ok; reserve warn for future non-blocking bounded information and do not lower a required condition today.</en></lang>

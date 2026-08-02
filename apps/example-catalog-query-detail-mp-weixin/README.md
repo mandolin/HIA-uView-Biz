@@ -10,9 +10,9 @@ The acceptance boundary is defined by the [representative slice contract](../../
 
 ## Local source prerequisite / 本地源码前提
 
-`@hia-uview/ui` is currently private and unpublished. Before building, set `HIA_UVIEW_UI_ROOT` to the trusted local directory that contains its `package.json`. The build checks `@hia-uview/ui`, version `0.0.0`, MIT metadata, and reviewed Git commit `c81b4427ef4a0bec8de546321cbb9277431afaaf`.
+`@hia-uview/ui` is currently private and unpublished. Before building, set `HIA_UVIEW_UI_ROOT` to the trusted local directory that contains its `package.json`. The build checks `@hia-uview/ui`, version `0.0.0`, MIT metadata, and reviewed Git commit `a774a8948d29c21951eea3073a5ce17d121b2de4`.
 
-`@hia-uview/ui` 当前为私有且未发布的包。构建前，请将 `HIA_UVIEW_UI_ROOT` 设置为包含其 `package.json` 的受信任本地目录。构建会检查 `@hia-uview/ui`、版本 `0.0.0`、MIT metadata 和已复审的 Git commit `c81b4427ef4a0bec8de546321cbb9277431afaaf`。
+`@hia-uview/ui` 当前为私有且未发布的包。构建前，请将 `HIA_UVIEW_UI_ROOT` 设置为包含其 `package.json` 的受信任本地目录。构建会检查 `@hia-uview/ui`、版本 `0.0.0`、MIT metadata 和已复审的 Git commit `a774a8948d29c21951eea3073a5ce17d121b2de4`。
 
 The repository declares no external `file:` dependency and never searches a parent directory or registry for this input. During the build, a temporary ignored directory junction gives the official compiler a lexical path inside the fixture input tree; it is removed even when compilation fails. UI source is neither copied, modified, committed, nor published by this fixture.
 
